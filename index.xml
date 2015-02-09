@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Recent Content on Allan&#39;s blog </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://yourSiteHere/index.xml/</link>
+    <language>en-us</language>
+    
+    
+    <updated>Mon, 09 Feb 2015 23:24:39 CST</updated>
+    
+    <item>
+      <title>A new Blog this time on github and statically generated</title>
+      <link>http://yoursitehere/posts/first/</link>
+      <pubDate>Mon, 09 Feb 2015 23:24:39 CST</pubDate>
+      
+      <guid>http://yoursitehere/posts/first/</guid>
+      <description>&lt;p&gt;It has been a long time since I last did a blog the biggest reason behind were:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;it&amp;rsquo;s hard to maintain a server and a blog platform&lt;/li&gt;
+&lt;li&gt;most common web plateforms are blocked in China&lt;/li&gt;
+&lt;li&gt;the other plateforms does not fit my geeky needs&lt;/li&gt;
+&lt;li&gt;non-self hosted platform make it hard to have easy backup of your data&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So here we are, after reading comments on HackerNews I&amp;rsquo;ve found the project
+&lt;a href=&#34;http://gohugo.io&#34;&gt;Hugo&lt;/a&gt; which permits you to create a static blog the
+advantages I see to it&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;it&amp;rsquo;s all command line and simple to install&lt;/li&gt;
+&lt;li&gt;vim and markdown friendly, posting is just one more markdown file&lt;/li&gt;
+&lt;li&gt;can be hosted on github (which solve the hosting problem)&lt;/li&gt;
+&lt;li&gt;it&amp;rsquo;s text files and git (which solve the backup problem)&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>about</title>
+      <link>http://yoursitehere/about/</link>
+      <pubDate>Mon, 09 Feb 2015 23:20:55 CST</pubDate>
+      
+      <guid>http://yoursitehere/about/</guid>
+      <description>
+
+&lt;h2 id=&#34;toc_0&#34;&gt;What will you find on this blog&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;My daily discoveries and tips, mostly web/linux/devops/c++/c/rust related.&lt;/li&gt;
+&lt;li&gt;Some tips and tricks on how to survive in the Chinese internet as a devops&lt;/li&gt;
+&lt;li&gt;Some news concerning my personnal projects&lt;/li&gt;
+&lt;li&gt;Random thoughts as I progress in my professional and personnal career.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
