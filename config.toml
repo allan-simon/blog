@@ -5,3 +5,4 @@ title = "Allan's blog"
 [Params]
     Description = "Tips, tricks and random thoughts on Linux/Vim/rust/php/devops"
     author = "Allan SIMON"
+    Copyright = "Creative-Common attribution"
