@@ -5,7 +5,7 @@ title = "postgresql display one column per line"
 
 +++
 
-##Problem : displaying a table with a lot of columns
+###Problem : displaying a table with a lot of columns
 
 You always got that table with a dozens of columns of type text and for which
 the normal tabular output does not work nicely and you end up with something 
@@ -18,7 +18,7 @@ like
 ```
 
 
-## In MySQL
+### In MySQL
 
 with MySQL you can replace `;` by `\G` at the end of your SQL statement, i.e turning
 
@@ -34,7 +34,7 @@ SELECT * FROM example \G
 ```
 
 
-## In PostgreSQL
+### In PostgreSQL
 
 you need first to use `\x` and it will activate the 'one column by line' display
 (use `\x` again to switch back to normal mode)

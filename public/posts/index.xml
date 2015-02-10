@@ -17,7 +17,7 @@
       <guid>http://allan-simon.github.io/blog/posts/postgresql-display-one-column-per-line/</guid>
       <description>
 
-&lt;p&gt;##Problem : displaying a table with a lot of columns&lt;/p&gt;
+&lt;p&gt;###Problem : displaying a table with a lot of columns&lt;/p&gt;
 
 &lt;p&gt;You always got that table with a dozens of columns of type text and for which
 the normal tabular output does not work nicely and you end up with something
@@ -28,7 +28,7 @@ like&lt;/p&gt;
    1000163 |     0 |     0 |     0 |     0 |   141 | 1000147 |       10 | blablabla                                                                                           |          3 |           4 |        22 |    1000163 |               0 | 1000163 |          184 |   10028 | 2014-06-30 23:36:00 | 2014-06-30 23:36:00 |             0 |           0 |         0 |          0 |                           |           |          
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;toc_0&#34;&gt;In MySQL&lt;/h2&gt;
+&lt;h3 id=&#34;toc_0&#34;&gt;In MySQL&lt;/h3&gt;
 
 &lt;p&gt;with MySQL you can replace &lt;code&gt;;&lt;/code&gt; by &lt;code&gt;\G&lt;/code&gt; at the end of your SQL statement, i.e turning&lt;/p&gt;
 
@@ -40,7 +40,7 @@ like&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;SELECT * FROM example \G
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;toc_1&#34;&gt;In PostgreSQL&lt;/h2&gt;
+&lt;h3 id=&#34;toc_1&#34;&gt;In PostgreSQL&lt;/h3&gt;
 
 &lt;p&gt;you need first to use &lt;code&gt;\x&lt;/code&gt; and it will activate the &amp;lsquo;one column by line&amp;rsquo; display
 (use &lt;code&gt;\x&lt;/code&gt; again to switch back to normal mode)&lt;/p&gt;
