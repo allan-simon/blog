@@ -7,7 +7,68 @@
     <language>en-us</language>
     
     
-    <updated>Tue, 10 Feb 2015 14:14:49 CST</updated>
+    <updated>Tue, 10 Feb 2015 18:19:22 CST</updated>
+    
+    <item>
+      <title>Solve composer github api limitation</title>
+      <link>http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/</link>
+      <pubDate>Tue, 10 Feb 2015 18:19:22 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/</guid>
+      <description>
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Could not fetch X enter your GitHub credentials to go over the API rate limit&lt;/h3&gt;
+
+&lt;p&gt;The problem is that composer is retrieving nearly all the packages from github
+using the anonymous access github API. In order to solve it you need to generate
+a token&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;you need a github account (or ask a friend)&lt;/li&gt;
+&lt;li&gt;go on your setting page &lt;a href=&#34;https://github.com/settings/applications&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;click on &lt;code&gt;Generate new token&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;now two possibilities&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_1&#34;&gt;1 - Put this token in one specific project&lt;/h4&gt;
+
+&lt;p&gt;for this simply run&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;composer config -g github-oauth.github.com YOUR_TOKEN
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;php composer.phar config -g github-oauth.github.com YOUR_TOKEN
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(depending on how you installed composer)&lt;/p&gt;
+
+&lt;p&gt;it will add that to your project&amp;rsquo;s composer.json file&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_2&#34;&gt;2 -  Put this token in your global composer configuration&lt;/h4&gt;
+
+&lt;p&gt;If your project is an open-source or company project you may not want
+to commit your token on the git of your project/company&lt;/p&gt;
+
+&lt;p&gt;for this edit the file &lt;code&gt;~/.composer/config.json&lt;/code&gt; and put in it:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;config&amp;quot;: {
+        &amp;quot;github-oauth&amp;quot;: { &amp;quot;github.com&amp;quot;: &amp;quot;YOUR_TOKEN&amp;quot; }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;that&amp;rsquo;s all folks!&lt;/p&gt;
+
+&lt;p&gt;Source:
+  * &lt;a href=&#34;https://coderwall.com/p/kz4egw/composer-install-github-rate-limiting-work-around&#34;&gt;coderwall.com&lt;/a&gt;
+  * &lt;a href=&#34;https://github.com/composer/composer/issues/3542&#34;&gt;composer&amp;rsquo;s github&lt;/a&gt;
+  * &lt;a href=&#34;https://github.com/blog/1509-personal-api-tokens&#34;&gt;github&amp;rsquo;s blog&lt;/a&gt; More details about Github token&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Install docker on ubuntu 12.04</title>
