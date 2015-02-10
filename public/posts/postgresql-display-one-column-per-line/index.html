@@ -50,7 +50,7 @@
   <span class="post-date">Tue, Feb 10, 2015</span>
       
 
-<p>###Problem : displaying a table with a lot of columns</p>
+<h3 id="toc_0">Problem : displaying a table with a lot of columns</h3>
 
 <p>You always got that table with a dozens of columns of type text and for which
 the normal tabular output does not work nicely and you end up with something
@@ -61,7 +61,7 @@ like</p>
    1000163 |     0 |     0 |     0 |     0 |   141 | 1000147 |       10 | blablabla                                                                                           |          3 |           4 |        22 |    1000163 |               0 | 1000163 |          184 |   10028 | 2014-06-30 23:36:00 | 2014-06-30 23:36:00 |             0 |           0 |         0 |          0 |                           |           |          
 </code></pre>
 
-<h3 id="toc_0">In MySQL</h3>
+<h3 id="toc_1">In MySQL</h3>
 
 <p>with MySQL you can replace <code>;</code> by <code>\G</code> at the end of your SQL statement, i.e turning</p>
 
@@ -73,7 +73,7 @@ like</p>
 <pre><code>SELECT * FROM example \G
 </code></pre>
 
-<h3 id="toc_1">In PostgreSQL</h3>
+<h3 id="toc_2">In PostgreSQL</h3>
 
 <p>you need first to use <code>\x</code> and it will activate the &lsquo;one column by line&rsquo; display
 (use <code>\x</code> again to switch back to normal mode)</p>

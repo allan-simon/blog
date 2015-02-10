@@ -5,7 +5,7 @@ title = "postgresql display one column per line"
 
 +++
 
-###Problem : displaying a table with a lot of columns
+### Problem : displaying a table with a lot of columns
 
 You always got that table with a dozens of columns of type text and for which
 the normal tabular output does not work nicely and you end up with something 
