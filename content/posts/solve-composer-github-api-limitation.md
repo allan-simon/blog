@@ -57,6 +57,7 @@ for this edit the file `~/.composer/config.json` and put in it:
 that's all folks!
 
 Source:
+
   * [coderwall.com](https://coderwall.com/p/kz4egw/composer-install-github-rate-limiting-work-around)
   * [composer's github](https://github.com/composer/composer/issues/3542) 
   * [github's blog](https://github.com/blog/1509-personal-api-tokens) More details about Github token

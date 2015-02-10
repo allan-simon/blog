@@ -63,10 +63,13 @@ to commit your token on the git of your project/company&lt;/p&gt;
 
 &lt;p&gt;that&amp;rsquo;s all folks!&lt;/p&gt;
 
-&lt;p&gt;Source:
-  * &lt;a href=&#34;https://coderwall.com/p/kz4egw/composer-install-github-rate-limiting-work-around&#34;&gt;coderwall.com&lt;/a&gt;
-  * &lt;a href=&#34;https://github.com/composer/composer/issues/3542&#34;&gt;composer&amp;rsquo;s github&lt;/a&gt;
-  * &lt;a href=&#34;https://github.com/blog/1509-personal-api-tokens&#34;&gt;github&amp;rsquo;s blog&lt;/a&gt; More details about Github token&lt;/p&gt;
+&lt;p&gt;Source:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://coderwall.com/p/kz4egw/composer-install-github-rate-limiting-work-around&#34;&gt;coderwall.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/composer/composer/issues/3542&#34;&gt;composer&amp;rsquo;s github&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/blog/1509-personal-api-tokens&#34;&gt;github&amp;rsquo;s blog&lt;/a&gt; More details about Github token&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
