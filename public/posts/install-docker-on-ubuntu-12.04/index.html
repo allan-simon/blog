@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
-  <title> Posts &middot; Allan&#39;s blog </title>
+  <title> Install docker on ubuntu 12.04 &middot; Allan&#39;s blog </title>
 
   
   <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
@@ -20,7 +20,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
 
   
-  <link href="http://allan-simon.github.io/blog/posts/index.xml/" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
 </head>
 
 <body>
@@ -44,22 +44,32 @@
 </div>
 
 
-  <div class="content container">
-    <ul class="posts">
-        
-        <li>
-          <span><a href="http://allan-simon.github.io/blog/posts/install-docker-on-ubuntu-12.04/">Install docker on ubuntu 12.04</a> <time class="pull-right post-list">Tue, Feb 10, 2015</time></span>
-        </li>
-        
-        <li>
-          <span><a href="http://allan-simon.github.io/blog/posts/postgresql-display-one-column-per-line/">postgresql display one column per line</a> <time class="pull-right post-list">Tue, Feb 10, 2015</time></span>
-        </li>
-        
-        <li>
-          <span><a href="http://allan-simon.github.io/blog/posts/first/">A new Blog this time on github and statically generated</a> <time class="pull-right post-list">Mon, Feb 9, 2015</time></span>
-        </li>
-        
-    </ul>
-  </div>
-</body>
+    <div class="content container">
+<div class="post">
+  <h1>Install docker on ubuntu 12.04</h1>
+  <span class="post-date">Tue, Feb 10, 2015</span>
+      <p>This article is a shameless summary from <a href="http://compositecode.com/2013/11/11/getting-docker-installed-on-ubuntu-12-04-lts/">http://compositecode.com</a></p>
+
+<p>the steps are:</p>
+
+<ul>
+<li>Updating your kernel to 3.8+ (requires a reboot)</li>
+<li>Add the docker repository</li>
+<li>Installing the package</li>
+</ul>
+
+<pre><code>sudo apt-get install linux-image-generic-lts-raring linux-headers-generic-lts-raring
+sudo reboot
+sudo sh -c &quot;wget -qO- https://get.docker.io/gpg | apt-key add -&quot;
+sudo sh -c &quot;echo deb http://get.docker.io/ubuntu docker main &gt; /etc/apt/sources.list.d/docker.list&quot;
+sudo apt-get update
+sudo apt-get install lxc-docker
+</code></pre>
+
+<p>And now you should be able to get docker working</p>
+
+</div>
+</div>
+
+  </body>
 </html>

@@ -7,7 +7,35 @@
     <language>en-us</language>
     
     
-    <updated>Tue, 10 Feb 2015 11:48:21 CST</updated>
+    <updated>Tue, 10 Feb 2015 14:14:49 CST</updated>
+    
+    <item>
+      <title>Install docker on ubuntu 12.04</title>
+      <link>http://allan-simon.github.io/blog/posts/install-docker-on-ubuntu-12.04/</link>
+      <pubDate>Tue, 10 Feb 2015 14:14:49 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/install-docker-on-ubuntu-12.04/</guid>
+      <description>&lt;p&gt;This article is a shameless summary from &lt;a href=&#34;http://compositecode.com/2013/11/11/getting-docker-installed-on-ubuntu-12-04-lts/&#34;&gt;http://compositecode.com&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;the steps are:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Updating your kernel to 3.8+ (requires a reboot)&lt;/li&gt;
+&lt;li&gt;Add the docker repository&lt;/li&gt;
+&lt;li&gt;Installing the package&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo apt-get install linux-image-generic-lts-raring linux-headers-generic-lts-raring
+sudo reboot
+sudo sh -c &amp;quot;wget -qO- https://get.docker.io/gpg | apt-key add -&amp;quot;
+sudo sh -c &amp;quot;echo deb http://get.docker.io/ubuntu docker main &amp;gt; /etc/apt/sources.list.d/docker.list&amp;quot;
+sudo apt-get update
+sudo apt-get install lxc-docker
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And now you should be able to get docker working&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>postgresql display one column per line</title>
