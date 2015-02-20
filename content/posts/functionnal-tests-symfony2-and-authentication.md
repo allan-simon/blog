@@ -5,8 +5,8 @@ title = "Functionnal tests in symfony2 with authentication"
 
 +++
 
-Admit you have your symfony2 website, all setup correctly with its
-set of functionnal test using phpunit, and now you start to have 
+Let's say you have your symfony2 website, all setup correctly with its
+set of functionnal tests using phpunit, and now you start to have 
 pages that only authenticated users can access to. My first solution was to
 create a client, make it load the login form, submit some valid credentials
 and then load the actual page to test. It was working fine as the client
