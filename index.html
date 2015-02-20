@@ -50,6 +50,47 @@
       
   <div class="post">
     <h1 class="post-title">
+      <a href="http://allan-simon.github.io/blog/posts/workflow-publishing-blog-post-with-hugo/">
+        Workflow publishing blog post with hugo
+      </a>
+    </h1>
+
+    <span class="post-date">Fri, Feb 20, 2015</span>
+
+    <p>I&rsquo;ve added some functions in my shell to make it even more convenient
+to write/edit/publish articles with <code>hugo</code> (just a self reminder)</p>
+
+<pre><code>export BLOG_ROOT=~/git/perso/blog
+export BLOG_THEME=hyde
+
+function new_blog_post {
+    cd $BLOG_ROOT
+    LAST_BLOG_POST=$(hugo new posts/$1.md | cut -d &quot; &quot; -f 1) ;
+    export LAST_BLOG_POST ;
+    $EDITOR $LAST_BLOG_POST
+    cd -
+}
+
+function publish_blog {
+    cd $BLOG_ROOT;
+    hugo --theme=&quot;$BLOG_THEME&quot; --buildDrafts &amp;&amp; \
+    git add -A &amp;&amp;  \
+    git commit -m &quot;Updating site&quot; &amp;&amp; \
+    git push origin master &amp;&amp; git subtree push --prefix=public &amp;&amp; \
+    git@github.com:allan-simon/blog.git gh-pages --squash  &amp;&amp; \
+    echo &quot;published&quot;
+    cd $BLOG_ROOT
+}
+
+function edit_last_blog_post {
+    $EDITOR $LAST_BLOG_POST
+}
+</code></pre>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="http://allan-simon.github.io/blog/posts/functionnal-tests-symfony2-and-authentication/">
         Functionnal tests in symfony2 with authentication
       </a>

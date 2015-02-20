@@ -7,7 +7,45 @@
     <language>en-us</language>
     
     
-    <updated>Fri, 20 Feb 2015 14:28:13 CST</updated>
+    <updated>Fri, 20 Feb 2015 15:03:36 CST</updated>
+    
+    <item>
+      <title>Workflow publishing blog post with hugo</title>
+      <link>http://allan-simon.github.io/blog/posts/workflow-publishing-blog-post-with-hugo/</link>
+      <pubDate>Fri, 20 Feb 2015 15:03:36 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/workflow-publishing-blog-post-with-hugo/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;ve added some functions in my shell to make it even more convenient
+to write/edit/publish articles with &lt;code&gt;hugo&lt;/code&gt; (just a self reminder)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;export BLOG_ROOT=~/git/perso/blog
+export BLOG_THEME=hyde
+
+function new_blog_post {
+    cd $BLOG_ROOT
+    LAST_BLOG_POST=$(hugo new posts/$1.md | cut -d &amp;quot; &amp;quot; -f 1) ;
+    export LAST_BLOG_POST ;
+    $EDITOR $LAST_BLOG_POST
+    cd -
+}
+
+function publish_blog {
+    cd $BLOG_ROOT;
+    hugo --theme=&amp;quot;$BLOG_THEME&amp;quot; --buildDrafts &amp;amp;&amp;amp; \
+    git add -A &amp;amp;&amp;amp;  \
+    git commit -m &amp;quot;Updating site&amp;quot; &amp;amp;&amp;amp; \
+    git push origin master &amp;amp;&amp;amp; git subtree push --prefix=public &amp;amp;&amp;amp; \
+    git@github.com:allan-simon/blog.git gh-pages --squash  &amp;amp;&amp;amp; \
+    echo &amp;quot;published&amp;quot;
+    cd $BLOG_ROOT
+}
+
+function edit_last_blog_post {
+    $EDITOR $LAST_BLOG_POST
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>Functionnal tests in symfony2 with authentication</title>
