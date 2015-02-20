@@ -8,9 +8,18 @@ title = "Workflow publishing blog post with hugo"
 I've added some functions in my shell to make it even more convenient
 to write/edit/publish articles with `hugo` (just a self reminder)
 
+so that now I have 
+
+  * new_blog_post name-of-your-blog-post
+  * publish_blog
+  * edit_last_blog_post
+
+that can be run from anywhere in my terminal
+
 ```
 export BLOG_ROOT=~/git/perso/blog
 export BLOG_THEME=hyde
+export GITHUB=git@github.com:allan-simon/blog.git
 
 function new_blog_post {
     cd $BLOG_ROOT
@@ -25,8 +34,8 @@ function publish_blog {
     hugo --theme="$BLOG_THEME" --buildDrafts && \
     git add -A &&  \
     git commit -m "Updating site" && \
-    git push origin master && git subtree push --prefix=public && \
-    git@github.com:allan-simon/blog.git gh-pages --squash  && \
+    git push origin master && \
+    git subtree push --prefix=public $GITHUB gh-pages --squash  && \
     echo "published"
     cd $BLOG_ROOT
 }

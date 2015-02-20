@@ -60,8 +60,19 @@
     <p>I&rsquo;ve added some functions in my shell to make it even more convenient
 to write/edit/publish articles with <code>hugo</code> (just a self reminder)</p>
 
+<p>so that now I have</p>
+
+<ul>
+<li>new_blog_post name-of-your-blog-post</li>
+<li>publish_blog</li>
+<li>edit_last_blog_post</li>
+</ul>
+
+<p>that can be run from anywhere in my terminal</p>
+
 <pre><code>export BLOG_ROOT=~/git/perso/blog
 export BLOG_THEME=hyde
+export GITHUB=git@github.com:allan-simon/blog.git
 
 function new_blog_post {
     cd $BLOG_ROOT
@@ -76,8 +87,8 @@ function publish_blog {
     hugo --theme=&quot;$BLOG_THEME&quot; --buildDrafts &amp;&amp; \
     git add -A &amp;&amp;  \
     git commit -m &quot;Updating site&quot; &amp;&amp; \
-    git push origin master &amp;&amp; git subtree push --prefix=public &amp;&amp; \
-    git@github.com:allan-simon/blog.git gh-pages --squash  &amp;&amp; \
+    git push origin master &amp;&amp; \
+    git subtree push --prefix=public $GITHUB gh-pages --squash  &amp;&amp; \
     echo &quot;published&quot;
     cd $BLOG_ROOT
 }
