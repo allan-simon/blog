@@ -18,8 +18,19 @@
       <description>&lt;p&gt;I&amp;rsquo;ve added some functions in my shell to make it even more convenient
 to write/edit/publish articles with &lt;code&gt;hugo&lt;/code&gt; (just a self reminder)&lt;/p&gt;
 
+&lt;p&gt;so that now I have&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;new_blog_post name-of-your-blog-post&lt;/li&gt;
+&lt;li&gt;publish_blog&lt;/li&gt;
+&lt;li&gt;edit_last_blog_post&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;that can be run from anywhere in my terminal&lt;/p&gt;
+
 &lt;pre&gt;&lt;code&gt;export BLOG_ROOT=~/git/perso/blog
 export BLOG_THEME=hyde
+export GITHUB=git@github.com:allan-simon/blog.git
 
 function new_blog_post {
     cd $BLOG_ROOT
@@ -34,8 +45,8 @@ function publish_blog {
     hugo --theme=&amp;quot;$BLOG_THEME&amp;quot; --buildDrafts &amp;amp;&amp;amp; \
     git add -A &amp;amp;&amp;amp;  \
     git commit -m &amp;quot;Updating site&amp;quot; &amp;amp;&amp;amp; \
-    git push origin master &amp;amp;&amp;amp; git subtree push --prefix=public &amp;amp;&amp;amp; \
-    git@github.com:allan-simon/blog.git gh-pages --squash  &amp;amp;&amp;amp; \
+    git push origin master &amp;amp;&amp;amp; \
+    git subtree push --prefix=public $GITHUB gh-pages --squash  &amp;amp;&amp;amp; \
     echo &amp;quot;published&amp;quot;
     cd $BLOG_ROOT
 }
