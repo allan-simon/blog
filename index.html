@@ -50,6 +50,81 @@
       
   <div class="post">
     <h1 class="post-title">
+      <a href="http://allan-simon.github.io/blog/posts/functionnal-tests-symfony2-and-authentication/">
+        Functionnal tests in symfony2 with authentication
+      </a>
+    </h1>
+
+    <span class="post-date">Fri, Feb 20, 2015</span>
+
+    <p>Admit you have your symfony2 website, all setup correctly with its
+set of functionnal test using phpunit, and now you start to have
+pages that only authenticated users can access to. My first solution was to
+create a client, make it load the login form, submit some valid credentials
+and then load the actual page to test. It was working fine as the client
+has a storage for cookie, it is acting like an actual browser in that case.</p>
+
+<p>The problem was that the time to execute the test was much longer, which
+started to become a problem has the test suite was growing.</p>
+
+<p>The first trick is to follow them method adviced by symfony, which is for the
+test environnement to enable the HTTP Basic Authentication method. For those
+who doesn&rsquo;t know, the HTTP standard comme with a method to authentify a
+user-agent by directly sending the username/password in the HTTP header
+(which goes along the fact that HTTP is aimed to be stateless)</p>
+
+<p>in your <code>config_test.yml</code> add this (replace <code>NAME_OF_YOUR_FIREWALL</code>)</p>
+
+<pre><code>security:
+    firewalls:
+        NAME_OF_YOUR_FIREWALL:
+            http_basic: ~
+</code></pre>
+
+<p>The second trick, to not have to repeat the username/password in all your
+functionnal tests, is to use the <a href="https://github.com/liip/LiipFunctionalTestBundle">LiipFunctionnalBundle</a>
+follow the installation instruction and then make your functionnal test inherit
+from their class, like this</p>
+
+<pre><code>&lt;?php
+//...
+use Liip\FunctionalTestBundle\Test\WebTestCase;
+
+class YourTest extends WebTestCase
+{
+ // your code
+}
+</code></pre>
+
+<p>then you can precise in <code>config_test.yml</code> your credentials:</p>
+
+<pre><code>liip_functional_test:
+    authentication:
+        username: &quot;XXXXX&quot;
+        password: &quot;YYYYY&quot;
+</code></pre>
+
+<p>finally to create an authenticated client, use this method</p>
+
+<pre><code>&lt;?php
+//...
+use Liip\FunctionalTestBundle\Test\WebTestCase;
+
+class YourTest extends WebTestCase
+{
+    public testYourFeature()
+    {
+        // true = &quot;authenticated&quot;
+        $client static::makeClient(true);
+        // ...
+    }
+}
+</code></pre>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/">
         Solve composer github api limitation
       </a>
