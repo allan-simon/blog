@@ -7,7 +7,124 @@
     <language>en-us</language>
     
     
-    <updated>Fri, 20 Feb 2015 15:03:36 CST</updated>
+    <updated>Mon, 23 Feb 2015 17:11:21 CST</updated>
+    
+    <item>
+      <title>form name goes into global scope javascript</title>
+      <link>http://allan-simon.github.io/blog/posts/form-name-goes-into-global-scope-javascript/</link>
+      <pubDate>Mon, 23 Feb 2015 17:11:21 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/form-name-goes-into-global-scope-javascript/</guid>
+      <description>
+
+&lt;p&gt;An interesting problem a friend of mine discovered today&lt;/p&gt;
+
+&lt;p&gt;Can you spot the problem?&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Le javascript&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;var CreateVersion = (function(){
+    &#39;use strict&#39;;
+
+    var foo = function(text) {
+        console.log(text);
+    };
+
+    return {
+        foo : foo 
+    };
+}());
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;Le HTML&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;div class=&amp;quot;panel-body&amp;quot;&amp;gt;
+    &amp;lt;form name=&amp;quot;CreateVersion&amp;quot; method=&amp;quot;post&amp;quot; action=&amp;quot;&amp;quot;&amp;gt;
+        &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
+            &amp;lt;label&amp;gt;
+                &amp;lt;span&amp;gt;something&amp;lt;/span&amp;gt;
+                &amp;lt;!--
+                    onClick on a span is a bad pratice and will be
+                    the object of an other post
+                -&amp;gt;&amp;gt;
+                &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;plop&#39;)&amp;quot;&amp;gt;plop/span&amp;gt;
+                &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;prout&#39;)&amp;quot;&amp;gt;prout&amp;lt;/span&amp;gt;
+            &amp;lt;/label&amp;gt;
+            &amp;lt;input
+                id=&amp;quot;CreateVersion_name&amp;quot;
+                name=&amp;quot;CreateVersion[name]&amp;quot;
+                class=&amp;quot;form-control version_name&amp;quot;
+                type=&amp;quot;text&amp;quot;
+            /&amp;gt;
+        &amp;lt;/div&amp;gt;
+        &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
+            &amp;lt;label&amp;gt;
+                &amp;lt;span&amp;gt;something something&amp;lt;/span&amp;gt;:
+                &amp;lt;span class=&amp;quot;text_length&amp;quot;&amp;gt;0&amp;lt;/span&amp;gt;
+            &amp;lt;/label&amp;gt;
+            &amp;lt;input
+                id=&amp;quot;CreateVersion_articleNotes&amp;quot;
+                name=&amp;quot;CreateVersion[articleNotes]&amp;quot;
+                class=&amp;quot;form-control&amp;quot;
+                type=&amp;quot;text&amp;quot;
+            /&amp;gt;
+        &amp;lt;/div&amp;gt;
+        &amp;lt;hr/&amp;gt;
+        &amp;lt;div&amp;gt;
+            &amp;lt;button
+                type=&amp;quot;submit&amp;quot;
+                id=&amp;quot;CreateVersion_submit&amp;quot;
+                name=&amp;quot;CreateVersion[submit]&amp;quot;
+            &amp;gt;
+                submit
+            &amp;lt;/button&amp;gt;
+        &amp;lt;/div&amp;gt;
+    &amp;lt;/form&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Le erreur&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;TypeError: CreateVersion.foo is not a function
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;No, not in IE6, in last version of Firefox/Chrome&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Le solution&lt;/h3&gt;
+
+&lt;p&gt;This line&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;lt;form name=&amp;quot;CreateVersion&amp;quot; method=&amp;quot;post&amp;quot; action=&amp;quot;&amp;quot;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;declare a Form with a name &lt;code&gt;CreateVersion&lt;/code&gt; which is exactly the same name as our
+Javascript module, and guess what ?&lt;/p&gt;
+
+&lt;p&gt;The name is exported in the DOM, which that when you do that&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;form name=&amp;quot;Foo&amp;quot;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then you can do&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;document.Foo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;to access to the DOM node, and in the HTML itself, the &amp;ldquo;document&amp;rdquo; is implicit which
+mean that &amp;ldquo;document.Foo&amp;rdquo; collide with any javascript defined variable &amp;ldquo;Foo&amp;rdquo;&lt;/p&gt;
+
+&lt;p&gt;For more explanation see &lt;a href=&#34;http://stackoverflow.com/questions/1415747/javascript-function-and-form-name-conflict&#34;&gt;this stackoverflow question&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;How to avoid that:&lt;/h3&gt;
+
+&lt;p&gt;Some possibilities:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Make it a coding style policy that module name start contains something &amp;ldquo;javascript only&amp;rdquo; like &lt;code&gt;FooModule&lt;/code&gt; or &lt;code&gt;FooJS&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;put your modules in one big wrapping modules (like &lt;code&gt;MyCorp.Foo&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Workflow publishing blog post with hugo</title>
