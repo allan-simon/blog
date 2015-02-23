@@ -38,49 +38,47 @@
 
 &lt;h3 id=&#34;toc_1&#34;&gt;Le HTML&lt;/h3&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;lt;div class=&amp;quot;panel-body&amp;quot;&amp;gt;
-    &amp;lt;form name=&amp;quot;CreateVersion&amp;quot; method=&amp;quot;post&amp;quot; action=&amp;quot;&amp;quot;&amp;gt;
-        &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
-            &amp;lt;label&amp;gt;
-                &amp;lt;span&amp;gt;something&amp;lt;/span&amp;gt;
-                &amp;lt;!--
-                    onClick on a span is a bad pratice and will be
-                    the object of an other post
-                -&amp;gt;&amp;gt;
-                &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;plop&#39;)&amp;quot;&amp;gt;plop/span&amp;gt;
-                &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;prout&#39;)&amp;quot;&amp;gt;prout&amp;lt;/span&amp;gt;
-            &amp;lt;/label&amp;gt;
-            &amp;lt;input
-                id=&amp;quot;CreateVersion_name&amp;quot;
-                name=&amp;quot;CreateVersion[name]&amp;quot;
-                class=&amp;quot;form-control version_name&amp;quot;
-                type=&amp;quot;text&amp;quot;
-            /&amp;gt;
-        &amp;lt;/div&amp;gt;
-        &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
-            &amp;lt;label&amp;gt;
-                &amp;lt;span&amp;gt;something something&amp;lt;/span&amp;gt;:
-                &amp;lt;span class=&amp;quot;text_length&amp;quot;&amp;gt;0&amp;lt;/span&amp;gt;
-            &amp;lt;/label&amp;gt;
-            &amp;lt;input
-                id=&amp;quot;CreateVersion_articleNotes&amp;quot;
-                name=&amp;quot;CreateVersion[articleNotes]&amp;quot;
-                class=&amp;quot;form-control&amp;quot;
-                type=&amp;quot;text&amp;quot;
-            /&amp;gt;
-        &amp;lt;/div&amp;gt;
-        &amp;lt;hr/&amp;gt;
-        &amp;lt;div&amp;gt;
-            &amp;lt;button
-                type=&amp;quot;submit&amp;quot;
-                id=&amp;quot;CreateVersion_submit&amp;quot;
-                name=&amp;quot;CreateVersion[submit]&amp;quot;
-            &amp;gt;
-                submit
-            &amp;lt;/button&amp;gt;
-        &amp;lt;/div&amp;gt;
-    &amp;lt;/form&amp;gt;
-&amp;lt;/div&amp;gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;form name=&amp;quot;CreateVersion&amp;quot; method=&amp;quot;post&amp;quot; action=&amp;quot;&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
+        &amp;lt;label&amp;gt;
+            &amp;lt;span&amp;gt;something&amp;lt;/span&amp;gt;
+            &amp;lt;!--
+                onClick on a span is a bad pratice and will be
+                the object of an other post
+            --&amp;gt;
+            &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;plop&#39;)&amp;quot;&amp;gt;plop/span&amp;gt;
+            &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;prout&#39;)&amp;quot;&amp;gt;prout&amp;lt;/span&amp;gt;
+        &amp;lt;/label&amp;gt;
+        &amp;lt;input
+            id=&amp;quot;CreateVersion_name&amp;quot;
+            name=&amp;quot;CreateVersion[name]&amp;quot;
+            class=&amp;quot;form-control version_name&amp;quot;
+            type=&amp;quot;text&amp;quot;
+        /&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
+        &amp;lt;label&amp;gt;
+            &amp;lt;span&amp;gt;something something&amp;lt;/span&amp;gt;:
+            &amp;lt;span class=&amp;quot;text_length&amp;quot;&amp;gt;0&amp;lt;/span&amp;gt;
+        &amp;lt;/label&amp;gt;
+        &amp;lt;input
+            id=&amp;quot;CreateVersion_articleNotes&amp;quot;
+            name=&amp;quot;CreateVersion[articleNotes]&amp;quot;
+            class=&amp;quot;form-control&amp;quot;
+            type=&amp;quot;text&amp;quot;
+        /&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;hr/&amp;gt;
+    &amp;lt;div&amp;gt;
+        &amp;lt;button
+            type=&amp;quot;submit&amp;quot;
+            id=&amp;quot;CreateVersion_submit&amp;quot;
+            name=&amp;quot;CreateVersion[submit]&amp;quot;
+        &amp;gt;
+            submit
+        &amp;lt;/button&amp;gt;
+    &amp;lt;/div&amp;gt;
+&amp;lt;/form&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&#34;toc_2&#34;&gt;Le erreur&lt;/h3&gt;
