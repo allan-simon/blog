@@ -28,49 +28,47 @@ var CreateVersion = (function(){
 ### Le HTML
 
 ```
-<div class="panel-body">
-    <form name="CreateVersion" method="post" action="">
-        <div class="form-group">
-            <label>
-                <span>something</span>
-                <!--
-                    onClick on a span is a bad pratice and will be
-                    the object of an other post
-                ->>
-                <span onclick="CreateVersion.foo('plop')">plop/span>
-                <span onclick="CreateVersion.foo('prout')">prout</span>
-            </label>
-            <input
-                id="CreateVersion_name"
-                name="CreateVersion[name]"
-                class="form-control version_name"
-                type="text"
-            />
-        </div>
-        <div class="form-group">
-            <label>
-                <span>something something</span>:
-                <span class="text_length">0</span>
-            </label>
-            <input
-                id="CreateVersion_articleNotes"
-                name="CreateVersion[articleNotes]"
-                class="form-control"
-                type="text"
-            />
-        </div>
-        <hr/>
-        <div>
-            <button
-                type="submit"
-                id="CreateVersion_submit"
-                name="CreateVersion[submit]"
-            >
-                submit
-            </button>
-        </div>
-    </form>
-</div>
+<form name="CreateVersion" method="post" action="">
+    <div class="form-group">
+        <label>
+            <span>something</span>
+            <!--
+                onClick on a span is a bad pratice and will be
+                the object of an other post
+            -->
+            <span onclick="CreateVersion.foo('plop')">plop/span>
+            <span onclick="CreateVersion.foo('prout')">prout</span>
+        </label>
+        <input
+            id="CreateVersion_name"
+            name="CreateVersion[name]"
+            class="form-control version_name"
+            type="text"
+        />
+    </div>
+    <div class="form-group">
+        <label>
+            <span>something something</span>:
+            <span class="text_length">0</span>
+        </label>
+        <input
+            id="CreateVersion_articleNotes"
+            name="CreateVersion[articleNotes]"
+            class="form-control"
+            type="text"
+        />
+    </div>
+    <hr/>
+    <div>
+        <button
+            type="submit"
+            id="CreateVersion_submit"
+            name="CreateVersion[submit]"
+        >
+            submit
+        </button>
+    </div>
+</form>
 ```
 
 ### Le erreur
