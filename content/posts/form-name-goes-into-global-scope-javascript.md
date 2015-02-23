@@ -1,7 +1,7 @@
 +++
 date = "2015-02-23T17:11:21+08:00"
 draft = true
-title = "form name goes into global scope javascript"
+title = "Form name goes into global scope in javascript"
 
 +++
 
