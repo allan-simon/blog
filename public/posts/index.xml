@@ -7,7 +7,127 @@
     <language>en-us</language>
     
     
-    <updated>Mon, 23 Feb 2015 17:11:21 CST</updated>
+    <updated>Wed, 25 Feb 2015 00:08:11 CST</updated>
+    
+    <item>
+      <title>Redmine-cli and redmine API</title>
+      <link>http://allan-simon.github.io/blog/posts/redmine-cli/</link>
+      <pubDate>Wed, 25 Feb 2015 00:08:11 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/redmine-cli/</guid>
+      <description>
+
+&lt;p&gt;I found a tool to manage redmine from the cli, in python:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;pip install redmine-cli&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;then a config file &lt;code&gt;~/.redmine-cli&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[default]
+key=API_KEY_YOU_CAN_SEE_IN_YOUR_ACCOUNT_ON_REDMINE
+my_id=ID_YOU_CAN_ON_YOUR_PROFILE_PAGE
+root_url=HOME_PAGE_OF_REDMINE
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;then you can do&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;redmine open 123&lt;/code&gt; to open the issue 123 in your browser&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redmine issues&lt;/code&gt; to see your issues&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redmine issue 123&lt;/code&gt; to see information about issue 123&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;(it has more options I let you check the doc)&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yanjost/redmine-cli&#34;&gt;original repo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/allan-simon/redmine-cli&#34;&gt;my fork where I have some features (like updating a ticket&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;(hopefully my modification are in PR on the original repo and will be soon integrated)&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;The long story behind:&lt;/h3&gt;
+
+&lt;p&gt;As any good Linux user, I love the CLI (no, there&amp;rsquo;s no such thing
+as a &lt;strong&gt;good&lt;/strong&gt; Linux user who does not love the CLI). Starting from
+that, though I appreciate using Redmine to manage features to implement,
+bugs etc. I&amp;rsquo;m not really fan of needing to click here and there,
+especially when the only things I want is&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;know what a Merge request on gitlab referencing the ticket XXX is about&lt;/li&gt;
+&lt;li&gt;see what tickets are assigned to me&lt;/li&gt;
+&lt;li&gt;update a ticket status&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;It becomes even less practical when you want to update a list of ticket
+you can either:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select in the list, while keeping shift pressed, the list of ticket you want to update&lt;/li&gt;
+&lt;li&gt;right click,&lt;/li&gt;
+&lt;li&gt;update the status&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The problem of that technique is that, if you click a little too much on the right,
+on the left etc. you loose your selection, which can be very frustating
+Then you have the second technique&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;click on ticket N&lt;/li&gt;
+&lt;li&gt;click on update&lt;/li&gt;
+&lt;li&gt;update, click on submit&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;each of these steps impliying a page load, no need to tell you how much times
+it takes even for 5 tickets&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;The CLI will always be there for you: redmine-cli&lt;/h3&gt;
+
+&lt;p&gt;For now some month, whenever I&amp;rsquo;m looking for that little tool, the reflex is to
+search for it on github. As I knew there was a Redmine API and that we don&amp;rsquo;t have
+time for a NIH (Not Invented Here) syndrom, it was very likely such a CLI tool
+would already exist.&lt;/p&gt;
+
+&lt;p&gt;I found a several tool, &lt;a href=&#34;https://github.com/diasjorge/redmine-cli&#34;&gt;one in ruby&lt;/a&gt;
+which seems rather complete, but as it was not updated for 2 years, and I didn&amp;rsquo;t felt
+like installing ruby on my computer (I guess it&amp;rsquo;s already install but&amp;hellip;) and it was
+late, so losing 2 minutes to know how to install the project was too much&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ALWAYS PUT CLEAR INSTRUCTION , DUMB PROOF, ON HOW TO INSTALL YOUR TOOL&lt;/li&gt;
+&lt;li&gt;if a project is &amp;ldquo;complete&amp;rdquo; and its the reason why you&amp;rsquo;re not updating it, state it
+so that people know if the project is dead or just &amp;lsquo;in good shape enough but the author is still active&amp;rsquo;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So I found the python project, which was updated in 2014 and
+had clear installation instruction &lt;code&gt;pip install redmine-cli&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Missing feature: redmine API my love&lt;/h3&gt;
+
+&lt;p&gt;while implementing the feature I found that&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;the API call was returning a 200 (without nothing in the body)&lt;/li&gt;
+&lt;li&gt;BUT the status was not updated (though the ticket was showing activity &amp;lsquo;less than a minute ago&amp;rsquo;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;after some research I found &lt;a href=&#34;http://www.redmine.org/boards/2/topics/25920&#34;&gt;that redmine discussion&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I need to declare the header &lt;code&gt;Application/Json&lt;/code&gt; (normal)&lt;/li&gt;
+&lt;li&gt;It needs to have the &lt;code&gt;status_id&lt;/code&gt; value as a string (and I was giving an integer)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The second point is raging because GUESS WHAT, that integer was given to me BY REDMINE ITSELF !
+So please please when you do an API&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Be consistent, if &lt;code&gt;status_id&lt;/code&gt; is an integer once, it must always be a integer&lt;/li&gt;
+&lt;li&gt;Have a clear documentation, with example&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Form name goes into global scope in javascript</title>
