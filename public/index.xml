@@ -44,7 +44,13 @@ root_url=HOME_PAGE_OF_REDMINE
 &lt;li&gt;&lt;a href=&#34;https://github.com/allan-simon/redmine-cli&#34;&gt;my fork where I have some features (like updating a ticket&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;(hopefully my modification are in PR on the original repo and will be soon integrated)&lt;/p&gt;
+&lt;p&gt;(hopefully my modification are in PR on the original repo and will be soon integrated)
+my modification include so far:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;redmine issue 123 long&lt;/code&gt; to see more detailled information about the issue&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redmine update 123 &#39;in progress&#39;&lt;/code&gt; to update the status to &lt;code&gt;in progress&lt;/code&gt; (admitting your redmine has this status)&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h3 id=&#34;toc_0&#34;&gt;The long story behind:&lt;/h3&gt;
 

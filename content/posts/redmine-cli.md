@@ -31,6 +31,10 @@ then you can do
   * [my fork where I have some features (like updating a ticket](https://github.com/allan-simon/redmine-cli)
 
 (hopefully my modification are in PR on the original repo and will be soon integrated)
+my modification include so far:
+
+  * `redmine issue 123 long` to see more detailled information about the issue
+  * `redmine update 123 'in progress'` to update the status to `in progress` (admitting your redmine has this status)
 
 ### The long story behind:
 
