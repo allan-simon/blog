@@ -7,7 +7,55 @@
     <language>en-us</language>
     
     
-    <updated>Wed, 25 Feb 2015 00:08:11 CST</updated>
+    <updated>Wed, 11 Mar 2015 22:40:50 CST</updated>
+    
+    <item>
+      <title>symfony 2.6 tips #1</title>
+      <link>http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/</link>
+      <pubDate>Wed, 11 Mar 2015 22:40:50 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/</guid>
+      <description>
+
+&lt;p&gt;Here a list of tips for symfony 2.6 I&amp;rsquo;ve gathered these days&lt;/p&gt;
+
+&lt;p&gt;###Skip test in phpunit&lt;/p&gt;
+
+&lt;p&gt;Imagine you&amp;rsquo;re rewriting your application to split &amp;lsquo;big&amp;rsquo; pages into
+set of smaller actions. You got your test already written but they
+are going to fail the time you finish the rewrite, and because you&amp;rsquo;re
+in company with tight deadline, you don&amp;rsquo;t have time to adapt the tests
+&amp;ldquo;right here right now&amp;rdquo; several possibilities&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Leave the tests failing until you fix them &lt;code&gt;master&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Delete the test.&lt;/li&gt;
+&lt;li&gt;Put between comments the failing tests.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;All these solutions are suboptimals, instead you can add this line at the beginning of your test method&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public function testMyTestWhichYouWantToSkip()
+{
+    $this-&amp;gt;markTestSkipped(&amp;quot;message explaining why it&#39;s skipped&amp;quot;);
+    // your test code, unmodified
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;so that it will appear with a &lt;code&gt;S&lt;/code&gt; in the test report, so that you have a reminder that there&amp;rsquo;s something to fix.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Disable form validation in test&lt;/h3&gt;
+
+&lt;p&gt;You&amp;rsquo;re writing functionnal test and you need to check the case of an form submitted with bogus data (to be sure your server side code is protected against hand-crafted request). By default the form you get in functionnal test will have the same checking rules than the one on server side, so in order to disable checking you can do&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$form[&#39;country&#39;]-&amp;gt;disableValidation()-&amp;gt;select(&#39;Invalid value&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;(Doctrine) don&amp;rsquo;t use findById() when you just mean find()&lt;/h3&gt;
+
+&lt;p&gt;well, the title is self-explaining&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Redmine-cli and redmine API</title>
