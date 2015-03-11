@@ -50,6 +50,57 @@
       
   <div class="post">
     <h1 class="post-title">
+      <a href="http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/">
+        symfony 2.6 tips #1
+      </a>
+    </h1>
+
+    <span class="post-date">Wed, Mar 11, 2015</span>
+
+    
+
+<p>Here a list of tips for symfony 2.6 I&rsquo;ve gathered these days</p>
+
+<p>###Skip test in phpunit</p>
+
+<p>Imagine you&rsquo;re rewriting your application to split &lsquo;big&rsquo; pages into
+set of smaller actions. You got your test already written but they
+are going to fail the time you finish the rewrite, and because you&rsquo;re
+in company with tight deadline, you don&rsquo;t have time to adapt the tests
+&ldquo;right here right now&rdquo; several possibilities</p>
+
+<ul>
+<li>Leave the tests failing until you fix them <code>master</code>.</li>
+<li>Delete the test.</li>
+<li>Put between comments the failing tests.</li>
+</ul>
+
+<p>All these solutions are suboptimals, instead you can add this line at the beginning of your test method</p>
+
+<pre><code>public function testMyTestWhichYouWantToSkip()
+{
+    $this-&gt;markTestSkipped(&quot;message explaining why it's skipped&quot;);
+    // your test code, unmodified
+}
+</code></pre>
+
+<p>so that it will appear with a <code>S</code> in the test report, so that you have a reminder that there&rsquo;s something to fix.</p>
+
+<h3 id="toc_0">Disable form validation in test</h3>
+
+<p>You&rsquo;re writing functionnal test and you need to check the case of an form submitted with bogus data (to be sure your server side code is protected against hand-crafted request). By default the form you get in functionnal test will have the same checking rules than the one on server side, so in order to disable checking you can do</p>
+
+<pre><code>$form['country']-&gt;disableValidation()-&gt;select('Invalid value');
+</code></pre>
+
+<h3 id="toc_1">(Doctrine) don&rsquo;t use findById() when you just mean find()</h3>
+
+<p>well, the title is self-explaining</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="http://allan-simon.github.io/blog/posts/redmine-cli/">
         Redmine-cli and redmine API
       </a>
