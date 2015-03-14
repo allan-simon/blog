@@ -50,6 +50,36 @@
       
   <div class="post">
     <h1 class="post-title">
+      <a href="http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/">
+        migrate down with doctrine migrations
+      </a>
+    </h1>
+
+    <span class="post-date">Sat, Mar 14, 2015</span>
+
+    <p>if you&rsquo;re using Doctrine in your Symfony2 project, you&rsquo;re certainly using the
+excellent <a href="http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html">Doctrine Migration Bundle</a>
+but you may have seen that documentation is not staging clearly how to migrate down</p>
+
+<p>for that:</p>
+
+<pre><code>php app/console doctrine:migrations:status
+
+</code></pre>
+
+<p>take the number in &ldquo;Current Version&rdquo; (format YYYYMMDDHHMMSS)</p>
+
+<p>and then run</p>
+
+<pre><code>php app/console doctrine:migrations:execute YYYYMMDDHHMMSS --down
+</code></pre>
+
+<p>that&rsquo;s all folks !</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/">
         symfony 2.6 tips #1
       </a>

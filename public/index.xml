@@ -7,7 +7,34 @@
     <language>en-us</language>
     
     
-    <updated>Wed, 11 Mar 2015 22:40:50 CST</updated>
+    <updated>Sat, 14 Mar 2015 18:21:01 CST</updated>
+    
+    <item>
+      <title>migrate down with doctrine migrations</title>
+      <link>http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/</link>
+      <pubDate>Sat, 14 Mar 2015 18:21:01 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/</guid>
+      <description>&lt;p&gt;if you&amp;rsquo;re using Doctrine in your Symfony2 project, you&amp;rsquo;re certainly using the
+excellent &lt;a href=&#34;http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html&#34;&gt;Doctrine Migration Bundle&lt;/a&gt;
+but you may have seen that documentation is not staging clearly how to migrate down&lt;/p&gt;
+
+&lt;p&gt;for that:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;php app/console doctrine:migrations:status
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;take the number in &amp;ldquo;Current Version&amp;rdquo; (format YYYYMMDDHHMMSS)&lt;/p&gt;
+
+&lt;p&gt;and then run&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;php app/console doctrine:migrations:execute YYYYMMDDHHMMSS --down
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;that&amp;rsquo;s all folks !&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>symfony 2.6 tips #1</title>
