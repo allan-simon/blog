@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> symfony create your own third party bundle part 1/4 &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>Allan&#39;s blog</h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/">Home</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>symfony create your own third party bundle part 1/4</h1>
+  <span class="post-date">Sat, Mar 28, 2015</span>
+      
+
+<p>So you&rsquo;ve reached the point where you&rsquo;re reusing the same service accross
+symfony application, again and again and you feel like this could even
+be useful for other people. You decide that it will be great if you could
+do like adults and have your own bundle.</p>
+
+<p>Here is how to create one from scratch, you can find the repo here <a href="https://travis-ci.org/we-bridge/OAuth2AccessBundle">Oauth2AccessBundle</a></p>
+
+<p>we cover these steps:</p>
+
+<ol>
+<li>Creating the base repo in github and composer.json</li>
+<li>Adding the base Classes</li>
+<li>Permit users of your bundle to configure it</li>
+<li>Make your bundle testable</li>
+</ol>
+
+<h3 id="toc_0">Create the base repo and composer.json</h3>
+
+<p>Well for creating the base repo, nothing different from any new repo on github.
+I would however stressed out that you should chose since the beginning a license</p>
+
+<p>I would recommend either</p>
+
+<ul>
+<li>The MIT license, the one I personnaly chose, it permits your bundle to be
+used without overthinking even by Companies with lawyer</li>
+<li>The AGPL license, no the A is not a typo, like the GPL license it does
+oblige people which integrate your bundle into application to make the full
+application also in a GPL-compatible license and to redistribute the modified
+source code with the application itself. HOWEVER, at the difference of the GPL
+it cover also the case of websites/webservices/REST API (for the GPL, it only
+works if the company which has made modification sells the website itself
+to other customers)</li>
+</ul>
+
+<p>You can of course chose the license your want, but be sure of what they implies.
+(As said for example the GPL will not force people who use and modify your
+bundle in their own website to give you back patches etc.)</p>
+
+<p>Then add a <code>composer.json</code> file with that skeleton content</p>
+
+<pre><code>{
+    &quot;name&quot; : &quot;webridge/oauth2-access-bundle&quot;,
+    &quot;type&quot; : &quot;symfony-bundle&quot;,
+    &quot;description&quot; : &quot;Symfony Oauth2 consumer bundle&quot;,
+    &quot;keywords&quot; : [&quot;Symfony&quot;, &quot;Oauth2&quot;],
+    &quot;homepage&quot; : &quot;https://github.com/we-bridge/OAuth2AccessBundle&quot;,
+    &quot;license&quot; : &quot;MIT&quot;,
+    &quot;authors&quot; :
+    [
+        {
+            &quot;name&quot; : &quot;Allan SIMON&quot;,
+            &quot;email&quot; : &quot;allan.simon@supinfo.com&quot;,
+            &quot;homepage&quot; : &quot;http://allan-simon.github.io/blog&quot;,
+            &quot;role&quot; : &quot;Developer&quot;
+        }
+    ],
+    &quot;minimum-stability&quot; : &quot;beta&quot;,
+    &quot;require&quot;: {
+        &quot;php&quot;: &quot;&gt;=5.3.2&quot;
+    },
+    &quot;autoload&quot;: {
+        &quot;psr-0&quot;: { &quot;Webridge\\Oauth2AccessBundle&quot;: &quot;&quot; }
+    },
+    &quot;target-dir&quot; : &quot;Webridge/Oauth2AccessBundle&quot;
+}
+</code></pre>
+
+<p>The <code>name</code> part is totally up to you but it needs to be unique accross
+composer packages so most of the time <code>your-name-or-company/your-bundle-name</code>
+is safe.</p>
+
+<p>The <code>autload</code> part precise in which namespace your bundle classes will be
+accessed</p>
+
+<p>Now that we have the very base of our repository, we will see in next
+post how to create a very basic service without configuration.</p>
+
+</div>
+</div>
+
+  </body>
+</html>
