@@ -50,6 +50,141 @@
       
   <div class="post">
     <h1 class="post-title">
+      <a href="http://allan-simon.github.io/blog/posts/gitlab-ci-with-docker-runner/">
+        gitlab ci with docker runner
+      </a>
+    </h1>
+
+    <span class="post-date">Sun, Mar 29, 2015</span>
+
+    
+
+<p>In my company we&rsquo;re using <a href="https://gitlab.com">Gitlab</a> for managing our code
+and doing code review. For the last months we&rsquo;ve been standardizing our stack
+on Symfony/Postgresql/php-fpm. Recently we&rsquo;ve started automatizing our tests
+using phpunit. The next step was of course to have a start of continuous
+integration and to be able to run our tests at each Merge request.</p>
+
+<p>In this article we&rsquo;re going to view</p>
+
+<ul>
+<li>How to install gitlab-ci on a separate server than your gitlab instance</li>
+<li>How to put gitlab-ci behind your company frontal server</li>
+<li>How to make gitlab-ci run your tests in a Docker container</li>
+</ul>
+
+<h2 id="toc_0">Gitlab-CI in a separate instance</h2>
+
+<p>To do continous-integration you got plenty of choice, the most popular one being
+<a href="http://jenkins-ci.org">jenkinks</a>. However it seems to be that it is a bit bloated
+and has too much feature that we don&rsquo;t need for the moment.</p>
+
+<p>On the other side gitlab comes with its own CI system (named Gitlab-ci) that has
+the advantage to be damn simple for the moment and of course pretty much integrated
+to gitlab (no need to create new accounts, build status directly in gitlab etc.)</p>
+
+<p>In order to install it you can use the <a href="https://about.gitlab.com/downloads/">ommibus package</a>
+which will take care of installing everything from you</p>
+
+<p>Then in order to have only gitlab-ci you can can follow the step <a href="https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/gitlab-ci/README.md">Running Gitlab on its own server</a></p>
+
+<h2 id="toc_1">Gitlab-CI behind your company&rsquo;s frontal server</h2>
+
+<p>Our company as one public IP under which we host all our services.
+We have then a frontal apache2 (but it could have been a nginx) which proxify
+then the request depending of the hostname. In that case it does not make
+sense for us to still have the Nginx that is installed with the omnibus package</p>
+
+<p>So in order to deactivate it, in your <code>/etc/gitlab/gitlab.rb</code> in the Nginx section
+you can add</p>
+
+<pre><code>nginx['enable'] = false
+ci_nginx['enable'] = false
+</code></pre>
+
+<p>and then</p>
+
+<pre><code>sudo gitlab-ctl reconfigure 
+</code></pre>
+
+<p>then in your frontal you can put a vhost</p>
+
+<pre><code>&lt;VirtualHost  *:80&gt;
+    ServerName gitlab-ci.example.com
+
+    ProxyRequests off
+    ProxyPreserveHost on
+    ProxyPass / http://LAN_IP_OF_YOUR_GITLAB_CI:8181/
+    ProxyPassReverse / http://LAN_IP_OF_YOUR_GITLAB_CI:8181/
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p>(by default gitlab-ci&rsquo;s unicorn listen on port 8181)</p>
+
+<h2 id="toc_2">Tell Gitlab-ci to run your test into a docker container</h2>
+
+<p>Gitlab-ci use what they call a &ldquo;Runner&rdquo; to run your test, it&rsquo;s more
+or less a spare machine in which Gitlab-ci will clone your project
+and run a bash script you&rsquo;ve provided in the Gitlab-ci admin panel</p>
+
+<p>The goal of this article is not to do a deep introduction to <a href="https://www.docker.com/">Docker</a>
+but basically it&rsquo;s a powerful technology that permits you to run &ldquo;containers&rdquo;.
+You can consider a container as a virtual machine without the virtual part, and restricted
+to Linux. (more or less)</p>
+
+<p>The container will brings their full advatanges with gitlab-ci as</p>
+
+<ul>
+<li>they don&rsquo;t take extra memory when not being runned</li>
+<li>you can create a new container from a base image in a blink of eyes</li>
+</ul>
+
+<p>Fortunately for us a Docker image already exists with all the base
+things to have a Gitlab-ci Runner in a container. <a href="https://github.com/sameersbn/docker-gitlab-ci-runner">The repository</a></p>
+
+<p>If you have already docker installed you can pull the image doing</p>
+
+<pre><code>docker pull sameersbn/gitlab-ci-runner:latest
+</code></pre>
+
+<p>Then you need to register your runner to gitlab-ci you can do that with</p>
+
+<pre><code>mkdir -p /opt/your-project-runner
+docker run --name your-project-runner -it --rm \
+    -v /opt/your-project-runner:/home/gitlab_ci_runner/data \
+  sameersbn/gitlab-ci-runner:latest app:setup
+</code></pre>
+
+<p>it will ask you some information given to you by your instance of gitlab-ci</p>
+
+<p>you can then pop a runner by doing</p>
+
+<pre><code>docker run --name your-project-runner -it -d \
+    -v /opt/your-project-runner:/home/gitlab_ci_runner/data \
+  sameersbn/gitlab-ci-runner:latest app:setup
+</code></pre>
+
+<p>you will certainly to customize some stuff on your container
+you can do so by connecting as root to it using</p>
+
+<pre><code>docker exec -it your-project-runner bash
+</code></pre>
+
+<p>of course something to keep in mind is that container are meant to be stateless
+which mean that outside of the directories you map with <code>-v</code> option
+the other information will be deleted when you restart the container</p>
+
+<p>So if you need to always create the same kind of container, you can create
+your own Runner container by extending this one to fit your needs, like
+it has been done in the <a href="https://github.com/sameersbn/docker-runner-gitlab">docker image to run test for gitlab&rsquo;s own source code</a></p>
+
+<p>In a next article we will see in details how to create step by step your own
+Gitlab-ci for your php/symfony project</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="http://allan-simon.github.io/blog/posts/symfony-create-your-own-third-party-bundle/">
         symfony create your own third party bundle part 1/4
       </a>
