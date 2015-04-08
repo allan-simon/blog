@@ -7,7 +7,99 @@
     <language>en-us</language>
     
     
-    <updated>Sun, 29 Mar 2015 15:05:36 CST</updated>
+    <updated>Thu, 09 Apr 2015 01:44:41 CST</updated>
+    
+    <item>
+      <title>doctrine2 order by count many to many</title>
+      <link>http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/</link>
+      <pubDate>Thu, 09 Apr 2015 01:44:41 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/</guid>
+      <description>
+
+&lt;p&gt;Today I found a problem quite common but tricky enough for the solution
+to share it with you&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;The problem&lt;/h3&gt;
+
+&lt;p&gt;I have 2 Entities&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;User&lt;/li&gt;
+&lt;li&gt;Article&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;and a &amp;ldquo;likedByUsers&amp;rdquo; Many To Many relationship between both&lt;/p&gt;
+
+&lt;p&gt;Now I would like to get the Articles ordered by number of &amp;lsquo;likes&amp;rsquo;
+for an API call returning a list of Articles&lt;/p&gt;
+
+&lt;p&gt;if you feel smart you can try to find the solution by yourself
+it&amp;rsquo;s an interesting exercise about &amp;lsquo;how much do you know doctrine and SQL&amp;rsquo;&lt;/p&gt;
+
+&lt;p&gt;but let me tell you, the solution is like an Egg of Columbus, once you see
+it it becomes evident, but it was actually not that simple at first.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;The solution&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;// in your repository
+$builder = $this-&amp;gt;createQueryBuilder(&#39;a&#39;);
+    -&amp;gt;select(&#39;COUNT(u) AS HIDDEN nbrLikes&#39;, &#39;a&#39;)
+    -&amp;gt;leftJoin(&#39;a.likedByUsers&#39;, &#39;u&#39;) 
+    -&amp;gt;orderBy(&#39;nbrLikes&#39;, &#39;DESC&#39;)
+    -&amp;gt;groupBy(&#39;a&#39;)
+    -&amp;gt;getQuery()
+    -&amp;gt;getResult()
+;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Step by step&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;-&amp;gt;leftJoin(&#39;a.likedByUsers&#39;, &#39;u&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;as it&amp;rsquo;s a many to many relationship, and as doctrine lazy-load by default
+we need to explicitly tell him we will need the join, and the referenced
+entity (users) will be refered as &lt;code&gt;u&lt;/code&gt; in the other part of the query&lt;/p&gt;
+
+&lt;p&gt;now the interesting point here is the &lt;code&gt;leftJoin&lt;/code&gt;, most PHP developers
+are not familiar with the different type of Join&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;inner join&lt;/code&gt; would have taken only the articles and users who have &lt;strong&gt;At least&lt;/strong&gt; one relationship
+which mean that using this, you will not get back the articles with 0 likes&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;left join&lt;/code&gt; take ALL the row on the left side (so here articles) and the entity on the right will
+be null if there&amp;rsquo;s no relationship, so here that&amp;rsquo;s what we want, as then the &lt;code&gt;COUNT()&lt;/code&gt; will consider norelationship as &lt;code&gt;0&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;    -&amp;gt;groupBy(&#39;a&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;here it&amp;rsquo;s really important to group by the FULL entity and not just &lt;code&gt;a.id&lt;/code&gt;, otherwise SQL
+will complain that your other fields are not inside the GROUP BY (here nothing specific as doctrine,
+it&amp;rsquo;s pure SQL, just that Doctrine makes your life easier by permitting you not to precise
+every single field one by one&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    -&amp;gt;select(&#39;COUNT(u) AS HIDDEN nbrLikes&#39;, &#39;a&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here we have the actual interesting part
+we select a &lt;code&gt;COUNT&lt;/code&gt; in order to be able to use it in the &lt;code&gt;ORDER BY&lt;/code&gt; and also the
+entity article itself, however if we were just doing &lt;code&gt;&#39;COUNT(u) AS nbrLikes&#39; , a&lt;/code&gt;
+then for each result, we would not directly the entity, but an array of two values
+the count and then the entity (which would need additional treatment in my case
+as I&amp;rsquo;m just returning an array of Article to be serialized by the REST bundle).&lt;/p&gt;
+
+&lt;p&gt;That&amp;rsquo;s why we have &lt;code&gt;HIDDEN&lt;/code&gt;, it will tell doctrine to use it for the generated query
+but not to use when creating the result array, so that it returns only the entity&lt;/p&gt;
+
+&lt;p&gt;For those wondering if I only get the entity how to have my API call returning also
+a &lt;code&gt;number_of_likes&lt;/code&gt; in the JSON, I will later make an article about virtual property
+of the JSM Serializer&lt;/p&gt;
+
+&lt;p&gt;Hope you learn something in the process,&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>gitlab ci with docker runner</title>
