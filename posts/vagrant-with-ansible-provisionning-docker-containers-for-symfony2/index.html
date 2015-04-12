@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> vagrant with ansible provisionning docker containers for symfony2 &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>Allan&#39;s blog</h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/">Home</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>vagrant with ansible provisionning docker containers for symfony2</h1>
+  <span class="post-date">Sun, Apr 12, 2015</span>
+      
+
+<p>In this article we&rsquo;re going to cover:</p>
+
+<ul>
+<li>How to use ansible+docker+vagrant to create a one size for all environment for Symfony2 + Nginx + Postgresql + PHP-fpm</li>
+<li>How to transition an existing application to fit in that new environment</li>
+</ul>
+
+<p>This article take the assumption that you have already heard about all the technologies above without being too familiar with them.</p>
+
+<p>As an example will take the existing Oauth2 server I have created: <a href="https://github.com/allan-simon/oauth2-symfony2-vagrant-fosuserbundle">Oauth2Symfony2</a></p>
+
+<h3 id="toc_0">Introduction</h3>
+
+<p>Recently I&rsquo;ve been reading a lot about Docker, Vagrant and Ansible.
+At my company we&rsquo;re already using vagrant and ansible to create our
+development machines, and as now the continous testing tool is
+using a docker container to run the test, the next step was logically to start
+using docker everywhere, in order to have the same environment from the
+developers machine to production.</p>
+
+<p>My requirements were the following:</p>
+
+<ul>
+<li>Get a model to split our each of our web projects into a set of
+docker containers, to increase reusability and reproductability</li>
+<li>Use ansible for provisionning, for its powerful feature while yet
+staying simple.</li>
+<li>Be able to have one command, the same, to create my dev environment on my linux
+laptop and to create staging / production etc.</li>
+<li>Still be able to have a Vagrant for the developers on Mac/Windows but just
+as a layer to provide them the linux necessary to have Docker (and ansible)</li>
+<li>In case of Heisenbug, be able to nuke my environment and recreate quickly
+in a way I&rsquo;m sure to have something clean, while being sure not to have broken
+my computer</li>
+<li>To works fine with Symfony2 web applications</li>
+</ul>
+
+<h2 id="toc_1">Step 1, getting the Docker containers ready</h2>
+
+<p>For this first try, we&rsquo;re not going to push the logic to its maximun
+and we will keep things simple we&rsquo;re going to have 2 Docker containers</p>
+
+<ul>
+<li>Postgresql container hosting the database</li>
+<li>Nginx+PHP-fpm container hosting the application code</li>
+</ul>
+
+<p>We will put all our dockerfiles in a directory <code>DockerFiles</code> with
+one subdirectory by container.</p>
+
+<h3 id="toc_2">Postgresql container</h3>
+
+<p>The docker repository has already a very nice <a href="https://registry.hub.docker.com/_/postgres/">official postgresql container</a>
+it contains instructions on how to extend it, perfect</p>
+
+<p>So in <code>DockerFiles/postgres</code> we now have</p>
+
+<pre><code># vim:set ft=dockerfile:
+FROM library/postgres
+</code></pre>
+
+<p>Here nothing funky, we&rsquo;re just saying our container&rsquo;s image will use
+the official postgres image as a base. As we progress it will be completed with a script to create a database and a database user, but outside of this it currently perfectly fits our needs</p>
+
+<h3 id="toc_3">Nginx + PHP-fpm</h3>
+
+<p>The docker repository is full of container for PHP-fpm with Nginx but I didn&rsquo;t find any which met my needs:</p>
+
+<ul>
+<li>Getting a recent version of PHP (5.5)</li>
+<li>PHP with enough PHP-modules pre-instaled (php5-redis and php-posgresql)</li>
+<li>Small image size (we&rsquo;re located in China and 300mo instead of 500mo can means an hour or two saved)</li>
+</ul>
+
+<p>So I started from a the stock Debian Wheezy image, Debian and not ubuntu because that&rsquo;s on what the Postgres image is based, and it will not necessitate to redownload an other full distribution.</p>
+
+<p>Here&rsquo;s the base docker file we&rsquo;re creating in <code>DockerFiles/Symfony2/</code>, comments have been added inside</p>
+
+<pre><code># vim:set ft=dockerfile:
+FROM debian:wheezy
+
+# so that my colleagues know who to yell at
+# when they will find a problem in it.
+MAINTAINER SIMON Allan &lt;simona@gobeta.com.cn&gt;
+
+# RUN is going to create a new layer, in order to avoid creating
+#     dozen of layers, we chain the command with &amp;&amp;
+#
+# we're adding packages.dotdeb.org repository to get PHP5.5
+# and activating the backport to get php5-redis
+#
+# once done we install the necessary package
+# curl to later get composer)
+# git to clone non-stable composer packages
+# a huge list of php5 modules to cover future usage
+#
+# at the end we clean all temporary files so that when docker
+# create the layer, it is as slim as possible
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E9C74FEEA2098A6E &amp;&amp; \
+    echo &quot;deb http://packages.dotdeb.org/ wheezy-php55 all&quot; &gt; /etc/apt/sources.list.d/php.list &amp;&amp; \
+    echo &quot;deb http://ftp.debian.org/debian wheezy-backports main contrib non-free&quot; &gt;&gt; /etc/apt/sources.list.d/php.list &amp;&amp; \
+    apt-get update &amp;&amp; \
+    apt-get install -y \
+        curl \
+        git \
+        nginx \
+        php5-fpm \
+        php5-cli \
+        php5-xdebug \
+        php5-imagick \
+        php5-gd \
+        php5-mongo \
+        php5-curl \
+        php5-mcrypt \
+        php5-intl \
+        php5-mysql \
+        php5-sqlite \
+        php5-redis \
+        php5-pgsql \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+# we directly put composer in the image, so that
+# even in case of China blocking the composer website, the image
+# will still be usable, as this command may fails (thanks great firewall)
+# we put it on a separate RUN, so that we don't need to run the previous
+# commands again and again in case of failure.
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# our docker image will put this port as 'public', and then people
+# using this image will be able to map it to port on their host machine
+EXPOSE 80
+EXPOSE 443
+
+# a good practice in docker, as the container themselves can be run
+# as demon, is to run the service inside it directly, so that the
+# ouput of the service goes on STDOUT and can be gathered using
+# standard tool (more on that in an other article)
+RUN echo &quot;\ndaemon off;&quot; &gt;&gt; /etc/nginx/nginx.conf
+
+</code></pre>
+
+<h3 id="toc_4">Building the Docker images using Ansible</h3>
+
+<p>For those who don&rsquo;t know <a href="http://docs.ansible.com/">Ansible</a>, it&rsquo;s a tool made to automate all the steps you do in order to setup an environment, be it creating files, installing packages, modifying configuration, making sure a service is started and an other stopped. It works also if the environment is made of several machines scattered over the world, as long as you can SSH to them.</p>
+
+<p>Here the first goal is to make Ansible build these docker images. Latter we will improve it to start containers based on these images and linking them together.</p>
+
+<p>Ansible is used by creating what they call a &ldquo;playbook&rdquo;, a playbook is one or several Yaml files describing the tasks to accomplish or the state to reach. Common tasks like installing packages have pre-made modules to make their description short and easy-to-read.</p>
+
+<p>Before anything make sure you have the latest version of ansible <code>pip install ansible --upgrade</code>, we assume from now that you have the versio <code>1.9.0.1</code>. Then at the root of your working directory create a file name <code>playbook.yml</code> and put that in it</p>
+
+<pre><code>---
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: Install Docker-py
+      pip: name=docker-py state=present
+
+    - name: check or build image for postgres
+      docker_image: path=&quot;./DockerFiles/postgres&quot; name=&quot;allansimon/postgres-for-symfony&quot; state=build
+
+    - name: check or build image for symfony2
+      docker_image: path=&quot;./DockerFiles/Symfony2&quot; name=&quot;allansimon/symfony2&quot; state=build
+
+
+</code></pre>
+
+<p>Here we have a very basic playbook that can be applied to every hosts and that will run every tasks using sudo. Then we describe one task (<code>name</code> is up to you) that will use <code>pip</code> to install <code>docker-py</code> if not already present. Docker-py will be needed for ansible to communicate with Docker.</p>
+
+<p>Then we have two tasks that will build the Dockerfile in <code>path</code> and will associate it ot a name.</p>
+
+<p><strong>Note:</strong> the <code>docker_image</code> is marked as deprecated in the Ansible, however the new <code>docker</code> module has nothing to build Dockerfiles&hellip;</p>
+
+<p><strong>Note 2:</strong> on ubuntu 14.10 I got a bug with the <code>pip</code> installed by apt and I needed to add these tasks at the beginning</p>
+
+<pre><code>  tasks:
+    - name: remove pip if installed from apt (fix bug of pip in ubuntu 14.XX)
+      apt: name=python-pip state=absent
+
+    - name: Easy install (fix bug of pip in ubuntu 14.XX)
+      easy_install: name=pip
+    # then the other tasks
+
+</code></pre>
+
+<h3 id="toc_5">Modifying our Postgres image to create a database for Symfony</h3>
+
+<p>Our postgres image is currently very basic, there&rsquo;s postgresql installed inside but no database or user created for our application. Let&rsquo;s fix that.According to the <a href="https://registry.hub.docker.com/_/postgres/">documentation</a> you can add your custom script or SQL query to be launched at the container start by adding your script to the <code>/docker-entrypoint-initdb.d</code> directory. Let&rsquo;s do that, create a file <code>DockerFiles/postgres/make_db.sh</code></p>
+
+<p>with this content</p>
+
+<pre><code>#!/bin/bash
+echo &quot;******CREATING DOCKER DATABASE******&quot;
+gosu postgres postgres --single &lt;&lt;- EOSQL
+    CREATE USER &quot;$APP_DB_USER_NAME&quot; WITH PASSWORD '$APP_DB_USER_PASSWORD';
+    CREATE DATABASE &quot;$APP_DB_NAME&quot; WITH OWNER=&quot;$APP_DB_USER_NAME&quot; ENCODING='UTF-8';
+EOSQL
+echo &quot;******DOCKER DATABASE CREATED******&quot;
+
+</code></pre>
+
+<p>We&rsquo;re going to see just after where the variables come from.</p>
+
+<p>and now lets tell docker to add this script inside the image and to make it executable</p>
+
+<pre><code># vim:set ft=dockerfile:
+FROM library/postgres
+
+MAINTAINER SIMON Allan &lt;simona@gobeta.com.cn&gt;
+
+ADD make_db.sh /docker-entrypoint-initdb.d/
+RUN chmod +x /docker-entrypoint-initdb.d/make_db.sh 
+</code></pre>
+
+<p>Et voila! nothing more for the Dockerfile of postgres.</p>
+
+<p><strong>/!\ One important remark, the file is added once, it means that if you latter modify the file, you need to rebuild the image. For that the &lsquo;easy&rsquo; way I found is to add a blank line in the dockerfile to force it to rebuild, but I guess there&rsquo;s a better way.</strong></p>
+
+<h3 id="toc_6">Start a Postgresql container based on our image from Ansible.</h3>
+
+<p>Now that our image is ready, it&rsquo;s time to start it, add at the end of your <code>playbook.yml</code></p>
+
+<pre><code>
+    # we define a new task
+    - name: postgresql container
+      # this task use the module docker to manage docker from ansible
+      docker:
+        # it's going to start a container based on our image
+        image: allansimon/postgres-for-symfony
+        # this specific container will be named app_database
+        name: app_database
+        # if the container does not exist it will be started, if already
+        # started it will be restarted (it was useful while creating
+        # the image
+        state: restarted
+        # we map our local /tmp/postgres to /var/lib/postgresql/data
+        # in the container, this way the database is persisted
+        volumes:
+            - /tmp/postgres:/var/lib/postgresql/data
+        # this precise the environment variable that will be given
+        # to the container with their value
+        env:
+            # this one is needed by the base postgres container
+            # to define a password to postgres user
+            # the explanation about {{ }} notation is coming
+            POSTGRES_PASSWORD: &quot;{{ DB_PASSWORD }}&quot;
+            # here we have the variables used by our make_db.sh script
+            APP_DB_USER_NAME: &quot;{{ APP_DB_USER_NAME }}&quot;
+            APP_DB_USER_PASSWORD: &quot;{{ APP_DB_USER_PASSWORD }}&quot;
+            APP_DB_NAME: &quot;{{ APP_DB_NAME }}&quot;
+
+
+</code></pre>
+
+<p>The <code>{{ }}</code> notation is for Ansible variables, there&rsquo;s several ways to declare, we&rsquo;re going to see two, that can be used at the same time, either by putting them directly in your <code>playbook.yml</code> or in a dedicated file. The advatange of the second is that this way you can add this file to your gitignore.</p>
+
+<pre><code>  vars:
+    DB_PASSWORD: postgres
+  vars_files:
+    - external_vars.yml
+</code></pre>
+
+<p>and in <code>external_var.yml</code></p>
+
+<pre><code>#for symfony
+APP_DB_USER_NAME: symfony_db_user
+APP_DB_USER_PASSWORD: symfony_db_password
+APP_DB_NAME: symfony_db
+</code></pre>
+
+<h3 id="toc_7">Start a Nginx+PHP-fpm container linked to the Postgresql one</h3>
+
+<p>Now that we have our postgres container started it&rsquo;s time to do the same with our container for Nginx and PHP-fpm it takes the same structure as the task for postgres, with just some little thing in more (explained in comments)</p>
+
+<pre><code>    - name: nginx and php-fpm
+      docker:
+        name: app_webserver
+        image: allansimon/symfony2
+        state: restarted
+        # here we say that the container 'app_database' will be linked
+        # to this container, with the local name app_database, i.e all
+        # the env variables of app_database will be accessible from app_webserver
+        # prefixed with `APP_DATABASE_ENV_` as well as the port exposed by
+        # the container (so only the webserver will have access to the db)
+        links:
+            - &quot;app_database:app_database&quot;
+        # Here as we need the webserver to be accessible from the outside
+        # we map our laptop port 8088 to the port 80 of the container
+        ports:
+            - &quot;8088:80&quot;
+        # it is possible to map as many directory as you need
+        # the only restriction is that it must be an asbolute path
+        # hence why we use a variable APP_DIR
+        volumes:
+            - &quot;{{ APP_DIR }}:/var/www&quot;
+            - /tmp/nginx-logs:/var/logs/nginx
+        env:
+            # more on these variables sooon
+            GITHUB_TOKEN : &quot;{{ GITHUB_TOKEN  }}&quot;
+            APP_DB_USER_NAME: &quot;{{ APP_DB_USER_NAME }}&quot;
+            APP_DB_USER_PASSWORD: &quot;{{ APP_DB_USER_PASSWORD }}&quot;
+            APP_DB_NAME: &quot;{{ APP_DB_NAME }}&quot;
+            APP_MAILER_HOST: &quot;{{ APP_MAILER_HOST }}&quot;
+            APP_MAILER_USER: &quot;{{ APP_MAILER_USER }}&quot;
+            APP_MAILER_PASSWORD: &quot;{{ APP_MAILER_PASSWORD }}&quot;
+</code></pre>
+
+<p>With that, our Symfony app will have all the information it needs to access to the database, and to be accessed from the outside</p>
+
+<h3 id="toc_8">Finalize the configuration of the Nginx+PHP-fpm image</h3>
+
+<p>Our two containers are now able to communicate but the same as we needed to create a database to make our postgres container useful, we&rsquo;re going to need to tweak a little our Nginx+PHP-fpm container in order to</p>
+
+<ul>
+<li>have a virtualhost that sends file to PHP-fpm</li>
+<li>get a timezone precised in our php.ini (otherwise symfony2 will refuse
+to work)</li>
+<li>have our container that run composer install when started</li>
+<li>get nginx service started as well as php-fpm</li>
+</ul>
+
+<p>so we&rsquo;re going to add this at the end of our <code>DockerFiles/Symfony2/Dockerfile</code></p>
+
+<pre><code># we put our self-defined vhost (see below for the content)
+COPY config/vhost.conf /etc/nginx/sites-enabled/default
+
+# we put our additional php configuration and we enable it
+COPY config/php-extra.ini /etc/php5/mods-available/extra.ini
+RUN php5enmod extra
+
+# we copy our script and we make sure it is executable
+COPY entrypoint.sh /root/entrypoint.sh
+RUN chown root:root /root/entrypoint.sh 
+RUN chmod +x /root/entrypoint.sh
+
+# more on that in a latter article
+VOLUME [&quot;/var/www&quot;, &quot;/var/log/nginx/&quot;]
+
+# when our container is started this script will be run
+# (it was not in our postgres dockerfile because the base image already
+# had it.
+ENTRYPOINT [&quot;/root/entrypoint.sh&quot;]
+
+</code></pre>
+
+<p>now the configuration file themselves</p>
+
+<h4 id="toc_9">DockerFiles/Symfony2/config/vhost.conf</h4>
+
+<p>This vhost is specifically for symfony2 applications
+you maybe to adapt it if you plan to run other kind
+of php websites.</p>
+
+<pre><code>
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    server_name localhost;
+
+    root /var/www/web;
+    index index.html index.htm index.php;
+
+    location / {
+        try_files $uri /app.php$is_args$args;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/www;
+    }
+
+    location ~ ^/(app|app_dev|config)\.php(/|$) {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS off;
+    }
+}
+
+</code></pre>
+
+<h4 id="toc_10">DockerFiles/Symfony2/config/php-extra.ini</h4>
+
+<p>nothing fancy in it</p>
+
+<pre><code>date.timezone = UTC
+</code></pre>
+
+<h4 id="toc_11">DockerFiles/Symfony2/entrypoint.sh</h4>
+
+<pre><code>#!/bin/bash
+
+# for development machines
+if [ $DEBUG ]; then
+    echo &quot;xdebug.remote_connect_back=On&quot; &gt;&gt; /etc/php5/fpm/conf.d/20-xdebug.ini
+    echo &quot;xdebug.remote_enable=On&quot; &gt;&gt; /etc/php5/fpm/conf.d/20-xdebug.ini
+fi
+
+cd /var/www
+
+# if no specific command are precised when the container is started:
+if [ -z &quot;$1&quot; ];
+    then
+
+    # if you're in china and that for some reason
+    # the docker build has failed to download composer.phar...
+    if ! which composer; then
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    fi
+    # variable provided by ansible when launching the docker container
+    mkdir ~/.composer
+    cat &gt; ~/.composer/config.json &lt;&lt;EOS
+{
+    &quot;config&quot;: {
+        &quot;github-oauth&quot;: { &quot;github.com&quot;: &quot;$GITHUB_TOKEN&quot; }
+    }
+}
+EOS
+    # we make sure to start fresh
+    rm app/config/parameters.yml
+    composer install
+    rm -rf app/cache/*
+    php app/console assets:install --symlink web/
+    php app/console c:c
+    php app/console c:w
+    # not pretty ...
+    chmod -R 777 app/logs
+    chmod -R 777 app/cache
+
+    service php5-fpm restart
+    nginx
+else
+    exec &quot;$@&quot;
+fi
+</code></pre>
+
+<p>Several things:</p>
+
+<ul>
+<li>We create a config.json for composer to put inside our github token to avoid composer install to hang because we&rsquo;re reached github anonymous limit.</li>
+<li>We delete the parameters.yml so that we&rsquo;re sure it&rsquo;s recreated everytime, which is important in case we change the environment variables or the parameters.yml.dist</li>
+<li>we clear and warmup the cache</li>
+<li>it&rsquo;s a bit hackish , but we make sure the logs and cache directory are writeable by symfony. (I did like this because it seems the application is run with a user that only have a UID but no username, and searching on the internet, different people seems to have different UID)</li>
+<li>then we start the php5-fpm service (in a perfect docker world, it should be on dedicated container so that we can easily its output)</li>
+<li>we start nginx as a process in the foreground</li>
+</ul>
+
+<p>To get your github token, you can take a look at my previous article on <a href="http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/">how to generate one to use with composer.</a></p>
+
+<p>Now our environment is fully ready we&rsquo;re only left with adapting our appliction</p>
+
+<h3 id="toc_12">Adapting our symfony application to fit in</h3>
+
+<p>Here&rsquo;s there&rsquo;s nothing much to change itself in the code, we simply need to tell Symfony2 to look in priority for the environment variables. The problem is Symfony2 itself looks for variable starting with <code>SYMFONY__</code> and the second problem is that the <code>parameters.yml</code> has priority over the environment variables&hellip;</p>
+
+<p>To solve that there&rsquo;s a simple trick, (first make sure your parameters.yml is not versionned), composer.json has a package that can be used to generate your parameters.yml and it can be used to generate it based on environment variables</p>
+
+<p>Make sure you have in your composer.json</p>
+
+<pre><code>&quot;require&quot;: {
+    ...
+
+    &quot;incenteev/composer-parameter-handler&quot;: &quot;~2.0&quot;,
+    ...
+}
+...
+&quot;scripts&quot;: {
+    ...
+    &quot;post-install-cmd&quot;: [
+        &quot;Incenteev\\ParameterHandler\\ScriptHandler::buildParameters&quot;,
+        ...
+    ],
+    &quot;post-update-cmd&quot;: [
+        &quot;Incenteev\\ParameterHandler\\ScriptHandler::buildParameters&quot;,
+        ...
+    ]
+},
+
+</code></pre>
+
+<p>Then in the <code>extra</code> section you can add <code>env-map</code> section to say to which environment variables to use (if present) to generate which parameter of your <code>parameters.yml</code></p>
+
+<p>In our case</p>
+
+<pre><code>    &quot;extra&quot;: {
+        ...
+        &quot;incenteev-parameters&quot;: {
+            &quot;env-map&quot; : {
+                &quot;database_host&quot;: &quot;APP_DATABASE_PORT_5432_TCP_ADDR&quot;,
+                &quot;database_port&quot;: &quot;APP_DATABASE_PORT_5432_TCP_PORT&quot;,
+
+                &quot;database_name&quot;: &quot;APP_DB_NAME&quot;,
+                &quot;database_user&quot;: &quot;APP_DB_USER_NAME&quot;,
+                &quot;database_password&quot;: &quot;APP_DB_USER_PASSWORD&quot;,
+
+                &quot;mailer_host&quot;: &quot;APP_MAILER_HOST&quot;,
+                &quot;mailer_user&quot;: &quot;APP_MAILER_USER&quot;,
+                &quot;mailer_password&quot;: &quot;APP_MAILER_PASSWORD&quot;
+            },
+            &quot;file&quot;: &quot;app/config/parameters.yml&quot;
+        },
+        ...
+    }
+</code></pre>
+
+<p>The two first environment variables come from the variables given by docker to the <code>app_webserver</code> when linking with <code>app_database</code></p>
+
+<h3 id="toc_13">Running everything</h3>
+
+<p>Now that everything is done you can run your playbook using:</p>
+
+<pre><code>sudo  ansible-playbook playbook.yml --connection=local -i &quot;[default] localhost,&quot; 
+</code></pre>
+
+<p>it tells to run the playbook on your local machine.</p>
+
+<h3 id="toc_14">Link it to vagrant</h3>
+
+<p>All of that works fine if you&rsquo;re on a Linux machine, so for your fellow Mac or Windows colleague you can create this <code>Vagrantfile</code></p>
+
+<pre><code>
+def host_box_is_unixy?
+  (RUBY_PLATFORM !~ /cygwin|mswin|mingw|bccwin|wince|emx/)
+end
+
+
+Vagrant.configure(&quot;2&quot;) do |config|
+    config.vm.box = &quot;ubuntu/trusty64&quot;
+
+    config.vm.network &quot;forwarded_port&quot;, guest: 80, host: 8080
+    config.vm.network &quot;private_network&quot;, ip: &quot;192.168.50.12&quot;
+
+    if host_box_is_unixy?
+        config.vm.synced_folder &quot;./&quot;, &quot;/vagrant&quot;, type: &quot;nfs&quot;
+    else
+        config.vm.synced_folder &quot;./&quot;, &quot;/vagrant&quot;, type: &quot;smb&quot;, mount_options: ['ip=192.168.50.1'] #host side of :private_network
+    end
+
+
+    config.vm.provision :shell, :inline =&gt; &lt;&lt;-END
+        set -e
+        if ! which ansible-playbook ; then
+            sudo sh -c &quot;wget -qO- https://get.docker.io/gpg | apt-key add -&quot;
+            sudo sh -c &quot;
+                echo deb http://get.docker.io/ubuntu docker main &gt; \
+                /etc/apt/sources.list.d/docker.list
+            &quot;
+            sudo apt-get update
+            sudo apt-get -y install \
+                lxc-docker \
+                python-software-properties \
+                python-pip
+            sudo pip install ansible
+        fi
+        cd /vagrant
+        sudo  ansible-playbook playbook.yml --connection=local -i &quot;[default] localhost,&quot; 
+    END
+end
+</code></pre>
+
+<p>it is not treated in this article but for Symfony2 performance reason on Vagrant, you may want to put the cache and logs folder outside of the share folder.</p>
+
+<h3 id="toc_15">Useful commands</h3>
+
+<h3 id="toc_16">Run a command in a given container</h3>
+
+<p>for example you want to run phpunit</p>
+
+<pre><code>sudo docker exec -it app_webserver   /var/www/bin/phpunit -c  /var/www/app
+</code></pre>
+
+<p>or if you want to &lsquo;ssh&rsquo; into the machine</p>
+
+<pre><code>sudo docker exec -it app_webserver bash
+</code></pre>
+
+<h3 id="toc_17">Get the logs</h3>
+
+<pre><code>sudo docker logs -f app_webserver   
+</code></pre>
+
+<h3 id="toc_18">Delete an image</h3>
+
+<p>Let&rsquo;s say it&rsquo;s 3AM you&rsquo;re trying desperately to modify the Dockerfile of the database but nothing change, so you want to nuke everything and start fresh</p>
+
+<p>First stop and remove the container using</p>
+
+<pre><code>sudo docker stop app_database2
+sudo docker rm app_database2
+
+</code></pre>
+
+<p>then delete the image itself</p>
+
+<pre><code>sudo docker rmi allansimon/postgres-for-symfony
+</code></pre>
+
+<h3 id="toc_19">Further improvements</h3>
+
+<p>With that you should have a good starters to have your application running in dockers , while still providing an easy environment to deploy for your developers, but things can be of course furthered improve (I will try to cover them in other articles)</p>
+
+<ul>
+<li>Integrate it smoothly with your continous-testing system (for example gitlab-ci)</li>
+<li>Split the containers in smaller ones (for example nginx and php-fpm in separate ones)</li>
+<li>Put the data in Docker volumes to easily backup your data</li>
+<li>Have a procedure to easily rollout a new release that include database migrations (using the excellent DoctrineMigration) without stopping the service or breaking things</li>
+<li>Use kubernetes to manage your running containers to restart them if one crash etc.</li>
+<li>Make your application scalable by being able to pop-out more instance of the web application and getting it to work nice with a loadbalancer</li>
+<li>Make your database scalable by using tools like <code>pgpool II</code></li>
+<li>Be able to have our containers over several physical machines</li>
+</ul>
+
+<h3 id="toc_20">Articles that helped me wrote this one and further reading</h3>
+
+<h4 id="toc_21">About the content of this article</h4>
+
+<ul>
+<li><a href="http://docs.ansible.com/docker_module.html">Ansible documentation on docker</a></li>
+<li><a href="http://docs.ansible.com/docker_image_module.html">Ansible documentation on docker images</a></li>
+<li><a href="http://patg.net/ansible,docker/2014/06/20/ansible-docker-image/">How to build docker images with Ansible</a></li>
+<li><a href="http://victorlin.me/posts/2014/08/11/building-docker-image-with-ansible">Other article on creating docker images with Ansible</a></li>
+<li><a href="http://www.slideshare.net/denderello/dockerizing-symony-applications-symfony-live-berlin-2014">Dockerizing Symfony Application</a></li>
+<li><a href="http://www.slideshare.net/nevalla/building-high-availability-application-with-docker">Building HA Application with Docker</a></li>
+<li></li>
+</ul>
+
+<h4 id="toc_22">Further reading</h4>
+
+<ul>
+<li><a href="http://devopscube.com/how-to-link-docker-containers-across-hosts-the-ambassador-pattern/">How to link docker containers accross host</a></li>
+<li><a href="http://getprismatic.com/story/1428327711576?share=MzE2MzYy.MTQyODMyNzcxMTU3Ng.6TZneNzk4ocS2YDOFkjk5AM0r-Y">Using Apache Mesos to get a production ready environment</a></li>
+<li><a href="http://www.slideshare.net/rajdeep/docker-swarm-introduction?next_slideshow=1">Docker swarm</a></li>
+<li><a href="http://www.scoop.it/t/docker-by-docker">List of articles on Docker</a></li>
+<li><a href="http://docs.ansible.com/playbooks_delegation.html">Doing rolling update with ansible</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-horizontally-scale-a-laravel-4-app-with-a-postgresql-database">How to scale a Laravel application with postgresql</a></li>
+<li><a href="http://www.slideshare.net/pgodel/symfony-live-nyc-2014-rock-solid-deployment-of-symfony-apps">Rock solide deployement of Symfony application</a></li>
+</ul>
+
+</div>
+</div>
+
+  </body>
+</html>
