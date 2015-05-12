@@ -7,7 +7,71 @@
     <language>en-us</language>
     
     
-    <updated>Sun, 12 Apr 2015 04:14:20 CST</updated>
+    <updated>Tue, 12 May 2015 22:40:38 CST</updated>
+    
+    <item>
+      <title>Things I&#39;ve learn this week</title>
+      <link>http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/</link>
+      <pubDate>Tue, 12 May 2015 22:40:38 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/</guid>
+      <description>
+
+&lt;h3 id=&#34;toc_0&#34;&gt;How to send the unchanged Host header to proxied server with Nginx&lt;/h3&gt;
+
+&lt;p&gt;Imagine you have a first nginx acting as a load balancer with this configuration&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;upstream blue  {
+    ...
+}
+
+upstream green  {
+    ...
+}
+
+server {
+    include /etc/nginx/backend.conf;
+
+    location / {
+        proxy_pass  http://blue;
+        proxy_connect_timeout   5;
+    }
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;if you do like that, with &lt;code&gt;blue&lt;/code&gt; and &lt;code&gt;green&lt;/code&gt; hosting your app, your application
+code will see &amp;ldquo;blue&amp;rdquo; or &amp;ldquo;green&amp;rdquo; as the http Host header, which may cause problem
+when creating absolue URL&lt;/p&gt;
+
+&lt;p&gt;you can override this, and force nginx to send the Host given by the client to
+the proxied server unchanged by adding one line like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    location / {
+        proxy_pass  http://$activeBackend;
+        proxy_set_header Host   $http_host; # &amp;lt;= this line
+        proxy_connect_timeout   5;
+    }
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;How to reload PHP-fpm without restarting it&lt;/h3&gt;
+
+&lt;p&gt;In production you may want to reload php-fpm without restarting it
+in order to avoid downtime.&lt;/p&gt;
+
+&lt;p&gt;You can do this by sending the unix signal &lt;code&gt;SIGUSR2&lt;/code&gt; to the PID of php-fpm&lt;/p&gt;
+
+&lt;p&gt;It may provde useful when&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;updating the php.ini&lt;/li&gt;
+&lt;li&gt;if you to clear the opcache&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>vagrant with ansible provisionning docker containers for symfony2</title>
@@ -1585,25 +1649,6 @@ advantages I see to it&lt;/p&gt;
 &lt;li&gt;vim and markdown friendly, posting is just one more markdown file&lt;/li&gt;
 &lt;li&gt;can be hosted on github (which solve the hosting problem)&lt;/li&gt;
 &lt;li&gt;it&amp;rsquo;s text files and git (which solve the backup problem)&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>about</title>
-      <link>http://allan-simon.github.io/blog/about/</link>
-      <pubDate>Mon, 09 Feb 2015 23:20:55 CST</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/about/</guid>
-      <description>
-
-&lt;h2 id=&#34;toc_0&#34;&gt;What will you find on this blog&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;My daily discoveries and tips, mostly web/linux/devops/c++/c/rust related.&lt;/li&gt;
-&lt;li&gt;Some tips and tricks on how to survive in the Chinese internet as a devops&lt;/li&gt;
-&lt;li&gt;Some news concerning my personnal projects&lt;/li&gt;
-&lt;li&gt;Random thoughts as I progress in my professional and personnal career.&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>

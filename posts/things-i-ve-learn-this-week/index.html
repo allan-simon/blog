@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> Things I&#39;ve learn this week &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>Things I&#39;ve learn this week</h1>
+  <span class="post-date">Tue, May 12, 2015</span>
+      
+
+<h3 id="toc_0">How to send the unchanged Host header to proxied server with Nginx</h3>
+
+<p>Imagine you have a first nginx acting as a load balancer with this configuration</p>
+
+<pre><code>upstream blue  {
+    ...
+}
+
+upstream green  {
+    ...
+}
+
+server {
+    include /etc/nginx/backend.conf;
+
+    location / {
+        proxy_pass  http://blue;
+        proxy_connect_timeout   5;
+    }
+}
+
+
+</code></pre>
+
+<p>if you do like that, with <code>blue</code> and <code>green</code> hosting your app, your application
+code will see &ldquo;blue&rdquo; or &ldquo;green&rdquo; as the http Host header, which may cause problem
+when creating absolue URL</p>
+
+<p>you can override this, and force nginx to send the Host given by the client to
+the proxied server unchanged by adding one line like this:</p>
+
+<pre><code>    location / {
+        proxy_pass  http://$activeBackend;
+        proxy_set_header Host   $http_host; # &lt;= this line
+        proxy_connect_timeout   5;
+    }
+
+
+</code></pre>
+
+<h3 id="toc_1">How to reload PHP-fpm without restarting it</h3>
+
+<p>In production you may want to reload php-fpm without restarting it
+in order to avoid downtime.</p>
+
+<p>You can do this by sending the unix signal <code>SIGUSR2</code> to the PID of php-fpm</p>
+
+<p>It may provde useful when</p>
+
+<ul>
+<li>updating the php.ini</li>
+<li>if you to clear the opcache</li>
+</ul>
+
+</div>
+</div>
+
+  </body>
+</html>
