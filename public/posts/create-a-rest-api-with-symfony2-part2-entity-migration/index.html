@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD</h1>
+  <span class="post-date">Sun, May 24, 2015</span>
+      
+
+<p>In the <a href="http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/">first part</a> we&rsquo;ve seen how to
+create the base of a symfony2 project used to generate a REST Api.</p>
+
+<p>In this part we&rsquo;re going to see</p>
+
+<pre><code>* How to use the basics of JMSSerializer to serialize Entity objects
+* How to link our API with a database
+* How to create migration files to easily manage our datase over time and colleagues
+* and how to generate a full [CRUD (create/read/update/delete)](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) with form checking
+</code></pre>
+
+<h4 id="toc_0">Very important Note /!\ (can save you hours of debugging):</h4>
+
+<p>if at any moment you got some strange 500 errors, run</p>
+
+<pre><code>php app/console cache:clear
+php app/console cache:clear --env prod
+</code></pre>
+
+<p>as sometimes, especially when you change the configuration files, the production environment will not update directly all the files, creating some weird errors.</p>
+
+<h3 id="toc_1">Creating the entity Article</h3>
+
+<p>for the moment we will limit ourselves to one entity <code>Article</code> which will contain for the moment only:</p>
+
+<ul>
+<li>an id</li>
+<li>a title =&gt; that can&rsquo;t be blank</li>
+<li>a body =&gt; which is a very long text and can&rsquo;t be blank</li>
+</ul>
+
+<p>(we&rsquo;re going to see later how to add more attributes)</p>
+
+<p>So we&rsquo;re going to create a class in <code>src/AppBundle/Entity/Article.php</code> (the class representing
+1 article, it&rsquo;s put to singular, so please don&rsquo;t name it ArticleS) That will be used by Doctrine:</p>
+
+<pre><code>&lt;?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity()
+ */
+class Article
+{
+    /**
+     * @var int
+     *
+     * @ORM\Id
+     * @ORM\Column(type=&quot;integer&quot;)
+     */
+    protected $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type=&quot;string&quot;)
+     */
+    protected $title;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type=&quot;string&quot;)
+     */
+    protected $body;
+
+    /**
+     * We'll see later why $title and $body are put by default to ''
+     */
+    public function __construct($title = '', $body = '')
+    {
+
+    }
+
+    // Note: at the opposite of the bad habits contracted by those coming
+    // from the Java world we don't generate all the setters and getters
+    // brainlessly, otherwise you can simply put the properties as public...
+    // By not creating them we're sure:
+    // that nobody can set the id
+    // that we understand why and how we need to add getter and or setter of
+    // a property
+}
+</code></pre>
+
+<p>We&rsquo;re going to see soon the use of the <code>@ORM\...</code>, for the moment you just need to
+know it&rsquo;s called <code>an annotation</code> and they come from <code>use Doctrine\ORM\Mapping as ORM</code>
+(hence the ORM at the beginning of the annotation)</p>
+
+<p>So now we can update our controller to generate an article instead</p>
+
+<pre><code>      /**
+       * ....
+       * @return Article
+       */
+      public function getArticleAction($id)
+      {
+          return new Article(&quot;title $id&quot;, &quot;body $id&quot;);
+      }   
+
+</code></pre>
+
+<p>Now if you refresh the page you will an error 500</p>
+
+<p>&ldquo;message&rdquo;:&ldquo;Could not normalize object of type AppBundle\Entity\Article&rdquo;</p>
+
+<p>it&rsquo;s because the very basic serializer of Symfony2 does not know how
+to serialize an Entity object. For that we would need to have some Normalizer
+as explained here <a href="http://symfony.com/doc/current/cookbook/serializer.html">http://symfony.com/doc/current/cookbook/serializer.html</a></p>
+
+<p>But as we plan to cover more complex example latters, we will go directly
+with a Serializer on steroid named JMSSerializer, its documentation being <a href="http://jmsyst.com/bundles/JMSSerializerBundle#usage">there</a></p>
+
+<p>to install it</p>
+
+<pre><code> composer require jms/serializer-bundle
+</code></pre>
+
+<p>you may need to increase the RAM of the virtual machine temporary
+to do this add the lines:</p>
+
+<pre><code>
+</code></pre>
+
+<p>and then run <code>vagrant reload</code> (it will restart the virtual machine)</p>
+
+<p>once done you can activate the bundle in <code>app/AppKernel.php</code></p>
+
+<pre><code>    // ...
+    new JMS\SerializerBundle\JMSSerializerBundle(),
+    // ...
+</code></pre>
+
+<p>And as the FOSRestBundle is already configured internally to look for the existence
+of the JMSSerializer, and to use it in priority of the default symfony2 seralizer
+you don&rsquo;t need to do anything more to get it working.</p>
+
+<p>Now if you refresh the page you will see</p>
+
+<pre><code>{
+    &quot;title&quot;:&quot;title 1&quot;,
+    &quot;body&quot;:&quot;body 1&quot;
+}
+</code></pre>
+
+<p>Note: the <code>id</code> property is missing because it is currently set to null, every property
+with the value null will not be seralized. In order to get an id, we need to save first
+the object in database</p>
+
+<h3 id="toc_2">Generate a database migration</h3>
+
+<p>for the moment our database is empty (and existing as it was created during the <code>vagrant up</code>
+if you check the provisionning folder , one of the file contains a task to create a database)</p>
+
+<p>So in order to save our Articles in database we&rsquo;re going to need a table</p>
+
+<p>DON&rsquo;T RUN TO GOOGLE on how to create a table manually, you don&rsquo;t need that, instead we&rsquo;re going to use
+a <code>migration</code> tool =&gt; Doctrine Migration because:</p>
+
+<ul>
+<li>it will create automatically the SQL statement from our Entity class</li>
+<li>it will create a file that our colleagues will be able to replay on their own machine (or in production) without any chance of typo or copy paste</li>
+<li>it has a mechanism to be sure to not be run twice</li>
+<li>it also automatically generate the SQL statment in the same file to &ldquo;revert&rdquo; your change if something goes wrong</li>
+<li>it will always be the same command, regardless on how complicated your database changes are.</li>
+<li>it knows SQL and the specific database you&rsquo;re using better than you.</li>
+</ul>
+
+<p>The full documentation can be found <a href="http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html">here</a></p>
+
+<p>In order to install it, you need to edit the composer.json and add this two lines in the <code>require</code> section</p>
+
+<pre><code>        &quot;doctrine/migrations&quot;: &quot;1.0.*@dev&quot;,
+        &quot;doctrine/doctrine-migrations-bundle&quot;: &quot;1.0.*&quot;
+</code></pre>
+
+<p>and then run <code>composer update</code></p>
+
+<p>after that activate the bundle in <code>app/AppKernel.php</code></p>
+
+<pre><code>        new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+</code></pre>
+
+<p>then you can create migration file using</p>
+
+<pre><code>php app/console doctrine:migrations:diff
+</code></pre>
+
+<p>if everything goes well you should see</p>
+
+<pre><code>vagrant@vagrant-ubuntu-trusty-64:/vagrant/MyApplication$ php app/console doctrine:migrations:diff 
+Generated new migration class to &quot;/vagrant/MyApplication/app/DoctrineMigrations/Version20150524202209.php&quot; from schema differences.
+</code></pre>
+
+<p>(the number will vary as it&rsquo;s generated from current date)</p>
+
+<p>if you got any error message, check in priority your <code>app/config/parameters.yml</code> to see if the driver is correctly set to <code>pdo_pgsql</code> and the username password set to <code>vagrant</code> (or the ones you&rsquo;ve chosen)</p>
+
+<p>if you open the file you will it contains a SQL request, you can apply it by doing</p>
+
+<pre><code>php app/console doctrine:migrations:migrate
+</code></pre>
+
+<p>Note: from now that&rsquo;s the only two commands you need to update your databases 99%, if you need to do additional SQL request, you can always edit the file <strong>BEFORE</strong> committing it AND before applying it, and on the other sides, your colleagues only need to run the migrate command.</p>
+
+<p>Note2: the migrate command can be run safely as many times as you want, so it can be run everytime you have a doubt that your database schema is up to date.</p>
+
+<p>Note3: the migrate command will run all the migrations that are not run yet on your machine, regardless on how are missing.</p>
+
+<h3 id="toc_3">Save an article in database</h3>
+
+<p>For the sake of the example, for the moment we create the Article entity on the fly at each request, now we&rsquo;re going to persist it in database before serialization (i.e before the <code>return</code> of the controller) in order to get an Id.</p>
+
+<p>Of course later we&rsquo;re going to move the Article creation to a dedicated API call</p>
+
+<p>For that we&rsquo;re going to need the <code>Doctrine</code> object (i.e the PHP library used to manage database and to map database rows and object,  tables and classes, i.e the <a href="https://en.wikipedia.org/wiki/Object-relational_mapping">ORM</a></p>
+
+<p>Symfony2 already create this object and link it to the database for us, in order to access to it, we need to make our service inheriting from the the <code>FOSRestController</code> class like this</p>
+
+<pre><code>&lt;?php
+
+namespace AppBundle\Controller;
+
+use FOS\RestBundle\Controller\FOSRestController;
+
+class ArticlesController extends FOSRestController
+{
+...
+}
+
+</code></pre>
+
+<p>Then we can access to the <code>Entity Manager</code> (i.e the object that take care of saving and keeping in sync the PHP objects and the SQL database) by using <code>$this-&gt;getDoctrine()-&gt;getManager()</code>, and then saving our object like this</p>
+
+<pre><code>      public function getArticleAction($id)
+      {   
+          $article = new Article(&quot;title $id&quot;, &quot;body $id&quot;);
+  
+          $manager = $this-&gt;getDoctrine()-&gt;getManager();
+          // persist ONLY add the object to the list of object to
+          // save
+          $manager-&gt;persist($article);
+          // only flush will actually save in database, this in order
+          // to make it possible to save a lot of object in only one flush
+          // (which is a LOT faster than flushing one by one
+          $manager-&gt;flush();
+  
+          return $article;
+     }
+
+</code></pre>
+
+<p>Then if you try to refresh the page <code>/api/articles/1</code> it will now generate you an error, saying it can&rsquo;t save in database because of the field <code>id</code> of Article, because we forgot to set it as autoincremented, in order to change that it&rsquo;s extremly simple , add the line <code>* @ORM\GeneratedValue</code> in the Entity:</p>
+
+<pre><code>      /*
+       * ....
+       * @ORM\GeneratedValue
+       */
+      protected $id;
+
+</code></pre>
+
+<p>and now you can do a <code>diff</code> and <code>migrate</code> as explained above.</p>
+
+<p>Now refresh the page you should see:</p>
+
+<pre><code>{&quot;id&quot;:1,&quot;title&quot;:&quot;title 1&quot;,&quot;body&quot;:&quot;body 1&quot;}
+</code></pre>
+
+<p>if you refesh again, you will see</p>
+
+<pre><code>{&quot;id&quot;:2,&quot;title&quot;:&quot;title 1&quot;,&quot;body&quot;:&quot;body 1&quot;}
+</code></pre>
+
+<p>this is because we&rsquo;re creating a new Article everytime.</p>
+
+<p>So let&rsquo;s clean that</p>
+
+<h3 id="toc_4">Retrieve an article from database</h3>
+
+<h4 id="toc_5">The normal way (using the repository)</h4>
+
+<p>Now that we have some Article in database (accidentally created by our previous code), it&rsquo;s time to clean <code>GET /api/articles/{id}</code> to actually works as expected</p>
+
+<p>for this you can retrieve it by doing</p>
+
+<pre><code>      public function getArticleAction($id)
+      {   
+          $article = $this
+              -&gt;getDoctrine()
+              -&gt;getRepository('AppBundle:Article')
+              -&gt;find($id);
+  
+          return $article;
+     }
+</code></pre>
+
+<p>The <code>getRepository('AppBundle:Article') is used to retrieve the Repository, which is the object used to generate the SQL request for you, in order to retrieve data, there's one repository by table/class, in order to get the right one easily, you can simply use the string</code>BundleName:ClassName<code>so in our case</code>AppBundle:Article`</p>
+
+<p>Then the <code>find</code> method is used to take an id, and retrieve one element, or null if it does not exists</p>
+
+<p>It means that you have to handle the <code>404 not found</code> yourself (the <code>404</code> status code bein if you remember your reading of part 1, the code to say that a Resource can&rsquo;t be found)</p>
+
+<p>for that simply add</p>
+
+<pre><code>
+    public function getArticleAction($id)
+    {   
+        $article = $this
+            -&gt;getDoctrine()
+            -&gt;getRepository('AppBundle:Article')
+            -&gt;find($id);
+
+        if (is_null($article)) {
+            throw $this-&gt;createNotFoundException('No such article');
+        } 
+  
+        return $article;
+     }
+</code></pre>
+
+<p>and now checking for a non existing article id will correctly return you a 404</p>
+
+<h4 id="toc_6">The simpler way (using the auto mapping of arguments)</h4>
+
+<p>As retrieving an object from the id given in parameters is a very common operation, symfony2
+already have something to makes your lifes easier, if instead of giving the parameters <code>$id</code>
+you directly put the parameters with the type you need, Symfony2 will automatically try to
+find the article with the corresponding id (and return the 404 <strong>BEFORE</strong> calling your method)</p>
+
+<p>so now your code will only be:</p>
+
+<pre><code>    public function getArticleAction(Article $article)
+    {
+        return $article
+    }
+</code></pre>
+
+<p>much simpler uh ? and the 404 case is still handle</p>
+
+<h3 id="toc_7">Implementing GET /api/articles</h3>
+
+<p>In order to get all articles, the standard REST way to do that is simply to remove the <code>{id}</code> part,
+which can directly be done with symfony2 by adding this method <code>getArticlesAction</code> (notice the S), and using the method <code>findAll()</code> of the repository,</p>
+
+<p>the API will then always return an array, either empty, or of Articles, serialized the same way as when you get one</p>
+
+<pre><code>      /**
+S&gt;     * retrieve all articles
+       * TODO: add pagination
+       *
+       * @return Article[]
+       */
+      public function getArticlesAction()
+      {
+          $articles = $this
+              -&gt;getDoctrine()
+              -&gt;getRepository('AppBundle:Article')
+              -&gt;findAll();
+  
+          return $articles;
+      }
+</code></pre>
+
+<p>and that&rsquo;s all</p>
+
+<p>now calling <code>/api/articles</code> will give you</p>
+
+<pre><code>[
+    {&quot;id&quot;:1,&quot;title&quot;:&quot;title 1&quot;,&quot;body&quot;:&quot;body 1&quot;},
+    {&quot;id&quot;:2,&quot;title&quot;:&quot;title 1&quot;,&quot;body&quot;:&quot;body 1&quot;}
+]
+</code></pre>
+
+<h4 id="toc_8">Important Note concerning pagination:</h4>
+
+<p>Pagination being a little more complex topic, we will cover it in a later part
+However if you remember your reading of Part1, pagination belongs to the metadata
+of the resource, so they belongs to the header of the HTTP response, which means
+that when pagination will be implemented, the json returned will still looks like
+that which permit</p>
+
+<ul>
+<li>to implement only one parser on client side for list, regardless of paginated or not</li>
+<li>permit a better flexibility and retro compatibility even if you &ldquo;ooops forgot pagination&rdquo; or you latter decide to remove it to simplify your API</li>
+</ul>
+
+<h3 id="toc_9">Implement POST /articles (creating one new article)</h3>
+
+<p>Note: of course never use GET to create (or edit) a resource, nor use /articles/create etc.</p>
+
+<p>The goal is to be to POST a json looking like the entity</p>
+
+<pre><code>{
+    &quot;title&quot;: &quot;your title&quot;,
+    &quot;body&quot;: &quot;your body&quot;
+}
+</code></pre>
+
+<p>and if everything is ok to get a <code>201</code> (standard HTTP status code for CREATED) with the created entity</p>
+
+<p>and if not to get a <code>422</code> (standard HTTP status code for `the entity is a json, but the application can&rsquo;t understand it as a valid article)</p>
+
+<p>this time in addition to the <code>postArticlesAction</code> you need also to create a Form class (in `src/AppBundle/Form/ArticleType.php) that will do the conversion and validation for you</p>
+
+<p>check <a href="https://github.com/allan-simon/symfony2-rest-api-example/commit/61c0ca878d82151915705808a5dd20295c8c3b2c">this commit</a> for the list of changes but basically now we have</p>
+
+<ul>
+<li>a check that the entity can&rsquo;t contain an empty or null body and title</li>
+<li>if valid, the article is saved in database</li>
+<li>if valid the article saved, which is <code>id</code> is returned</li>
+<li>if non valid a list of why the article is not valid is returned</li>
+</ul>
+
+<p>now you can test your POST in the shell by doing</p>
+
+<pre><code> echo '
+{
+    &quot;body&quot; : &quot;plop2@plop.com&quot;,
+    &quot;title&quot; : &quot;hello&quot;
+}
+' | http POST  http://localhost:8181/app_dev.php/api/articles
+
+</code></pre>
+
+<p>(http is the command provided by <a href="https://github.com/jakubroztocil/httpie">httpie</a> a MUST-HAVE for testing API</p>
+
+<h4 id="toc_10">Important note</h4>
+
+<p>There&rsquo;s actually a much simpler to do, using a technique similar to the one for GET, but
+unfortunately it&rsquo;s late at the time of writing, so I will edit this blog post
+soon to include it</p>
+
+<h3 id="toc_11">Implement PUT /articles/{id}  (editing an existing article)</h3>
+
+<p><code>PUT</code> is the standard way in HTTP to modify (or create) a resource for which you already
+know the URL, in our case to edit, we already know the url, as it is /api/articles/{id}</p>
+
+<p>So it&rsquo;s going to be the same for PUT, which will be a mix between GET and POST</p>
+
+<p>Here it&rsquo;s very simple as we have already created everything in the previous steps,</p>
+
+<p>we let it as an exercise to the reader (or you can directly check on github how it was implemented)</p>
+
+<h3 id="toc_12">Implement DELETE /articles/{id} (delete an existing article)</h3>
+
+<h3 id="toc_13">Conclusion</h3>
+
+<p>Now we know how to create a Full crud which leverage as much as possible the utilities provided
+to us by symfony2 and the FOSRestBundle.</p>
+
+<p>We&rsquo;re also now able to fully manage our database over time using the Doctrine migrations tools</p>
+
+<p>In the next part we will see</p>
+
+<ul>
+<li>How to add functionnal testing</li>
+<li>How to pre-fill the project with fake data</li>
+<li>How to create relationship between Resources (Articles and Comments)</li>
+</ul>
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
