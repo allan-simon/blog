@@ -158,11 +158,18 @@ with this content:
 
 namespace AppBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
-
-class ArticlesController extends FOSRestController
+class ArticlesController
 {
 
+    /**
+     * Note: here the name is important
+     * get => the action is restricted to GET HTTP method
+     * Article => (without s) generate /articles/SOMETHING
+     * Action => standard things for symfony for a controller method which
+     *           generate an output
+     *
+     * it generates so the route GET .../articles/{id}
+     */
     public function getArticleAction($id)
     {
         return array('hello' => 'world');
@@ -180,8 +187,7 @@ blog_api_articles:
     name_prefix:  api_articles_
 ```
 
-the fact that we put the controller to inherit from FOSRestController
-and that we've declared in the routing that this controller is of type rest
+the fact that we've declared in the routing that this controller is of type rest
 will make Symfony2 to automatically create the route
 
 `/api/articles/{id}` restricted to the `GET` method
