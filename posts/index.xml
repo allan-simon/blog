@@ -161,11 +161,18 @@ or in HTTP header &amp;ldquo;Accept&amp;rdquo; header set.&lt;/p&gt;
 
 namespace AppBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
-
-class ArticlesController extends FOSRestController
+class ArticlesController
 {
 
+    /**
+     * Note: here the name is important
+     * get =&amp;gt; the action is restricted to GET HTTP method
+     * Article =&amp;gt; (without s) generate /articles/SOMETHING
+     * Action =&amp;gt; standard things for symfony for a controller method which
+     *           generate an output
+     *
+     * it generates so the route GET .../articles/{id}
+     */
     public function getArticleAction($id)
     {
         return array(&#39;hello&#39; =&amp;gt; &#39;world&#39;);
@@ -182,8 +189,7 @@ class ArticlesController extends FOSRestController
     name_prefix:  api_articles_
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;the fact that we put the controller to inherit from FOSRestController
-and that we&amp;rsquo;ve declared in the routing that this controller is of type rest
+&lt;p&gt;the fact that we&amp;rsquo;ve declared in the routing that this controller is of type rest
 will make Symfony2 to automatically create the route&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;/api/articles/{id}&lt;/code&gt; restricted to the &lt;code&gt;GET&lt;/code&gt; method&lt;/p&gt;
