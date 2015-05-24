@@ -7,7 +7,211 @@
     <language>en-us</language>
     
     
-    <updated>Tue, 12 May 2015 22:40:38 CST</updated>
+    <updated>Sat, 23 May 2015 23:31:15 CST</updated>
+    
+    <item>
+      <title>Create a production ready rest api with symfony2 (part 1)</title>
+      <link>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/</link>
+      <pubDate>Sat, 23 May 2015 23:31:15 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/</guid>
+      <description>
+
+&lt;p&gt;What will we cover:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;how to transform a just-started symfony project into a REST-ready project&lt;/li&gt;
+&lt;li&gt;how to configure and use the FOSRestBundle to help us in that task&lt;/li&gt;
+&lt;li&gt;How to use Doctrine migrations to easily transition your database from version N to version N+1&lt;/li&gt;
+&lt;li&gt;how to add functionnal tests to automatically check your API&lt;/li&gt;
+&lt;li&gt;how to configure and use the JMSSerializer to automagically serialize and unseralize your data into json (or xml)&lt;/li&gt;
+&lt;li&gt;How to plug your API to a Oauth2 service&lt;/li&gt;
+&lt;li&gt;mixed in between some generic advices to make your API reality proof&lt;/li&gt;
+&lt;li&gt;practical examples of common &amp;ldquo;tricky things&amp;rdquo; (Image uploading / pagination / association between resources etc.)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Here we suppose you&amp;rsquo;re already familiar with what a REST API &lt;strong&gt;exactly&lt;/strong&gt; means,
+and I really mean the emphasis in &lt;strong&gt;exactly&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;for this I urge you to read these links:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://martinfowler.com/articles/richardsonMaturityModel.html&#34;&gt;http://martinfowler.com/articles/richardsonMaturityModel.html&lt;/a&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http&#34;&gt;http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/interagent/http-api-design&#34;&gt;https://github.com/interagent/http-api-design&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api&#34;&gt;www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;An API is made to resist the test of time, so you can really afford to spend one or
+two hours to carefully read these links.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Example project&lt;/h3&gt;
+
+&lt;p&gt;All the steps described here are applied in this toy project
+&lt;a href=&#34;https://github.com/allan-simon/symfony2-rest-api-example&#34;&gt;https://github.com/allan-simon/symfony2-rest-api-example&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s a Blog-like services with a REST API in json at the end it will permit&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Multiple Authors&lt;/li&gt;
+&lt;li&gt;Possiblity to add/edit/delete articles&lt;/li&gt;
+&lt;li&gt;Possibility to comments&lt;/li&gt;
+&lt;li&gt;Creation of tags to category articles&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;Creating the project&lt;/h3&gt;
+
+&lt;p&gt;To create the project in a repeatable and automated way,
+regardless of your Operating system, we will use this base &lt;a href=&#34;https://github.com/we-bridge/vagrant-ansible-symfony&#34;&gt;https://github.com/we-bridge/vagrant-ansible-symfony&lt;/a&gt;
+to bootstrap our project. It simply wrap the symfony2 installer
+into a Vagrant machine (i.e a virtual machine), so that all the
+additional things such as installing a database, a webserver etc.
+are handled for you, in a dedicated environment so that you&amp;rsquo;re
+not polluating your own machine.&lt;/p&gt;
+
+&lt;p&gt;Make sure you have Vagrant installed and then do&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/we-bridge/vagrant-ansible-symfony.git
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;edit the Vagrantfile as explained in the README, and then&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;it takes some times, and at the end you should be able to open
+the following address &lt;a href=&#34;http://localhost:8080/app/example&#34;&gt;http://localhost:8080/app/example&lt;/a&gt; in your browser.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Adding the FOSRestBundle&lt;/h3&gt;
+
+&lt;p&gt;The FOSRestBundle is a bundle providing a lot of classes and method to create easily
+a REST api, especially as it&amp;rsquo;s part of the third-party bundles recommanded by Symfony
+so in order not to reinvent the wheel we&amp;rsquo;re going to use it.&lt;/p&gt;
+
+&lt;p&gt;The full document on how to install it and using it can be found here &lt;a href=&#34;http://symfony.com/doc/master/bundles/FOSRestBundle/index.html&#34;&gt;http://symfony.com/doc/master/bundles/FOSRestBundle/index.html&lt;/a&gt;
+Here We&amp;rsquo;re going only to talk about the step necessary to get things running&lt;/p&gt;
+
+&lt;p&gt;In the VM , in the symfony2 application directory run&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;composer require friendsofsymfony/rest-bundle
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then commit the &lt;code&gt;composer.json&lt;/code&gt; and &lt;code&gt;composer.lock&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then edit your &lt;code&gt;AppKernel.php&lt;/code&gt; and add the bundle&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+new FOS\RestBundle\FOSRestBundle(),
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and add in your &lt;code&gt;app/config/config.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# app/config/config.yml
+framework:
+    # ...
+    serializer:
+        enabled: true
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Creating our first API call GET /api/articles/{id}&lt;/h3&gt;
+
+&lt;h4 id=&#34;toc_4&#34;&gt;Putting all the API calls in /api&lt;/h4&gt;
+
+&lt;p&gt;Create the file &lt;code&gt;src/AppBundle/Resources/config/api-routing.yml&lt;/code&gt;
+(empty for the moment)&lt;/p&gt;
+
+&lt;p&gt;Then in your &lt;code&gt;app/config/routing.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mvms_api:
+    type:     rest
+    prefix:   /api
+    resource: &amp;quot;@AppBundle/Resources/config/api-routing.yml&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;toc_5&#34;&gt;Create the controller for all the /api/articles calls&lt;/h4&gt;
+
+&lt;h4 id=&#34;toc_6&#34;&gt;Put the framework to automatically seralize as JSON the returned value of Controller&lt;/h4&gt;
+
+&lt;p&gt;Without any change, you still need to create a &lt;code&gt;Response&lt;/code&gt; object etc. you can make it even
+simpler and directly the object or array to serialize by adding this to your &lt;code&gt;app/config/config.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;fos_rest:
+    view:
+        view_response_listener: &#39;force&#39;
+        formats:
+            json: true
+    format_listener:
+        rules:
+            - { path: ^/api, priorities: [ json ], fallback_format: json, prefer_extension: true }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We don&amp;rsquo;t cover it here, but actually it&amp;rsquo;s possible, without modifying your code, in one action
+to generate a JSON output, a XML output, a HTML output, a RSS output depending on the extension set
+or in HTTP header &amp;ldquo;Accept&amp;rdquo; header set.&lt;/p&gt;
+
+&lt;p&gt;so now you can add your controller in &lt;code&gt;src/AppBundle/Controller/ArticlesController.php&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;with this content:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+
+namespace AppBundle\Controller;
+
+use FOS\RestBundle\Controller\FOSRestController;
+
+class ArticlesController extends FOSRestController
+{
+
+    public function getArticleAction($id)
+    {
+        return array(&#39;hello&#39; =&amp;gt; &#39;world&#39;);
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and then in &lt;code&gt;AppBundle/Resources/config/api-routing.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;blog_api_articles:
+    type: rest
+    resource: &amp;quot;@AppBundle/Controller/ArticlesController.php&amp;quot;
+    name_prefix:  api_articles_
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;the fact that we put the controller to inherit from FOSRestController
+and that we&amp;rsquo;ve declared in the routing that this controller is of type rest
+will make Symfony2 to automatically create the route&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;/api/articles/{id}&lt;/code&gt; restricted to the &lt;code&gt;GET&lt;/code&gt; method&lt;/p&gt;
+
+&lt;p&gt;for more information on this consult &lt;a href=&#34;http://symfony.com/doc/master/bundles/FOSRestBundle/5-automatic-route-generation_single-restful-controller.html#define-resource-actions&#34;&gt;http://symfony.com/doc/master/bundles/FOSRestBundle/5-automatic-route-generation_single-restful-controller.html#define-resource-actions&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;so now if you try to access the URL  &lt;code&gt;/api/articles/1&lt;/code&gt; with a &lt;code&gt;GET&lt;/code&gt;  you will get a&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;hello&amp;quot;:&amp;quot;world&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note that if you return an object, it will actually serialize it also automatically, it&amp;rsquo;s not
+only because we&amp;rsquo;re returning an array.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_7&#34;&gt;Conclusion and next part&lt;/h3&gt;
+
+&lt;p&gt;as you can see in some simple step we now have a bundle that in two lines can implement an API
+call.&lt;/p&gt;
+
+&lt;p&gt;In the next part we will see:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;How to create an entity and generate a migration file to update the database schema&lt;/li&gt;
+&lt;li&gt;How to generate a full CRUD API to manipulate this API&lt;/li&gt;
+&lt;li&gt;How to create functionnal test&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Things I&#39;ve learn this week</title>
@@ -1622,34 +1826,6 @@ something     | 0
 something     | 0
 something     | 2
 &lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>A new Blog this time on github and statically generated</title>
-      <link>http://allan-simon.github.io/blog/posts/first/</link>
-      <pubDate>Mon, 09 Feb 2015 23:24:39 CST</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/posts/first/</guid>
-      <description>&lt;p&gt;It has been a long time since I last did a blog the biggest reason behind were:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;it&amp;rsquo;s hard to maintain a server and a blog platform&lt;/li&gt;
-&lt;li&gt;most common web plateforms are blocked in China&lt;/li&gt;
-&lt;li&gt;the other plateforms does not fit my geeky needs&lt;/li&gt;
-&lt;li&gt;non-self hosted platform make it hard to have easy backup of your data&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;So here we are, after reading comments on HackerNews I&amp;rsquo;ve found the project
-&lt;a href=&#34;http://gohugo.io&#34;&gt;Hugo&lt;/a&gt; which permits you to create a static blog the
-advantages I see to it&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;it&amp;rsquo;s all command line and simple to install&lt;/li&gt;
-&lt;li&gt;vim and markdown friendly, posting is just one more markdown file&lt;/li&gt;
-&lt;li&gt;can be hosted on github (which solve the hosting problem)&lt;/li&gt;
-&lt;li&gt;it&amp;rsquo;s text files and git (which solve the backup problem)&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
