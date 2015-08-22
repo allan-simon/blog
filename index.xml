@@ -7,7 +7,71 @@
     <language>en-us</language>
     
     
-    <updated>Sun, 24 May 2015 18:26:09 CST</updated>
+    <updated>Sun, 23 Aug 2015 03:43:56 CST</updated>
+    
+    <item>
+      <title>bug in Vagrant with Virtualbox sharefolder</title>
+      <link>http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/</link>
+      <pubDate>Sun, 23 Aug 2015 03:43:56 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/</guid>
+      <description>
+
+&lt;h2 id=&#34;toc_0&#34;&gt;The problem: serving static files&lt;/h2&gt;
+
+&lt;p&gt;The problem will affect you if you try to serve static files
+from your vagrant folder if you use the default from virtualbox&lt;/p&gt;
+
+&lt;p&gt;For example you got your nginx or apache to serve css files
+and when you update them, they don&amp;rsquo;t get updated, and sometimes
+they even come out with some garbage bytes at the end of it&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;The reason, a long standing bug in virtual box&lt;/h2&gt;
+
+&lt;p&gt;after reading &lt;a href=&#34;https://github.com/mitchellh/vagrant/issues/351&#34;&gt;this bug report&lt;/a&gt; in vagrant repository&lt;/p&gt;
+
+&lt;p&gt;I&amp;rsquo;ve found that the underlying bug is from virtualbox, bug which has been reported &lt;a href=&#34;https://www.virtualbox.org/ticket/12597&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;The solutions: deactivate send or switch of sharefolder type&lt;/h2&gt;
+
+&lt;p&gt;If you use Nginx or apache you can just followed the &lt;a href=&#34;https://docs.vagrantup.com/v2/synced-folders/virtualbox.html&#34;&gt;official workaround&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sendfile off;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In Apache:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;EnableSendfile Off
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you are like me and you&amp;rsquo;re serving your files from go then you have no
+other choice than to swithc the sharefolder type, nfs for Unix-ish OS and
+SMB for windows&lt;/p&gt;
+
+&lt;p&gt;A colleague of mine made this to have a transparent switch for your developers&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def host_box_is_unixy?
+  (RUBY_PLATFORM !~ /cygwin|mswin|mingw|bccwin|wince|emx/)
+end
+
+
+Vagrant.configure(2) do |config|
+
+   # your stuffs
+
+  if host_box_is_unixy?
+    config.vm.synced_folder &amp;quot;./&amp;quot;, &amp;quot;/vagrant&amp;quot;, type: &amp;quot;nfs&amp;quot;
+  else
+    config.vm.synced_folder &amp;quot;./&amp;quot;, &amp;quot;/vagrant&amp;quot;, type: &amp;quot;smb&amp;quot;, mount_options: [&#39;ip=192.168.50.1&#39;] #host side of :private_network
+    config.vm.network &amp;quot;private_network&amp;quot;, ip: &amp;quot;192.168.50.12&amp;quot;
+  end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;NFS and SMB sharefolder don&amp;rsquo;t have this bug so you should be fine with that&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD</title>
@@ -2216,34 +2280,6 @@ to commit your token on the git of your project/company&lt;/p&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/composer/composer/issues/3542&#34;&gt;composer&amp;rsquo;s github&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/blog/1509-personal-api-tokens&#34;&gt;github&amp;rsquo;s blog&lt;/a&gt; More details about Github token&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Install docker on ubuntu 12.04</title>
-      <link>http://allan-simon.github.io/blog/posts/install-docker-on-ubuntu-12.04/</link>
-      <pubDate>Tue, 10 Feb 2015 14:14:49 CST</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/posts/install-docker-on-ubuntu-12.04/</guid>
-      <description>&lt;p&gt;This article is a shameless summary from &lt;a href=&#34;http://compositecode.com/2013/11/11/getting-docker-installed-on-ubuntu-12-04-lts/&#34;&gt;http://compositecode.com&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;the steps are:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Updating your kernel to 3.8+ (requires a reboot)&lt;/li&gt;
-&lt;li&gt;Add the docker repository&lt;/li&gt;
-&lt;li&gt;Installing the package&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get install linux-image-generic-lts-raring linux-headers-generic-lts-raring
-sudo reboot
-sudo sh -c &amp;quot;wget -qO- https://get.docker.io/gpg | apt-key add -&amp;quot;
-sudo sh -c &amp;quot;echo deb http://get.docker.io/ubuntu docker main &amp;gt; /etc/apt/sources.list.d/docker.list&amp;quot;
-sudo apt-get update
-sudo apt-get install lxc-docker
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;And now you should be able to get docker working&lt;/p&gt;
 </description>
     </item>
     
