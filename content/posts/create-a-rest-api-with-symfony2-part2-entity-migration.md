@@ -33,7 +33,6 @@ as sometimes, especially when you change the configuration files, the production
 
 for the moment we will limit ourselves to one entity `Article` which will contain for the moment only:
 
-
   * an id
   * a title => that can't be blank
   * a body => which is a very long text and can't be blank
