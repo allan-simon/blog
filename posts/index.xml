@@ -81,7 +81,7 @@ Vagrant.configure(2) do |config|
       <guid>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/</guid>
       <description>
 
-&lt;p&gt;Update 23 November 2015: Corrected some typo, and updated bundles versions for Doctrine&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Update 23 November 2015&lt;/strong&gt;: Corrected some typo, and updated bundles versions for Doctrine&lt;/p&gt;
 
 &lt;p&gt;In the &lt;a href=&#34;http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/&#34;&gt;first part&lt;/a&gt; we&amp;rsquo;ve seen how to
 create the base of a symfony2 project used to generate a REST Api.&lt;/p&gt;
