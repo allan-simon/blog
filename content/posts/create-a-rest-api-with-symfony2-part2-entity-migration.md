@@ -5,15 +5,17 @@ title = "create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD"
 
 +++
 
+Update 23 November 2015: Corrected some typo, and updated bundles versions for Doctrine
+
 In the [first part](http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/) we've seen how to
 create the base of a symfony2 project used to generate a REST Api.
 
 In this part we're going to see
 
-    * How to use the basics of JMSSerializer to serialize Entity objects
-    * How to link our API with a database
-    * How to create migration files to easily manage our datase over time and colleagues
-    * and how to generate a full [CRUD (create/read/update/delete)](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) with form checking
+  * How to use the basics of JMSSerializer to serialize Entity objects
+  * How to link our API with a database
+  * How to create migration files to easily manage our datase over time and colleagues
+  * and how to generate a full [CRUD (create/read/update/delete)](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) with form checking
 
 
 #### Very important Note /!\ (can save you hours of debugging):
@@ -85,11 +87,12 @@ class Article
 
     // Note: at the opposite of the bad habits contracted by those coming
     // from the Java world we don't generate all the setters and getters
-    // brainlessly, otherwise you can simply put the properties as public...
+    // brainlessly, otherwise you can simply put the properties as
+    // public...
     // By not creating them we're sure:
     // that nobody can set the id
-    // that we understand why and how we need to add getter and or setter of
-    // a property
+    // that we understand why and how we need to add getter and or
+    // setter of a property
 }
 ```
 
@@ -115,7 +118,9 @@ So now we can update our controller to generate an article instead
 
 Now if you refresh the page you will an error 500
 
-"message":"Could not normalize object of type AppBundle\\Entity\\Article"
+```
+    "message":"Could not normalize object of type AppBundle\\Entity\\Article"
+```
 
 it's because the very basic serializer of Symfony2 does not know how
 to serialize an Entity object. For that we would need to have some Normalizer
@@ -134,6 +139,9 @@ you may need to increase the RAM of the virtual machine temporary
 to do this add the lines:
 
 ```
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+  end
 
 ```
 
@@ -225,7 +233,7 @@ if you open the file you will it contains a SQL request, you can apply it by doi
 php app/console doctrine:migrations:migrate
 ```
 
-Note: from now that's the only two commands you need to update your databases 99%, if you need to do additional SQL request, you can always edit the file **BEFORE** committing it AND before applying it, and on the other sides, your colleagues only need to run the migrate command.
+Note: from now that's the only two commands you need to update your databases 99% of the time. If you need to do additional SQL request, you can always edit the file **BEFORE** committing it AND before applying it, and on the other sides, your colleagues only need to run the migrate command.
 
 Note2: the migrate command can be run safely as many times as you want, so it can be run everytime you have a doubt that your database schema is up to date.
 
@@ -330,7 +338,7 @@ for this you can retrieve it by doing
      }
 ```
 
-The `getRepository('AppBundle:Article') is used to retrieve the Repository, which is the object used to generate the SQL request for you, in order to retrieve data, there's one repository by table/class, in order to get the right one easily, you can simply use the string `BundleName:ClassName` so in our case `AppBundle:Article`
+The `getRepository('AppBundle:Article')` is used to retrieve the Repository, which is the object used to generate the SQL request for you, in order to retrieve data, there's one repository by table/class, in order to get the right one easily, you can simply use the string `BundleName:ClassName` so in our case `AppBundle:Article`
 
 Then the `find` method is used to take an id, and retrieve one element, or null if it does not exists
 
