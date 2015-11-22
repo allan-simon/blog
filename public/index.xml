@@ -212,7 +212,6 @@ to do this add the lines:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;  config.vm.provider &amp;quot;virtualbox&amp;quot; do |v| 
     v.memory = 2048
   end 
-
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;and then run &lt;code&gt;vagrant reload&lt;/code&gt; (it will restart the virtual machine)&lt;/p&gt;
