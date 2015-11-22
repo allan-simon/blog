@@ -139,9 +139,9 @@ you may need to increase the RAM of the virtual machine temporary
 to do this add the lines:
 
 ```
-  config.vm.provider "virtualbox" do |v|
+  config.vm.provider "virtualbox" do |v| 
     v.memory = 2048
-  end
+  end 
 
 ```
 
@@ -198,8 +198,8 @@ In order to install it, you need to edit the composer.json and add this two line
 
 
 ```
-        "doctrine/migrations": "1.0.*@dev",
-        "doctrine/doctrine-migrations-bundle": "1.0.*"
+        "doctrine/migrations": "~1.1",
+        "doctrine/doctrine-migrations-bundle": "~1.1"
 ```
 
 and then run `composer update`
