@@ -5,7 +5,7 @@ title = "create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD"
 
 +++
 
-Update 23 November 2015: Corrected some typo, and updated bundles versions for Doctrine
+**Update 23 November 2015**: Corrected some typo, and updated bundles versions for Doctrine
 
 In the [first part](http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/) we've seen how to
 create the base of a symfony2 project used to generate a REST Api.
