@@ -81,16 +81,19 @@ Vagrant.configure(2) do |config|
       <guid>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/</guid>
       <description>
 
+&lt;p&gt;Update 23 November 2015: Corrected some typo, and updated bundles versions for Doctrine&lt;/p&gt;
+
 &lt;p&gt;In the &lt;a href=&#34;http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/&#34;&gt;first part&lt;/a&gt; we&amp;rsquo;ve seen how to
 create the base of a symfony2 project used to generate a REST Api.&lt;/p&gt;
 
 &lt;p&gt;In this part we&amp;rsquo;re going to see&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;* How to use the basics of JMSSerializer to serialize Entity objects
-* How to link our API with a database
-* How to create migration files to easily manage our datase over time and colleagues
-* and how to generate a full [CRUD (create/read/update/delete)](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) with form checking
-&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;How to use the basics of JMSSerializer to serialize Entity objects&lt;/li&gt;
+&lt;li&gt;How to link our API with a database&lt;/li&gt;
+&lt;li&gt;How to create migration files to easily manage our datase over time and colleagues&lt;/li&gt;
+&lt;li&gt;and how to generate a full &lt;a href=&#34;https://en.wikipedia.org/wiki/Create,_read,_update_and_delete&#34;&gt;CRUD (create/read/update/delete)&lt;/a&gt; with form checking&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h4 id=&#34;toc_0&#34;&gt;Very important Note /!\ (can save you hours of debugging):&lt;/h4&gt;
 
@@ -160,11 +163,12 @@ class Article
 
     // Note: at the opposite of the bad habits contracted by those coming
     // from the Java world we don&#39;t generate all the setters and getters
-    // brainlessly, otherwise you can simply put the properties as public...
+    // brainlessly, otherwise you can simply put the properties as
+    // public...
     // By not creating them we&#39;re sure:
     // that nobody can set the id
-    // that we understand why and how we need to add getter and or setter of
-    // a property
+    // that we understand why and how we need to add getter and or
+    // setter of a property
 }
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -187,7 +191,8 @@ know it&amp;rsquo;s called &lt;code&gt;an annotation&lt;/code&gt; and they come 
 
 &lt;p&gt;Now if you refresh the page you will an error 500&lt;/p&gt;
 
-&lt;p&gt;&amp;ldquo;message&amp;rdquo;:&amp;ldquo;Could not normalize object of type AppBundle\Entity\Article&amp;rdquo;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    &amp;quot;message&amp;quot;:&amp;quot;Could not normalize object of type AppBundle\\Entity\\Article&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;it&amp;rsquo;s because the very basic serializer of Symfony2 does not know how
 to serialize an Entity object. For that we would need to have some Normalizer
@@ -204,7 +209,10 @@ with a Serializer on steroid named JMSSerializer, its documentation being &lt;a 
 &lt;p&gt;you may need to increase the RAM of the virtual machine temporary
 to do this add the lines:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;
+&lt;pre&gt;&lt;code&gt;  config.vm.provider &amp;quot;virtualbox&amp;quot; do |v| 
+    v.memory = 2048
+  end 
+
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;and then run &lt;code&gt;vagrant reload&lt;/code&gt; (it will restart the virtual machine)&lt;/p&gt;
@@ -286,7 +294,7 @@ Generated new migration class to &amp;quot;/vagrant/MyApplication/app/DoctrineMi
 &lt;pre&gt;&lt;code&gt;php app/console doctrine:migrations:migrate
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Note: from now that&amp;rsquo;s the only two commands you need to update your databases 99%, if you need to do additional SQL request, you can always edit the file &lt;strong&gt;BEFORE&lt;/strong&gt; committing it AND before applying it, and on the other sides, your colleagues only need to run the migrate command.&lt;/p&gt;
+&lt;p&gt;Note: from now that&amp;rsquo;s the only two commands you need to update your databases 99% of the time. If you need to do additional SQL request, you can always edit the file &lt;strong&gt;BEFORE&lt;/strong&gt; committing it AND before applying it, and on the other sides, your colleagues only need to run the migrate command.&lt;/p&gt;
 
 &lt;p&gt;Note2: the migrate command can be run safely as many times as you want, so it can be run everytime you have a doubt that your database schema is up to date.&lt;/p&gt;
 
@@ -380,7 +388,7 @@ class ArticlesController extends FOSRestController
      }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;The &lt;code&gt;getRepository(&#39;AppBundle:Article&#39;) is used to retrieve the Repository, which is the object used to generate the SQL request for you, in order to retrieve data, there&#39;s one repository by table/class, in order to get the right one easily, you can simply use the string&lt;/code&gt;BundleName:ClassName&lt;code&gt;so in our case&lt;/code&gt;AppBundle:Article`&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;getRepository(&#39;AppBundle:Article&#39;)&lt;/code&gt; is used to retrieve the Repository, which is the object used to generate the SQL request for you, in order to retrieve data, there&amp;rsquo;s one repository by table/class, in order to get the right one easily, you can simply use the string &lt;code&gt;BundleName:ClassName&lt;/code&gt; so in our case &lt;code&gt;AppBundle:Article&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;Then the &lt;code&gt;find&lt;/code&gt; method is used to take an id, and retrieve one element, or null if it does not exists&lt;/p&gt;
 
