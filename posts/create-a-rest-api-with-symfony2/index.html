@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> Create a production ready rest api with symfony2 (part 1) &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>Create a production ready rest api with symfony2 (part 1)</h1>
+  <span class="post-date">Sat, May 23, 2015</span>
+      
+
+<p>What will we cover:</p>
+
+<ul>
+<li>how to transform a just-started symfony project into a REST-ready project</li>
+<li>how to configure and use the FOSRestBundle to help us in that task</li>
+<li>How to use Doctrine migrations to easily transition your database from version N to version N+1</li>
+<li>how to add functionnal tests to automatically check your API</li>
+<li>how to configure and use the JMSSerializer to automagically serialize and unseralize your data into json (or xml)</li>
+<li>How to plug your API to a Oauth2 service</li>
+<li>mixed in between some generic advices to make your API reality proof</li>
+<li>practical examples of common &ldquo;tricky things&rdquo; (Image uploading / pagination / association between resources etc.)</li>
+</ul>
+
+<p>Here we suppose you&rsquo;re already familiar with what a REST API <strong>exactly</strong> means,
+and I really mean the emphasis in <strong>exactly</strong></p>
+
+<p>for this I urge you to read these links:</p>
+
+<ul>
+<li><a href="http://martinfowler.com/articles/richardsonMaturityModel.html">http://martinfowler.com/articles/richardsonMaturityModel.html</a></li>
+
+<li><p><a href="http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http">http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http</a></p></li>
+
+<li><p><a href="https://github.com/interagent/http-api-design">https://github.com/interagent/http-api-design</a></p></li>
+
+<li><p><a href="www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api">www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api</a></p></li>
+</ul>
+
+<p>An API is made to resist the test of time, so you can really afford to spend one or
+two hours to carefully read these links.</p>
+
+<h3 id="toc_0">Example project</h3>
+
+<p>All the steps described here are applied in this toy project
+<a href="https://github.com/allan-simon/symfony2-rest-api-example">https://github.com/allan-simon/symfony2-rest-api-example</a></p>
+
+<p>It&rsquo;s a Blog-like services with a REST API in json at the end it will permit</p>
+
+<ul>
+<li>Multiple Authors</li>
+<li>Possiblity to add/edit/delete articles</li>
+<li>Possibility to comments</li>
+<li>Creation of tags to category articles</li>
+</ul>
+
+<h3 id="toc_1">Creating the project</h3>
+
+<p>To create the project in a repeatable and automated way,
+regardless of your Operating system, we will use this base <a href="https://github.com/we-bridge/vagrant-ansible-symfony">https://github.com/we-bridge/vagrant-ansible-symfony</a>
+to bootstrap our project. It simply wrap the symfony2 installer
+into a Vagrant machine (i.e a virtual machine), so that all the
+additional things such as installing a database, a webserver etc.
+are handled for you, in a dedicated environment so that you&rsquo;re
+not polluating your own machine.</p>
+
+<p>Make sure you have Vagrant installed and then do</p>
+
+<pre><code>git clone https://github.com/we-bridge/vagrant-ansible-symfony.git
+</code></pre>
+
+<p>edit the Vagrantfile as explained in the README, and then</p>
+
+<pre><code>vagrant up
+</code></pre>
+
+<p>it takes some times, and at the end you should be able to open
+the following address <a href="http://localhost:8080/app/example">http://localhost:8080/app/example</a> in your browser.</p>
+
+<h3 id="toc_2">Adding the FOSRestBundle</h3>
+
+<p>The FOSRestBundle is a bundle providing a lot of classes and method to create easily
+a REST api, especially as it&rsquo;s part of the third-party bundles recommanded by Symfony
+so in order not to reinvent the wheel we&rsquo;re going to use it.</p>
+
+<p>The full document on how to install it and using it can be found here <a href="http://symfony.com/doc/master/bundles/FOSRestBundle/index.html">http://symfony.com/doc/master/bundles/FOSRestBundle/index.html</a>
+Here We&rsquo;re going only to talk about the step necessary to get things running</p>
+
+<p>In the VM , in the symfony2 application directory run</p>
+
+<pre><code>composer require friendsofsymfony/rest-bundle
+</code></pre>
+
+<p>Then commit the <code>composer.json</code> and <code>composer.lock</code></p>
+
+<p>Then edit your <code>AppKernel.php</code> and add the bundle</p>
+
+<pre><code>...
+new FOS\RestBundle\FOSRestBundle(),
+...
+</code></pre>
+
+<p>and add in your <code>app/config/config.yml</code></p>
+
+<pre><code># app/config/config.yml
+framework:
+    # ...
+    serializer:
+        enabled: true
+</code></pre>
+
+<h3 id="toc_3">Creating our first API call GET /api/articles/{id}</h3>
+
+<h4 id="toc_4">Putting all the API calls in /api</h4>
+
+<p>Create the file <code>src/AppBundle/Resources/config/api-routing.yml</code>
+(empty for the moment)</p>
+
+<p>Then in your <code>app/config/routing.yml</code></p>
+
+<pre><code>mvms_api:
+    type:     rest
+    prefix:   /api
+    resource: &quot;@AppBundle/Resources/config/api-routing.yml&quot;
+</code></pre>
+
+<h4 id="toc_5">Create the controller for all the /api/articles calls</h4>
+
+<h4 id="toc_6">Put the framework to automatically seralize as JSON the returned value of Controller</h4>
+
+<p>Without any change, you still need to create a <code>Response</code> object etc. you can make it even
+simpler and directly the object or array to serialize by adding this to your <code>app/config/config.yml</code></p>
+
+<pre><code>fos_rest:
+    view:
+        view_response_listener: 'force'
+        formats:
+            json: true
+    format_listener:
+        rules:
+            - { path: ^/api, priorities: [ json ], fallback_format: json, prefer_extension: true }
+</code></pre>
+
+<p>We don&rsquo;t cover it here, but actually it&rsquo;s possible, without modifying your code, in one action
+to generate a JSON output, a XML output, a HTML output, a RSS output depending on the extension set
+or in HTTP header &ldquo;Accept&rdquo; header set.</p>
+
+<p>so now you can add your controller in <code>src/AppBundle/Controller/ArticlesController.php</code></p>
+
+<p>with this content:</p>
+
+<pre><code>&lt;?php
+
+namespace AppBundle\Controller;
+
+class ArticlesController
+{
+
+    /**
+     * Note: here the name is important
+     * get =&gt; the action is restricted to GET HTTP method
+     * Article =&gt; (without s) generate /articles/SOMETHING
+     * Action =&gt; standard things for symfony for a controller method which
+     *           generate an output
+     *
+     * it generates so the route GET .../articles/{id}
+     */
+    public function getArticleAction($id)
+    {
+        return array('hello' =&gt; 'world');
+    }
+
+}
+</code></pre>
+
+<p>and then in <code>AppBundle/Resources/config/api-routing.yml</code></p>
+
+<pre><code>blog_api_articles:
+    type: rest
+    resource: &quot;@AppBundle/Controller/ArticlesController.php&quot;
+    name_prefix:  api_articles_
+</code></pre>
+
+<p>the fact that we&rsquo;ve declared in the routing that this controller is of type rest
+will make Symfony2 to automatically create the route</p>
+
+<p><code>/api/articles/{id}</code> restricted to the <code>GET</code> method</p>
+
+<p>for more information on this consult <a href="http://symfony.com/doc/master/bundles/FOSRestBundle/5-automatic-route-generation_single-restful-controller.html#define-resource-actions">http://symfony.com/doc/master/bundles/FOSRestBundle/5-automatic-route-generation_single-restful-controller.html#define-resource-actions</a></p>
+
+<p>so now if you try to access the URL  <code>/api/articles/1</code> with a <code>GET</code>  you will get a</p>
+
+<pre><code>{&quot;hello&quot;:&quot;world&quot;}
+</code></pre>
+
+<p>Note that if you return an object, it will actually serialize it also automatically, it&rsquo;s not
+only because we&rsquo;re returning an array.</p>
+
+<h3 id="toc_7">Conclusion and next part</h3>
+
+<p>as you can see in some simple step we now have a bundle that in two lines can implement an API
+call.</p>
+
+<p>In the next part we will see:</p>
+
+<ul>
+<li>How to create an entity and generate a migration file to update the database schema</li>
+<li>How to generate a full CRUD API to manipulate this API</li>
+<li>How to create functionnal test</li>
+</ul>
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>

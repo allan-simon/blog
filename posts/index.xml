@@ -1,0 +1,2295 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Posts on Allan&#39;s blog </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://allan-simon.github.io/blog/posts/index.xml/</link>
+    <language>en-us</language>
+    
+    
+    <updated>Sun, 23 Aug 2015 03:43:56 CST</updated>
+    
+    <item>
+      <title>bug in Vagrant with Virtualbox sharefolder</title>
+      <link>http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/</link>
+      <pubDate>Sun, 23 Aug 2015 03:43:56 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/</guid>
+      <description>
+
+&lt;h2 id=&#34;toc_0&#34;&gt;The problem: serving static files&lt;/h2&gt;
+
+&lt;p&gt;The problem will affect you if you try to serve static files
+from your vagrant folder if you use the default from virtualbox&lt;/p&gt;
+
+&lt;p&gt;For example you got your nginx or apache to serve css files
+and when you update them, they don&amp;rsquo;t get updated, and sometimes
+they even come out with some garbage bytes at the end of it&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;The reason, a long standing bug in virtual box&lt;/h2&gt;
+
+&lt;p&gt;after reading &lt;a href=&#34;https://github.com/mitchellh/vagrant/issues/351&#34;&gt;this bug report&lt;/a&gt; in vagrant repository&lt;/p&gt;
+
+&lt;p&gt;I&amp;rsquo;ve found that the underlying bug is from virtualbox, bug which has been reported &lt;a href=&#34;https://www.virtualbox.org/ticket/12597&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;The solutions: deactivate send or switch of sharefolder type&lt;/h2&gt;
+
+&lt;p&gt;If you use Nginx or apache you can just followed the &lt;a href=&#34;https://docs.vagrantup.com/v2/synced-folders/virtualbox.html&#34;&gt;official workaround&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In Nginx:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sendfile off;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In Apache:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;EnableSendfile Off
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you are like me and you&amp;rsquo;re serving your files from go then you have no
+other choice than to swithc the sharefolder type, nfs for Unix-ish OS and
+SMB for windows&lt;/p&gt;
+
+&lt;p&gt;A colleague of mine made this to have a transparent switch for your developers&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def host_box_is_unixy?
+  (RUBY_PLATFORM !~ /cygwin|mswin|mingw|bccwin|wince|emx/)
+end
+
+
+Vagrant.configure(2) do |config|
+
+   # your stuffs
+
+  if host_box_is_unixy?
+    config.vm.synced_folder &amp;quot;./&amp;quot;, &amp;quot;/vagrant&amp;quot;, type: &amp;quot;nfs&amp;quot;
+  else
+    config.vm.synced_folder &amp;quot;./&amp;quot;, &amp;quot;/vagrant&amp;quot;, type: &amp;quot;smb&amp;quot;, mount_options: [&#39;ip=192.168.50.1&#39;] #host side of :private_network
+    config.vm.network &amp;quot;private_network&amp;quot;, ip: &amp;quot;192.168.50.12&amp;quot;
+  end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;NFS and SMB sharefolder don&amp;rsquo;t have this bug so you should be fine with that&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD</title>
+      <link>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/</link>
+      <pubDate>Sun, 24 May 2015 18:26:09 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/</guid>
+      <description>
+
+&lt;p&gt;Update 23 November 2015: Corrected some typo, and updated bundles versions for Doctrine&lt;/p&gt;
+
+&lt;p&gt;In the &lt;a href=&#34;http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/&#34;&gt;first part&lt;/a&gt; we&amp;rsquo;ve seen how to
+create the base of a symfony2 project used to generate a REST Api.&lt;/p&gt;
+
+&lt;p&gt;In this part we&amp;rsquo;re going to see&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;How to use the basics of JMSSerializer to serialize Entity objects&lt;/li&gt;
+&lt;li&gt;How to link our API with a database&lt;/li&gt;
+&lt;li&gt;How to create migration files to easily manage our datase over time and colleagues&lt;/li&gt;
+&lt;li&gt;and how to generate a full &lt;a href=&#34;https://en.wikipedia.org/wiki/Create,_read,_update_and_delete&#34;&gt;CRUD (create/read/update/delete)&lt;/a&gt; with form checking&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;toc_0&#34;&gt;Very important Note /!\ (can save you hours of debugging):&lt;/h4&gt;
+
+&lt;p&gt;if at any moment you got some strange 500 errors, run&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;php app/console cache:clear
+php app/console cache:clear --env prod
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;as sometimes, especially when you change the configuration files, the production environment will not update directly all the files, creating some weird errors.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;Creating the entity Article&lt;/h3&gt;
+
+&lt;p&gt;for the moment we will limit ourselves to one entity &lt;code&gt;Article&lt;/code&gt; which will contain for the moment only:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;an id&lt;/li&gt;
+&lt;li&gt;a title =&amp;gt; that can&amp;rsquo;t be blank&lt;/li&gt;
+&lt;li&gt;a body =&amp;gt; which is a very long text and can&amp;rsquo;t be blank&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;(we&amp;rsquo;re going to see later how to add more attributes)&lt;/p&gt;
+
+&lt;p&gt;So we&amp;rsquo;re going to create a class in &lt;code&gt;src/AppBundle/Entity/Article.php&lt;/code&gt; (the class representing
+1 article, it&amp;rsquo;s put to singular, so please don&amp;rsquo;t name it ArticleS) That will be used by Doctrine:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity()
+ */
+class Article
+{
+    /**
+     * @var int
+     *
+     * @ORM\Id
+     * @ORM\Column(type=&amp;quot;integer&amp;quot;)
+     */
+    protected $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type=&amp;quot;string&amp;quot;)
+     */
+    protected $title;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type=&amp;quot;string&amp;quot;)
+     */
+    protected $body;
+
+    /**
+     * We&#39;ll see later why $title and $body are put by default to &#39;&#39;
+     */
+    public function __construct($title = &#39;&#39;, $body = &#39;&#39;)
+    {
+
+    }
+
+    // Note: at the opposite of the bad habits contracted by those coming
+    // from the Java world we don&#39;t generate all the setters and getters
+    // brainlessly, otherwise you can simply put the properties as
+    // public...
+    // By not creating them we&#39;re sure:
+    // that nobody can set the id
+    // that we understand why and how we need to add getter and or
+    // setter of a property
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We&amp;rsquo;re going to see soon the use of the &lt;code&gt;@ORM\...&lt;/code&gt;, for the moment you just need to
+know it&amp;rsquo;s called &lt;code&gt;an annotation&lt;/code&gt; and they come from &lt;code&gt;use Doctrine\ORM\Mapping as ORM&lt;/code&gt;
+(hence the ORM at the beginning of the annotation)&lt;/p&gt;
+
+&lt;p&gt;So now we can update our controller to generate an article instead&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;      /**
+       * ....
+       * @return Article
+       */
+      public function getArticleAction($id)
+      {
+          return new Article(&amp;quot;title $id&amp;quot;, &amp;quot;body $id&amp;quot;);
+      }   
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now if you refresh the page you will an error 500&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;quot;message&amp;quot;:&amp;quot;Could not normalize object of type AppBundle\\Entity\\Article&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;it&amp;rsquo;s because the very basic serializer of Symfony2 does not know how
+to serialize an Entity object. For that we would need to have some Normalizer
+as explained here &lt;a href=&#34;http://symfony.com/doc/current/cookbook/serializer.html&#34;&gt;http://symfony.com/doc/current/cookbook/serializer.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;But as we plan to cover more complex example latters, we will go directly
+with a Serializer on steroid named JMSSerializer, its documentation being &lt;a href=&#34;http://jmsyst.com/bundles/JMSSerializerBundle#usage&#34;&gt;there&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;to install it&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; composer require jms/serializer-bundle
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;you may need to increase the RAM of the virtual machine temporary
+to do this add the lines:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  config.vm.provider &amp;quot;virtualbox&amp;quot; do |v| 
+    v.memory = 2048
+  end 
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and then run &lt;code&gt;vagrant reload&lt;/code&gt; (it will restart the virtual machine)&lt;/p&gt;
+
+&lt;p&gt;once done you can activate the bundle in &lt;code&gt;app/AppKernel.php&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    // ...
+    new JMS\SerializerBundle\JMSSerializerBundle(),
+    // ...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And as the FOSRestBundle is already configured internally to look for the existence
+of the JMSSerializer, and to use it in priority of the default symfony2 seralizer
+you don&amp;rsquo;t need to do anything more to get it working.&lt;/p&gt;
+
+&lt;p&gt;Now if you refresh the page you will see&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;title&amp;quot;:&amp;quot;title 1&amp;quot;,
+    &amp;quot;body&amp;quot;:&amp;quot;body 1&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note: the &lt;code&gt;id&lt;/code&gt; property is missing because it is currently set to null, every property
+with the value null will not be seralized. In order to get an id, we need to save first
+the object in database&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Generate a database migration&lt;/h3&gt;
+
+&lt;p&gt;for the moment our database is empty (and existing as it was created during the &lt;code&gt;vagrant up&lt;/code&gt;
+if you check the provisionning folder , one of the file contains a task to create a database)&lt;/p&gt;
+
+&lt;p&gt;So in order to save our Articles in database we&amp;rsquo;re going to need a table&lt;/p&gt;
+
+&lt;p&gt;DON&amp;rsquo;T RUN TO GOOGLE on how to create a table manually, you don&amp;rsquo;t need that, instead we&amp;rsquo;re going to use
+a &lt;code&gt;migration&lt;/code&gt; tool =&amp;gt; Doctrine Migration because:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;it will create automatically the SQL statement from our Entity class&lt;/li&gt;
+&lt;li&gt;it will create a file that our colleagues will be able to replay on their own machine (or in production) without any chance of typo or copy paste&lt;/li&gt;
+&lt;li&gt;it has a mechanism to be sure to not be run twice&lt;/li&gt;
+&lt;li&gt;it also automatically generate the SQL statment in the same file to &amp;ldquo;revert&amp;rdquo; your change if something goes wrong&lt;/li&gt;
+&lt;li&gt;it will always be the same command, regardless on how complicated your database changes are.&lt;/li&gt;
+&lt;li&gt;it knows SQL and the specific database you&amp;rsquo;re using better than you.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The full documentation can be found &lt;a href=&#34;http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In order to install it, you need to edit the composer.json and add this two lines in the &lt;code&gt;require&lt;/code&gt; section&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        &amp;quot;doctrine/migrations&amp;quot;: &amp;quot;1.0.*@dev&amp;quot;,
+        &amp;quot;doctrine/doctrine-migrations-bundle&amp;quot;: &amp;quot;1.0.*&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and then run &lt;code&gt;composer update&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;after that activate the bundle in &lt;code&gt;app/AppKernel.php&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;        new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;then you can create migration file using&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;php app/console doctrine:migrations:diff
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;if everything goes well you should see&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vagrant@vagrant-ubuntu-trusty-64:/vagrant/MyApplication$ php app/console doctrine:migrations:diff 
+Generated new migration class to &amp;quot;/vagrant/MyApplication/app/DoctrineMigrations/Version20150524202209.php&amp;quot; from schema differences.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(the number will vary as it&amp;rsquo;s generated from current date)&lt;/p&gt;
+
+&lt;p&gt;if you got any error message, check in priority your &lt;code&gt;app/config/parameters.yml&lt;/code&gt; to see if the driver is correctly set to &lt;code&gt;pdo_pgsql&lt;/code&gt; and the username password set to &lt;code&gt;vagrant&lt;/code&gt; (or the ones you&amp;rsquo;ve chosen)&lt;/p&gt;
+
+&lt;p&gt;if you open the file you will it contains a SQL request, you can apply it by doing&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;php app/console doctrine:migrations:migrate
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note: from now that&amp;rsquo;s the only two commands you need to update your databases 99% of the time. If you need to do additional SQL request, you can always edit the file &lt;strong&gt;BEFORE&lt;/strong&gt; committing it AND before applying it, and on the other sides, your colleagues only need to run the migrate command.&lt;/p&gt;
+
+&lt;p&gt;Note2: the migrate command can be run safely as many times as you want, so it can be run everytime you have a doubt that your database schema is up to date.&lt;/p&gt;
+
+&lt;p&gt;Note3: the migrate command will run all the migrations that are not run yet on your machine, regardless on how are missing.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Save an article in database&lt;/h3&gt;
+
+&lt;p&gt;For the sake of the example, for the moment we create the Article entity on the fly at each request, now we&amp;rsquo;re going to persist it in database before serialization (i.e before the &lt;code&gt;return&lt;/code&gt; of the controller) in order to get an Id.&lt;/p&gt;
+
+&lt;p&gt;Of course later we&amp;rsquo;re going to move the Article creation to a dedicated API call&lt;/p&gt;
+
+&lt;p&gt;For that we&amp;rsquo;re going to need the &lt;code&gt;Doctrine&lt;/code&gt; object (i.e the PHP library used to manage database and to map database rows and object,  tables and classes, i.e the &lt;a href=&#34;https://en.wikipedia.org/wiki/Object-relational_mapping&#34;&gt;ORM&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Symfony2 already create this object and link it to the database for us, in order to access to it, we need to make our service inheriting from the the &lt;code&gt;FOSRestController&lt;/code&gt; class like this&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+
+namespace AppBundle\Controller;
+
+use FOS\RestBundle\Controller\FOSRestController;
+
+class ArticlesController extends FOSRestController
+{
+...
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then we can access to the &lt;code&gt;Entity Manager&lt;/code&gt; (i.e the object that take care of saving and keeping in sync the PHP objects and the SQL database) by using &lt;code&gt;$this-&amp;gt;getDoctrine()-&amp;gt;getManager()&lt;/code&gt;, and then saving our object like this&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;      public function getArticleAction($id)
+      {   
+          $article = new Article(&amp;quot;title $id&amp;quot;, &amp;quot;body $id&amp;quot;);
+  
+          $manager = $this-&amp;gt;getDoctrine()-&amp;gt;getManager();
+          // persist ONLY add the object to the list of object to
+          // save
+          $manager-&amp;gt;persist($article);
+          // only flush will actually save in database, this in order
+          // to make it possible to save a lot of object in only one flush
+          // (which is a LOT faster than flushing one by one
+          $manager-&amp;gt;flush();
+  
+          return $article;
+     }
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then if you try to refresh the page &lt;code&gt;/api/articles/1&lt;/code&gt; it will now generate you an error, saying it can&amp;rsquo;t save in database because of the field &lt;code&gt;id&lt;/code&gt; of Article, because we forgot to set it as autoincremented, in order to change that it&amp;rsquo;s extremly simple , add the line &lt;code&gt;* @ORM\GeneratedValue&lt;/code&gt; in the Entity:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;      /*
+       * ....
+       * @ORM\GeneratedValue
+       */
+      protected $id;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and now you can do a &lt;code&gt;diff&lt;/code&gt; and &lt;code&gt;migrate&lt;/code&gt; as explained above.&lt;/p&gt;
+
+&lt;p&gt;Now refresh the page you should see:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;id&amp;quot;:1,&amp;quot;title&amp;quot;:&amp;quot;title 1&amp;quot;,&amp;quot;body&amp;quot;:&amp;quot;body 1&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;if you refesh again, you will see&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;id&amp;quot;:2,&amp;quot;title&amp;quot;:&amp;quot;title 1&amp;quot;,&amp;quot;body&amp;quot;:&amp;quot;body 1&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;this is because we&amp;rsquo;re creating a new Article everytime.&lt;/p&gt;
+
+&lt;p&gt;So let&amp;rsquo;s clean that&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;Retrieve an article from database&lt;/h3&gt;
+
+&lt;h4 id=&#34;toc_5&#34;&gt;The normal way (using the repository)&lt;/h4&gt;
+
+&lt;p&gt;Now that we have some Article in database (accidentally created by our previous code), it&amp;rsquo;s time to clean &lt;code&gt;GET /api/articles/{id}&lt;/code&gt; to actually works as expected&lt;/p&gt;
+
+&lt;p&gt;for this you can retrieve it by doing&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;      public function getArticleAction($id)
+      {   
+          $article = $this
+              -&amp;gt;getDoctrine()
+              -&amp;gt;getRepository(&#39;AppBundle:Article&#39;)
+              -&amp;gt;find($id);
+  
+          return $article;
+     }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;getRepository(&#39;AppBundle:Article&#39;)&lt;/code&gt; is used to retrieve the Repository, which is the object used to generate the SQL request for you, in order to retrieve data, there&amp;rsquo;s one repository by table/class, in order to get the right one easily, you can simply use the string &lt;code&gt;BundleName:ClassName&lt;/code&gt; so in our case &lt;code&gt;AppBundle:Article&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then the &lt;code&gt;find&lt;/code&gt; method is used to take an id, and retrieve one element, or null if it does not exists&lt;/p&gt;
+
+&lt;p&gt;It means that you have to handle the &lt;code&gt;404 not found&lt;/code&gt; yourself (the &lt;code&gt;404&lt;/code&gt; status code bein if you remember your reading of part 1, the code to say that a Resource can&amp;rsquo;t be found)&lt;/p&gt;
+
+&lt;p&gt;for that simply add&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+    public function getArticleAction($id)
+    {   
+        $article = $this
+            -&amp;gt;getDoctrine()
+            -&amp;gt;getRepository(&#39;AppBundle:Article&#39;)
+            -&amp;gt;find($id);
+
+        if (is_null($article)) {
+            throw $this-&amp;gt;createNotFoundException(&#39;No such article&#39;);
+        } 
+  
+        return $article;
+     }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and now checking for a non existing article id will correctly return you a 404&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_6&#34;&gt;The simpler way (using the auto mapping of arguments)&lt;/h4&gt;
+
+&lt;p&gt;As retrieving an object from the id given in parameters is a very common operation, symfony2
+already have something to makes your lifes easier, if instead of giving the parameters &lt;code&gt;$id&lt;/code&gt;
+you directly put the parameters with the type you need, Symfony2 will automatically try to
+find the article with the corresponding id (and return the 404 &lt;strong&gt;BEFORE&lt;/strong&gt; calling your method)&lt;/p&gt;
+
+&lt;p&gt;so now your code will only be:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    public function getArticleAction(Article $article)
+    {
+        return $article
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;much simpler uh ? and the 404 case is still handle&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_7&#34;&gt;Implementing GET /api/articles&lt;/h3&gt;
+
+&lt;p&gt;In order to get all articles, the standard REST way to do that is simply to remove the &lt;code&gt;{id}&lt;/code&gt; part,
+which can directly be done with symfony2 by adding this method &lt;code&gt;getArticlesAction&lt;/code&gt; (notice the S), and using the method &lt;code&gt;findAll()&lt;/code&gt; of the repository,&lt;/p&gt;
+
+&lt;p&gt;the API will then always return an array, either empty, or of Articles, serialized the same way as when you get one&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;      /**
+S&amp;gt;     * retrieve all articles
+       * TODO: add pagination
+       *
+       * @return Article[]
+       */
+      public function getArticlesAction()
+      {
+          $articles = $this
+              -&amp;gt;getDoctrine()
+              -&amp;gt;getRepository(&#39;AppBundle:Article&#39;)
+              -&amp;gt;findAll();
+  
+          return $articles;
+      }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and that&amp;rsquo;s all&lt;/p&gt;
+
+&lt;p&gt;now calling &lt;code&gt;/api/articles&lt;/code&gt; will give you&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[
+    {&amp;quot;id&amp;quot;:1,&amp;quot;title&amp;quot;:&amp;quot;title 1&amp;quot;,&amp;quot;body&amp;quot;:&amp;quot;body 1&amp;quot;},
+    {&amp;quot;id&amp;quot;:2,&amp;quot;title&amp;quot;:&amp;quot;title 1&amp;quot;,&amp;quot;body&amp;quot;:&amp;quot;body 1&amp;quot;}
+]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;toc_8&#34;&gt;Important Note concerning pagination:&lt;/h4&gt;
+
+&lt;p&gt;Pagination being a little more complex topic, we will cover it in a later part
+However if you remember your reading of Part1, pagination belongs to the metadata
+of the resource, so they belongs to the header of the HTTP response, which means
+that when pagination will be implemented, the json returned will still looks like
+that which permit&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;to implement only one parser on client side for list, regardless of paginated or not&lt;/li&gt;
+&lt;li&gt;permit a better flexibility and retro compatibility even if you &amp;ldquo;ooops forgot pagination&amp;rdquo; or you latter decide to remove it to simplify your API&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;toc_9&#34;&gt;Implement POST /articles (creating one new article)&lt;/h3&gt;
+
+&lt;p&gt;Note: of course never use GET to create (or edit) a resource, nor use /articles/create etc.&lt;/p&gt;
+
+&lt;p&gt;The goal is to be to POST a json looking like the entity&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;title&amp;quot;: &amp;quot;your title&amp;quot;,
+    &amp;quot;body&amp;quot;: &amp;quot;your body&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and if everything is ok to get a &lt;code&gt;201&lt;/code&gt; (standard HTTP status code for CREATED) with the created entity&lt;/p&gt;
+
+&lt;p&gt;and if not to get a &lt;code&gt;422&lt;/code&gt; (standard HTTP status code for `the entity is a json, but the application can&amp;rsquo;t understand it as a valid article)&lt;/p&gt;
+
+&lt;p&gt;this time in addition to the &lt;code&gt;postArticlesAction&lt;/code&gt; you need also to create a Form class (in `src/AppBundle/Form/ArticleType.php) that will do the conversion and validation for you&lt;/p&gt;
+
+&lt;p&gt;check &lt;a href=&#34;https://github.com/allan-simon/symfony2-rest-api-example/commit/61c0ca878d82151915705808a5dd20295c8c3b2c&#34;&gt;this commit&lt;/a&gt; for the list of changes but basically now we have&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;a check that the entity can&amp;rsquo;t contain an empty or null body and title&lt;/li&gt;
+&lt;li&gt;if valid, the article is saved in database&lt;/li&gt;
+&lt;li&gt;if valid the article saved, which is &lt;code&gt;id&lt;/code&gt; is returned&lt;/li&gt;
+&lt;li&gt;if non valid a list of why the article is not valid is returned&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;now you can test your POST in the shell by doing&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; echo &#39;
+{
+    &amp;quot;body&amp;quot; : &amp;quot;plop2@plop.com&amp;quot;,
+    &amp;quot;title&amp;quot; : &amp;quot;hello&amp;quot;
+}
+&#39; | http POST  http://localhost:8181/app_dev.php/api/articles
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(http is the command provided by &lt;a href=&#34;https://github.com/jakubroztocil/httpie&#34;&gt;httpie&lt;/a&gt; a MUST-HAVE for testing API&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_10&#34;&gt;Important note&lt;/h4&gt;
+
+&lt;p&gt;There&amp;rsquo;s actually a much simpler to do, using a technique similar to the one for GET, but
+unfortunately it&amp;rsquo;s late at the time of writing, so I will edit this blog post
+soon to include it&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_11&#34;&gt;Implement PUT /articles/{id}  (editing an existing article)&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;PUT&lt;/code&gt; is the standard way in HTTP to modify (or create) a resource for which you already
+know the URL, in our case to edit, we already know the url, as it is /api/articles/{id}&lt;/p&gt;
+
+&lt;p&gt;So it&amp;rsquo;s going to be the same for PUT, which will be a mix between GET and POST&lt;/p&gt;
+
+&lt;p&gt;Here it&amp;rsquo;s very simple as we have already created everything in the previous steps,&lt;/p&gt;
+
+&lt;p&gt;we let it as an exercise to the reader (or you can directly check on github how it was implemented)&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_12&#34;&gt;Implement DELETE /articles/{id} (delete an existing article)&lt;/h3&gt;
+
+&lt;h3 id=&#34;toc_13&#34;&gt;Conclusion&lt;/h3&gt;
+
+&lt;p&gt;Now we know how to create a Full crud which leverage as much as possible the utilities provided
+to us by symfony2 and the FOSRestBundle.&lt;/p&gt;
+
+&lt;p&gt;We&amp;rsquo;re also now able to fully manage our database over time using the Doctrine migrations tools&lt;/p&gt;
+
+&lt;p&gt;In the next part we will see&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;How to add functionnal testing&lt;/li&gt;
+&lt;li&gt;How to pre-fill the project with fake data&lt;/li&gt;
+&lt;li&gt;How to create relationship between Resources (Articles and Comments)&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Create a production ready rest api with symfony2 (part 1)</title>
+      <link>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/</link>
+      <pubDate>Sat, 23 May 2015 23:31:15 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/</guid>
+      <description>
+
+&lt;p&gt;What will we cover:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;how to transform a just-started symfony project into a REST-ready project&lt;/li&gt;
+&lt;li&gt;how to configure and use the FOSRestBundle to help us in that task&lt;/li&gt;
+&lt;li&gt;How to use Doctrine migrations to easily transition your database from version N to version N+1&lt;/li&gt;
+&lt;li&gt;how to add functionnal tests to automatically check your API&lt;/li&gt;
+&lt;li&gt;how to configure and use the JMSSerializer to automagically serialize and unseralize your data into json (or xml)&lt;/li&gt;
+&lt;li&gt;How to plug your API to a Oauth2 service&lt;/li&gt;
+&lt;li&gt;mixed in between some generic advices to make your API reality proof&lt;/li&gt;
+&lt;li&gt;practical examples of common &amp;ldquo;tricky things&amp;rdquo; (Image uploading / pagination / association between resources etc.)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Here we suppose you&amp;rsquo;re already familiar with what a REST API &lt;strong&gt;exactly&lt;/strong&gt; means,
+and I really mean the emphasis in &lt;strong&gt;exactly&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;for this I urge you to read these links:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://martinfowler.com/articles/richardsonMaturityModel.html&#34;&gt;http://martinfowler.com/articles/richardsonMaturityModel.html&lt;/a&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http&#34;&gt;http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/interagent/http-api-design&#34;&gt;https://github.com/interagent/http-api-design&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;a href=&#34;www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api&#34;&gt;www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;An API is made to resist the test of time, so you can really afford to spend one or
+two hours to carefully read these links.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Example project&lt;/h3&gt;
+
+&lt;p&gt;All the steps described here are applied in this toy project
+&lt;a href=&#34;https://github.com/allan-simon/symfony2-rest-api-example&#34;&gt;https://github.com/allan-simon/symfony2-rest-api-example&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s a Blog-like services with a REST API in json at the end it will permit&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Multiple Authors&lt;/li&gt;
+&lt;li&gt;Possiblity to add/edit/delete articles&lt;/li&gt;
+&lt;li&gt;Possibility to comments&lt;/li&gt;
+&lt;li&gt;Creation of tags to category articles&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;Creating the project&lt;/h3&gt;
+
+&lt;p&gt;To create the project in a repeatable and automated way,
+regardless of your Operating system, we will use this base &lt;a href=&#34;https://github.com/we-bridge/vagrant-ansible-symfony&#34;&gt;https://github.com/we-bridge/vagrant-ansible-symfony&lt;/a&gt;
+to bootstrap our project. It simply wrap the symfony2 installer
+into a Vagrant machine (i.e a virtual machine), so that all the
+additional things such as installing a database, a webserver etc.
+are handled for you, in a dedicated environment so that you&amp;rsquo;re
+not polluating your own machine.&lt;/p&gt;
+
+&lt;p&gt;Make sure you have Vagrant installed and then do&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/we-bridge/vagrant-ansible-symfony.git
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;edit the Vagrantfile as explained in the README, and then&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vagrant up
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;it takes some times, and at the end you should be able to open
+the following address &lt;a href=&#34;http://localhost:8080/app/example&#34;&gt;http://localhost:8080/app/example&lt;/a&gt; in your browser.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Adding the FOSRestBundle&lt;/h3&gt;
+
+&lt;p&gt;The FOSRestBundle is a bundle providing a lot of classes and method to create easily
+a REST api, especially as it&amp;rsquo;s part of the third-party bundles recommanded by Symfony
+so in order not to reinvent the wheel we&amp;rsquo;re going to use it.&lt;/p&gt;
+
+&lt;p&gt;The full document on how to install it and using it can be found here &lt;a href=&#34;http://symfony.com/doc/master/bundles/FOSRestBundle/index.html&#34;&gt;http://symfony.com/doc/master/bundles/FOSRestBundle/index.html&lt;/a&gt;
+Here We&amp;rsquo;re going only to talk about the step necessary to get things running&lt;/p&gt;
+
+&lt;p&gt;In the VM , in the symfony2 application directory run&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;composer require friendsofsymfony/rest-bundle
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then commit the &lt;code&gt;composer.json&lt;/code&gt; and &lt;code&gt;composer.lock&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Then edit your &lt;code&gt;AppKernel.php&lt;/code&gt; and add the bundle&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+new FOS\RestBundle\FOSRestBundle(),
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and add in your &lt;code&gt;app/config/config.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# app/config/config.yml
+framework:
+    # ...
+    serializer:
+        enabled: true
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Creating our first API call GET /api/articles/{id}&lt;/h3&gt;
+
+&lt;h4 id=&#34;toc_4&#34;&gt;Putting all the API calls in /api&lt;/h4&gt;
+
+&lt;p&gt;Create the file &lt;code&gt;src/AppBundle/Resources/config/api-routing.yml&lt;/code&gt;
+(empty for the moment)&lt;/p&gt;
+
+&lt;p&gt;Then in your &lt;code&gt;app/config/routing.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mvms_api:
+    type:     rest
+    prefix:   /api
+    resource: &amp;quot;@AppBundle/Resources/config/api-routing.yml&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;toc_5&#34;&gt;Create the controller for all the /api/articles calls&lt;/h4&gt;
+
+&lt;h4 id=&#34;toc_6&#34;&gt;Put the framework to automatically seralize as JSON the returned value of Controller&lt;/h4&gt;
+
+&lt;p&gt;Without any change, you still need to create a &lt;code&gt;Response&lt;/code&gt; object etc. you can make it even
+simpler and directly the object or array to serialize by adding this to your &lt;code&gt;app/config/config.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;fos_rest:
+    view:
+        view_response_listener: &#39;force&#39;
+        formats:
+            json: true
+    format_listener:
+        rules:
+            - { path: ^/api, priorities: [ json ], fallback_format: json, prefer_extension: true }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We don&amp;rsquo;t cover it here, but actually it&amp;rsquo;s possible, without modifying your code, in one action
+to generate a JSON output, a XML output, a HTML output, a RSS output depending on the extension set
+or in HTTP header &amp;ldquo;Accept&amp;rdquo; header set.&lt;/p&gt;
+
+&lt;p&gt;so now you can add your controller in &lt;code&gt;src/AppBundle/Controller/ArticlesController.php&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;with this content:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+
+namespace AppBundle\Controller;
+
+class ArticlesController
+{
+
+    /**
+     * Note: here the name is important
+     * get =&amp;gt; the action is restricted to GET HTTP method
+     * Article =&amp;gt; (without s) generate /articles/SOMETHING
+     * Action =&amp;gt; standard things for symfony for a controller method which
+     *           generate an output
+     *
+     * it generates so the route GET .../articles/{id}
+     */
+    public function getArticleAction($id)
+    {
+        return array(&#39;hello&#39; =&amp;gt; &#39;world&#39;);
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and then in &lt;code&gt;AppBundle/Resources/config/api-routing.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;blog_api_articles:
+    type: rest
+    resource: &amp;quot;@AppBundle/Controller/ArticlesController.php&amp;quot;
+    name_prefix:  api_articles_
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;the fact that we&amp;rsquo;ve declared in the routing that this controller is of type rest
+will make Symfony2 to automatically create the route&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;/api/articles/{id}&lt;/code&gt; restricted to the &lt;code&gt;GET&lt;/code&gt; method&lt;/p&gt;
+
+&lt;p&gt;for more information on this consult &lt;a href=&#34;http://symfony.com/doc/master/bundles/FOSRestBundle/5-automatic-route-generation_single-restful-controller.html#define-resource-actions&#34;&gt;http://symfony.com/doc/master/bundles/FOSRestBundle/5-automatic-route-generation_single-restful-controller.html#define-resource-actions&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;so now if you try to access the URL  &lt;code&gt;/api/articles/1&lt;/code&gt; with a &lt;code&gt;GET&lt;/code&gt;  you will get a&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{&amp;quot;hello&amp;quot;:&amp;quot;world&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note that if you return an object, it will actually serialize it also automatically, it&amp;rsquo;s not
+only because we&amp;rsquo;re returning an array.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_7&#34;&gt;Conclusion and next part&lt;/h3&gt;
+
+&lt;p&gt;as you can see in some simple step we now have a bundle that in two lines can implement an API
+call.&lt;/p&gt;
+
+&lt;p&gt;In the next part we will see:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;How to create an entity and generate a migration file to update the database schema&lt;/li&gt;
+&lt;li&gt;How to generate a full CRUD API to manipulate this API&lt;/li&gt;
+&lt;li&gt;How to create functionnal test&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Things I&#39;ve learn this week</title>
+      <link>http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/</link>
+      <pubDate>Tue, 12 May 2015 22:40:38 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/</guid>
+      <description>
+
+&lt;h3 id=&#34;toc_0&#34;&gt;How to send the unchanged Host header to proxied server with Nginx&lt;/h3&gt;
+
+&lt;p&gt;Imagine you have a first nginx acting as a load balancer with this configuration&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;upstream blue  {
+    ...
+}
+
+upstream green  {
+    ...
+}
+
+server {
+    include /etc/nginx/backend.conf;
+
+    location / {
+        proxy_pass  http://blue;
+        proxy_connect_timeout   5;
+    }
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;if you do like that, with &lt;code&gt;blue&lt;/code&gt; and &lt;code&gt;green&lt;/code&gt; hosting your app, your application
+code will see &amp;ldquo;blue&amp;rdquo; or &amp;ldquo;green&amp;rdquo; as the http Host header, which may cause problem
+when creating absolue URL&lt;/p&gt;
+
+&lt;p&gt;you can override this, and force nginx to send the Host given by the client to
+the proxied server unchanged by adding one line like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    location / {
+        proxy_pass  http://$activeBackend;
+        proxy_set_header Host   $http_host; # &amp;lt;= this line
+        proxy_connect_timeout   5;
+    }
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;How to reload PHP-fpm without restarting it&lt;/h3&gt;
+
+&lt;p&gt;In production you may want to reload php-fpm without restarting it
+in order to avoid downtime.&lt;/p&gt;
+
+&lt;p&gt;You can do this by sending the unix signal &lt;code&gt;SIGUSR2&lt;/code&gt; to the PID of php-fpm&lt;/p&gt;
+
+&lt;p&gt;It may provde useful when&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;updating the php.ini&lt;/li&gt;
+&lt;li&gt;if you to clear the opcache&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>vagrant with ansible provisionning docker containers for symfony2</title>
+      <link>http://allan-simon.github.io/blog/posts/vagrant-with-ansible-provisionning-docker-containers-for-symfony2/</link>
+      <pubDate>Sun, 12 Apr 2015 04:14:20 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/vagrant-with-ansible-provisionning-docker-containers-for-symfony2/</guid>
+      <description>
+
+&lt;p&gt;In this article we&amp;rsquo;re going to cover:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;How to use ansible+docker+vagrant to create a one size for all environment for Symfony2 + Nginx + Postgresql + PHP-fpm&lt;/li&gt;
+&lt;li&gt;How to transition an existing application to fit in that new environment&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This article take the assumption that you have already heard about all the technologies above without being too familiar with them.&lt;/p&gt;
+
+&lt;p&gt;As an example will take the existing Oauth2 server I have created: &lt;a href=&#34;https://github.com/allan-simon/oauth2-symfony2-vagrant-fosuserbundle&#34;&gt;Oauth2Symfony2&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Introduction&lt;/h3&gt;
+
+&lt;p&gt;Recently I&amp;rsquo;ve been reading a lot about Docker, Vagrant and Ansible.
+At my company we&amp;rsquo;re already using vagrant and ansible to create our
+development machines, and as now the continous testing tool is
+using a docker container to run the test, the next step was logically to start
+using docker everywhere, in order to have the same environment from the
+developers machine to production.&lt;/p&gt;
+
+&lt;p&gt;My requirements were the following:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Get a model to split our each of our web projects into a set of
+docker containers, to increase reusability and reproductability&lt;/li&gt;
+&lt;li&gt;Use ansible for provisionning, for its powerful feature while yet
+staying simple.&lt;/li&gt;
+&lt;li&gt;Be able to have one command, the same, to create my dev environment on my linux
+laptop and to create staging / production etc.&lt;/li&gt;
+&lt;li&gt;Still be able to have a Vagrant for the developers on Mac/Windows but just
+as a layer to provide them the linux necessary to have Docker (and ansible)&lt;/li&gt;
+&lt;li&gt;In case of Heisenbug, be able to nuke my environment and recreate quickly
+in a way I&amp;rsquo;m sure to have something clean, while being sure not to have broken
+my computer&lt;/li&gt;
+&lt;li&gt;To works fine with Symfony2 web applications&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Step 1, getting the Docker containers ready&lt;/h2&gt;
+
+&lt;p&gt;For this first try, we&amp;rsquo;re not going to push the logic to its maximun
+and we will keep things simple we&amp;rsquo;re going to have 2 Docker containers&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Postgresql container hosting the database&lt;/li&gt;
+&lt;li&gt;Nginx+PHP-fpm container hosting the application code&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We will put all our dockerfiles in a directory &lt;code&gt;DockerFiles&lt;/code&gt; with
+one subdirectory by container.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Postgresql container&lt;/h3&gt;
+
+&lt;p&gt;The docker repository has already a very nice &lt;a href=&#34;https://registry.hub.docker.com/_/postgres/&#34;&gt;official postgresql container&lt;/a&gt;
+it contains instructions on how to extend it, perfect&lt;/p&gt;
+
+&lt;p&gt;So in &lt;code&gt;DockerFiles/postgres&lt;/code&gt; we now have&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# vim:set ft=dockerfile:
+FROM library/postgres
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here nothing funky, we&amp;rsquo;re just saying our container&amp;rsquo;s image will use
+the official postgres image as a base. As we progress it will be completed with a script to create a database and a database user, but outside of this it currently perfectly fits our needs&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Nginx + PHP-fpm&lt;/h3&gt;
+
+&lt;p&gt;The docker repository is full of container for PHP-fpm with Nginx but I didn&amp;rsquo;t find any which met my needs:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Getting a recent version of PHP (5.5)&lt;/li&gt;
+&lt;li&gt;PHP with enough PHP-modules pre-instaled (php5-redis and php-posgresql)&lt;/li&gt;
+&lt;li&gt;Small image size (we&amp;rsquo;re located in China and 300mo instead of 500mo can means an hour or two saved)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So I started from a the stock Debian Wheezy image, Debian and not ubuntu because that&amp;rsquo;s on what the Postgres image is based, and it will not necessitate to redownload an other full distribution.&lt;/p&gt;
+
+&lt;p&gt;Here&amp;rsquo;s the base docker file we&amp;rsquo;re creating in &lt;code&gt;DockerFiles/Symfony2/&lt;/code&gt;, comments have been added inside&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# vim:set ft=dockerfile:
+FROM debian:wheezy
+
+# so that my colleagues know who to yell at
+# when they will find a problem in it.
+MAINTAINER SIMON Allan &amp;lt;simona@gobeta.com.cn&amp;gt;
+
+# RUN is going to create a new layer, in order to avoid creating
+#     dozen of layers, we chain the command with &amp;amp;&amp;amp;
+#
+# we&#39;re adding packages.dotdeb.org repository to get PHP5.5
+# and activating the backport to get php5-redis
+#
+# once done we install the necessary package
+# curl to later get composer)
+# git to clone non-stable composer packages
+# a huge list of php5 modules to cover future usage
+#
+# at the end we clean all temporary files so that when docker
+# create the layer, it is as slim as possible
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E9C74FEEA2098A6E &amp;amp;&amp;amp; \
+    echo &amp;quot;deb http://packages.dotdeb.org/ wheezy-php55 all&amp;quot; &amp;gt; /etc/apt/sources.list.d/php.list &amp;amp;&amp;amp; \
+    echo &amp;quot;deb http://ftp.debian.org/debian wheezy-backports main contrib non-free&amp;quot; &amp;gt;&amp;gt; /etc/apt/sources.list.d/php.list &amp;amp;&amp;amp; \
+    apt-get update &amp;amp;&amp;amp; \
+    apt-get install -y \
+        curl \
+        git \
+        nginx \
+        php5-fpm \
+        php5-cli \
+        php5-xdebug \
+        php5-imagick \
+        php5-gd \
+        php5-mongo \
+        php5-curl \
+        php5-mcrypt \
+        php5-intl \
+        php5-mysql \
+        php5-sqlite \
+        php5-redis \
+        php5-pgsql \
+    &amp;amp;&amp;amp; rm -rf /var/lib/apt/lists/*
+
+# we directly put composer in the image, so that
+# even in case of China blocking the composer website, the image
+# will still be usable, as this command may fails (thanks great firewall)
+# we put it on a separate RUN, so that we don&#39;t need to run the previous
+# commands again and again in case of failure.
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# our docker image will put this port as &#39;public&#39;, and then people
+# using this image will be able to map it to port on their host machine
+EXPOSE 80
+EXPOSE 443
+
+# a good practice in docker, as the container themselves can be run
+# as demon, is to run the service inside it directly, so that the
+# ouput of the service goes on STDOUT and can be gathered using
+# standard tool (more on that in an other article)
+RUN echo &amp;quot;\ndaemon off;&amp;quot; &amp;gt;&amp;gt; /etc/nginx/nginx.conf
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;Building the Docker images using Ansible&lt;/h3&gt;
+
+&lt;p&gt;For those who don&amp;rsquo;t know &lt;a href=&#34;http://docs.ansible.com/&#34;&gt;Ansible&lt;/a&gt;, it&amp;rsquo;s a tool made to automate all the steps you do in order to setup an environment, be it creating files, installing packages, modifying configuration, making sure a service is started and an other stopped. It works also if the environment is made of several machines scattered over the world, as long as you can SSH to them.&lt;/p&gt;
+
+&lt;p&gt;Here the first goal is to make Ansible build these docker images. Latter we will improve it to start containers based on these images and linking them together.&lt;/p&gt;
+
+&lt;p&gt;Ansible is used by creating what they call a &amp;ldquo;playbook&amp;rdquo;, a playbook is one or several Yaml files describing the tasks to accomplish or the state to reach. Common tasks like installing packages have pre-made modules to make their description short and easy-to-read.&lt;/p&gt;
+
+&lt;p&gt;Before anything make sure you have the latest version of ansible &lt;code&gt;pip install ansible --upgrade&lt;/code&gt;, we assume from now that you have the versio &lt;code&gt;1.9.0.1&lt;/code&gt;. Then at the root of your working directory create a file name &lt;code&gt;playbook.yml&lt;/code&gt; and put that in it&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;---
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: Install Docker-py
+      pip: name=docker-py state=present
+
+    - name: check or build image for postgres
+      docker_image: path=&amp;quot;./DockerFiles/postgres&amp;quot; name=&amp;quot;allansimon/postgres-for-symfony&amp;quot; state=build
+
+    - name: check or build image for symfony2
+      docker_image: path=&amp;quot;./DockerFiles/Symfony2&amp;quot; name=&amp;quot;allansimon/symfony2&amp;quot; state=build
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here we have a very basic playbook that can be applied to every hosts and that will run every tasks using sudo. Then we describe one task (&lt;code&gt;name&lt;/code&gt; is up to you) that will use &lt;code&gt;pip&lt;/code&gt; to install &lt;code&gt;docker-py&lt;/code&gt; if not already present. Docker-py will be needed for ansible to communicate with Docker.&lt;/p&gt;
+
+&lt;p&gt;Then we have two tasks that will build the Dockerfile in &lt;code&gt;path&lt;/code&gt; and will associate it ot a name.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; the &lt;code&gt;docker_image&lt;/code&gt; is marked as deprecated in the Ansible, however the new &lt;code&gt;docker&lt;/code&gt; module has nothing to build Dockerfiles&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Note 2:&lt;/strong&gt; on ubuntu 14.10 I got a bug with the &lt;code&gt;pip&lt;/code&gt; installed by apt and I needed to add these tasks at the beginning&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  tasks:
+    - name: remove pip if installed from apt (fix bug of pip in ubuntu 14.XX)
+      apt: name=python-pip state=absent
+
+    - name: Easy install (fix bug of pip in ubuntu 14.XX)
+      easy_install: name=pip
+    # then the other tasks
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_5&#34;&gt;Modifying our Postgres image to create a database for Symfony&lt;/h3&gt;
+
+&lt;p&gt;Our postgres image is currently very basic, there&amp;rsquo;s postgresql installed inside but no database or user created for our application. Let&amp;rsquo;s fix that.According to the &lt;a href=&#34;https://registry.hub.docker.com/_/postgres/&#34;&gt;documentation&lt;/a&gt; you can add your custom script or SQL query to be launched at the container start by adding your script to the &lt;code&gt;/docker-entrypoint-initdb.d&lt;/code&gt; directory. Let&amp;rsquo;s do that, create a file &lt;code&gt;DockerFiles/postgres/make_db.sh&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;with this content&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#!/bin/bash
+echo &amp;quot;******CREATING DOCKER DATABASE******&amp;quot;
+gosu postgres postgres --single &amp;lt;&amp;lt;- EOSQL
+    CREATE USER &amp;quot;$APP_DB_USER_NAME&amp;quot; WITH PASSWORD &#39;$APP_DB_USER_PASSWORD&#39;;
+    CREATE DATABASE &amp;quot;$APP_DB_NAME&amp;quot; WITH OWNER=&amp;quot;$APP_DB_USER_NAME&amp;quot; ENCODING=&#39;UTF-8&#39;;
+EOSQL
+echo &amp;quot;******DOCKER DATABASE CREATED******&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We&amp;rsquo;re going to see just after where the variables come from.&lt;/p&gt;
+
+&lt;p&gt;and now lets tell docker to add this script inside the image and to make it executable&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# vim:set ft=dockerfile:
+FROM library/postgres
+
+MAINTAINER SIMON Allan &amp;lt;simona@gobeta.com.cn&amp;gt;
+
+ADD make_db.sh /docker-entrypoint-initdb.d/
+RUN chmod +x /docker-entrypoint-initdb.d/make_db.sh 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Et voila! nothing more for the Dockerfile of postgres.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;/!\ One important remark, the file is added once, it means that if you latter modify the file, you need to rebuild the image. For that the &amp;lsquo;easy&amp;rsquo; way I found is to add a blank line in the dockerfile to force it to rebuild, but I guess there&amp;rsquo;s a better way.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_6&#34;&gt;Start a Postgresql container based on our image from Ansible.&lt;/h3&gt;
+
+&lt;p&gt;Now that our image is ready, it&amp;rsquo;s time to start it, add at the end of your &lt;code&gt;playbook.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+    # we define a new task
+    - name: postgresql container
+      # this task use the module docker to manage docker from ansible
+      docker:
+        # it&#39;s going to start a container based on our image
+        image: allansimon/postgres-for-symfony
+        # this specific container will be named app_database
+        name: app_database
+        # if the container does not exist it will be started, if already
+        # started it will be restarted (it was useful while creating
+        # the image
+        state: restarted
+        # we map our local /tmp/postgres to /var/lib/postgresql/data
+        # in the container, this way the database is persisted
+        volumes:
+            - /tmp/postgres:/var/lib/postgresql/data
+        # this precise the environment variable that will be given
+        # to the container with their value
+        env:
+            # this one is needed by the base postgres container
+            # to define a password to postgres user
+            # the explanation about {{ }} notation is coming
+            POSTGRES_PASSWORD: &amp;quot;{{ DB_PASSWORD }}&amp;quot;
+            # here we have the variables used by our make_db.sh script
+            APP_DB_USER_NAME: &amp;quot;{{ APP_DB_USER_NAME }}&amp;quot;
+            APP_DB_USER_PASSWORD: &amp;quot;{{ APP_DB_USER_PASSWORD }}&amp;quot;
+            APP_DB_NAME: &amp;quot;{{ APP_DB_NAME }}&amp;quot;
+
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;{{ }}&lt;/code&gt; notation is for Ansible variables, there&amp;rsquo;s several ways to declare, we&amp;rsquo;re going to see two, that can be used at the same time, either by putting them directly in your &lt;code&gt;playbook.yml&lt;/code&gt; or in a dedicated file. The advatange of the second is that this way you can add this file to your gitignore.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  vars:
+    DB_PASSWORD: postgres
+  vars_files:
+    - external_vars.yml
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and in &lt;code&gt;external_var.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#for symfony
+APP_DB_USER_NAME: symfony_db_user
+APP_DB_USER_PASSWORD: symfony_db_password
+APP_DB_NAME: symfony_db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_7&#34;&gt;Start a Nginx+PHP-fpm container linked to the Postgresql one&lt;/h3&gt;
+
+&lt;p&gt;Now that we have our postgres container started it&amp;rsquo;s time to do the same with our container for Nginx and PHP-fpm it takes the same structure as the task for postgres, with just some little thing in more (explained in comments)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    - name: nginx and php-fpm
+      docker:
+        name: app_webserver
+        image: allansimon/symfony2
+        state: restarted
+        # here we say that the container &#39;app_database&#39; will be linked
+        # to this container, with the local name app_database, i.e all
+        # the env variables of app_database will be accessible from app_webserver
+        # prefixed with `APP_DATABASE_ENV_` as well as the port exposed by
+        # the container (so only the webserver will have access to the db)
+        links:
+            - &amp;quot;app_database:app_database&amp;quot;
+        # Here as we need the webserver to be accessible from the outside
+        # we map our laptop port 8088 to the port 80 of the container
+        ports:
+            - &amp;quot;8088:80&amp;quot;
+        # it is possible to map as many directory as you need
+        # the only restriction is that it must be an asbolute path
+        # hence why we use a variable APP_DIR
+        volumes:
+            - &amp;quot;{{ APP_DIR }}:/var/www&amp;quot;
+            - /tmp/nginx-logs:/var/logs/nginx
+        env:
+            # more on these variables sooon
+            GITHUB_TOKEN : &amp;quot;{{ GITHUB_TOKEN  }}&amp;quot;
+            APP_DB_USER_NAME: &amp;quot;{{ APP_DB_USER_NAME }}&amp;quot;
+            APP_DB_USER_PASSWORD: &amp;quot;{{ APP_DB_USER_PASSWORD }}&amp;quot;
+            APP_DB_NAME: &amp;quot;{{ APP_DB_NAME }}&amp;quot;
+            APP_MAILER_HOST: &amp;quot;{{ APP_MAILER_HOST }}&amp;quot;
+            APP_MAILER_USER: &amp;quot;{{ APP_MAILER_USER }}&amp;quot;
+            APP_MAILER_PASSWORD: &amp;quot;{{ APP_MAILER_PASSWORD }}&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;With that, our Symfony app will have all the information it needs to access to the database, and to be accessed from the outside&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_8&#34;&gt;Finalize the configuration of the Nginx+PHP-fpm image&lt;/h3&gt;
+
+&lt;p&gt;Our two containers are now able to communicate but the same as we needed to create a database to make our postgres container useful, we&amp;rsquo;re going to need to tweak a little our Nginx+PHP-fpm container in order to&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;have a virtualhost that sends file to PHP-fpm&lt;/li&gt;
+&lt;li&gt;get a timezone precised in our php.ini (otherwise symfony2 will refuse
+to work)&lt;/li&gt;
+&lt;li&gt;have our container that run composer install when started&lt;/li&gt;
+&lt;li&gt;get nginx service started as well as php-fpm&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;so we&amp;rsquo;re going to add this at the end of our &lt;code&gt;DockerFiles/Symfony2/Dockerfile&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# we put our self-defined vhost (see below for the content)
+COPY config/vhost.conf /etc/nginx/sites-enabled/default
+
+# we put our additional php configuration and we enable it
+COPY config/php-extra.ini /etc/php5/mods-available/extra.ini
+RUN php5enmod extra
+
+# we copy our script and we make sure it is executable
+COPY entrypoint.sh /root/entrypoint.sh
+RUN chown root:root /root/entrypoint.sh 
+RUN chmod +x /root/entrypoint.sh
+
+# more on that in a latter article
+VOLUME [&amp;quot;/var/www&amp;quot;, &amp;quot;/var/log/nginx/&amp;quot;]
+
+# when our container is started this script will be run
+# (it was not in our postgres dockerfile because the base image already
+# had it.
+ENTRYPOINT [&amp;quot;/root/entrypoint.sh&amp;quot;]
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;now the configuration file themselves&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_9&#34;&gt;DockerFiles/Symfony2/config/vhost.conf&lt;/h4&gt;
+
+&lt;p&gt;This vhost is specifically for symfony2 applications
+you maybe to adapt it if you plan to run other kind
+of php websites.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    server_name localhost;
+
+    root /var/www/web;
+    index index.html index.htm index.php;
+
+    location / {
+        try_files $uri /app.php$is_args$args;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/www;
+    }
+
+    location ~ ^/(app|app_dev|config)\.php(/|$) {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS off;
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;toc_10&#34;&gt;DockerFiles/Symfony2/config/php-extra.ini&lt;/h4&gt;
+
+&lt;p&gt;nothing fancy in it&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;date.timezone = UTC
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;toc_11&#34;&gt;DockerFiles/Symfony2/entrypoint.sh&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;#!/bin/bash
+
+# for development machines
+if [ $DEBUG ]; then
+    echo &amp;quot;xdebug.remote_connect_back=On&amp;quot; &amp;gt;&amp;gt; /etc/php5/fpm/conf.d/20-xdebug.ini
+    echo &amp;quot;xdebug.remote_enable=On&amp;quot; &amp;gt;&amp;gt; /etc/php5/fpm/conf.d/20-xdebug.ini
+fi
+
+cd /var/www
+
+# if no specific command are precised when the container is started:
+if [ -z &amp;quot;$1&amp;quot; ];
+    then
+
+    # if you&#39;re in china and that for some reason
+    # the docker build has failed to download composer.phar...
+    if ! which composer; then
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    fi
+    # variable provided by ansible when launching the docker container
+    mkdir ~/.composer
+    cat &amp;gt; ~/.composer/config.json &amp;lt;&amp;lt;EOS
+{
+    &amp;quot;config&amp;quot;: {
+        &amp;quot;github-oauth&amp;quot;: { &amp;quot;github.com&amp;quot;: &amp;quot;$GITHUB_TOKEN&amp;quot; }
+    }
+}
+EOS
+    # we make sure to start fresh
+    rm app/config/parameters.yml
+    composer install
+    rm -rf app/cache/*
+    php app/console assets:install --symlink web/
+    php app/console c:c
+    php app/console c:w
+    # not pretty ...
+    chmod -R 777 app/logs
+    chmod -R 777 app/cache
+
+    service php5-fpm restart
+    nginx
+else
+    exec &amp;quot;$@&amp;quot;
+fi
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Several things:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We create a config.json for composer to put inside our github token to avoid composer install to hang because we&amp;rsquo;re reached github anonymous limit.&lt;/li&gt;
+&lt;li&gt;We delete the parameters.yml so that we&amp;rsquo;re sure it&amp;rsquo;s recreated everytime, which is important in case we change the environment variables or the parameters.yml.dist&lt;/li&gt;
+&lt;li&gt;we clear and warmup the cache&lt;/li&gt;
+&lt;li&gt;it&amp;rsquo;s a bit hackish , but we make sure the logs and cache directory are writeable by symfony. (I did like this because it seems the application is run with a user that only have a UID but no username, and searching on the internet, different people seems to have different UID)&lt;/li&gt;
+&lt;li&gt;then we start the php5-fpm service (in a perfect docker world, it should be on dedicated container so that we can easily its output)&lt;/li&gt;
+&lt;li&gt;we start nginx as a process in the foreground&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To get your github token, you can take a look at my previous article on &lt;a href=&#34;http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/&#34;&gt;how to generate one to use with composer.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Now our environment is fully ready we&amp;rsquo;re only left with adapting our appliction&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_12&#34;&gt;Adapting our symfony application to fit in&lt;/h3&gt;
+
+&lt;p&gt;Here&amp;rsquo;s there&amp;rsquo;s nothing much to change itself in the code, we simply need to tell Symfony2 to look in priority for the environment variables. The problem is Symfony2 itself looks for variable starting with &lt;code&gt;SYMFONY__&lt;/code&gt; and the second problem is that the &lt;code&gt;parameters.yml&lt;/code&gt; has priority over the environment variables&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;To solve that there&amp;rsquo;s a simple trick, (first make sure your parameters.yml is not versionned), composer.json has a package that can be used to generate your parameters.yml and it can be used to generate it based on environment variables&lt;/p&gt;
+
+&lt;p&gt;Make sure you have in your composer.json&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;quot;require&amp;quot;: {
+    ...
+
+    &amp;quot;incenteev/composer-parameter-handler&amp;quot;: &amp;quot;~2.0&amp;quot;,
+    ...
+}
+...
+&amp;quot;scripts&amp;quot;: {
+    ...
+    &amp;quot;post-install-cmd&amp;quot;: [
+        &amp;quot;Incenteev\\ParameterHandler\\ScriptHandler::buildParameters&amp;quot;,
+        ...
+    ],
+    &amp;quot;post-update-cmd&amp;quot;: [
+        &amp;quot;Incenteev\\ParameterHandler\\ScriptHandler::buildParameters&amp;quot;,
+        ...
+    ]
+},
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then in the &lt;code&gt;extra&lt;/code&gt; section you can add &lt;code&gt;env-map&lt;/code&gt; section to say to which environment variables to use (if present) to generate which parameter of your &lt;code&gt;parameters.yml&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;In our case&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;quot;extra&amp;quot;: {
+        ...
+        &amp;quot;incenteev-parameters&amp;quot;: {
+            &amp;quot;env-map&amp;quot; : {
+                &amp;quot;database_host&amp;quot;: &amp;quot;APP_DATABASE_PORT_5432_TCP_ADDR&amp;quot;,
+                &amp;quot;database_port&amp;quot;: &amp;quot;APP_DATABASE_PORT_5432_TCP_PORT&amp;quot;,
+
+                &amp;quot;database_name&amp;quot;: &amp;quot;APP_DB_NAME&amp;quot;,
+                &amp;quot;database_user&amp;quot;: &amp;quot;APP_DB_USER_NAME&amp;quot;,
+                &amp;quot;database_password&amp;quot;: &amp;quot;APP_DB_USER_PASSWORD&amp;quot;,
+
+                &amp;quot;mailer_host&amp;quot;: &amp;quot;APP_MAILER_HOST&amp;quot;,
+                &amp;quot;mailer_user&amp;quot;: &amp;quot;APP_MAILER_USER&amp;quot;,
+                &amp;quot;mailer_password&amp;quot;: &amp;quot;APP_MAILER_PASSWORD&amp;quot;
+            },
+            &amp;quot;file&amp;quot;: &amp;quot;app/config/parameters.yml&amp;quot;
+        },
+        ...
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The two first environment variables come from the variables given by docker to the &lt;code&gt;app_webserver&lt;/code&gt; when linking with &lt;code&gt;app_database&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_13&#34;&gt;Running everything&lt;/h3&gt;
+
+&lt;p&gt;Now that everything is done you can run your playbook using:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo  ansible-playbook playbook.yml --connection=local -i &amp;quot;[default] localhost,&amp;quot; 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;it tells to run the playbook on your local machine.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_14&#34;&gt;Link it to vagrant&lt;/h3&gt;
+
+&lt;p&gt;All of that works fine if you&amp;rsquo;re on a Linux machine, so for your fellow Mac or Windows colleague you can create this &lt;code&gt;Vagrantfile&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+def host_box_is_unixy?
+  (RUBY_PLATFORM !~ /cygwin|mswin|mingw|bccwin|wince|emx/)
+end
+
+
+Vagrant.configure(&amp;quot;2&amp;quot;) do |config|
+    config.vm.box = &amp;quot;ubuntu/trusty64&amp;quot;
+
+    config.vm.network &amp;quot;forwarded_port&amp;quot;, guest: 80, host: 8080
+    config.vm.network &amp;quot;private_network&amp;quot;, ip: &amp;quot;192.168.50.12&amp;quot;
+
+    if host_box_is_unixy?
+        config.vm.synced_folder &amp;quot;./&amp;quot;, &amp;quot;/vagrant&amp;quot;, type: &amp;quot;nfs&amp;quot;
+    else
+        config.vm.synced_folder &amp;quot;./&amp;quot;, &amp;quot;/vagrant&amp;quot;, type: &amp;quot;smb&amp;quot;, mount_options: [&#39;ip=192.168.50.1&#39;] #host side of :private_network
+    end
+
+
+    config.vm.provision :shell, :inline =&amp;gt; &amp;lt;&amp;lt;-END
+        set -e
+        if ! which ansible-playbook ; then
+            sudo sh -c &amp;quot;wget -qO- https://get.docker.io/gpg | apt-key add -&amp;quot;
+            sudo sh -c &amp;quot;
+                echo deb http://get.docker.io/ubuntu docker main &amp;gt; \
+                /etc/apt/sources.list.d/docker.list
+            &amp;quot;
+            sudo apt-get update
+            sudo apt-get -y install \
+                lxc-docker \
+                python-software-properties \
+                python-pip
+            sudo pip install ansible
+        fi
+        cd /vagrant
+        sudo  ansible-playbook playbook.yml --connection=local -i &amp;quot;[default] localhost,&amp;quot; 
+    END
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;it is not treated in this article but for Symfony2 performance reason on Vagrant, you may want to put the cache and logs folder outside of the share folder.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_15&#34;&gt;Useful commands&lt;/h3&gt;
+
+&lt;h3 id=&#34;toc_16&#34;&gt;Run a command in a given container&lt;/h3&gt;
+
+&lt;p&gt;for example you want to run phpunit&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo docker exec -it app_webserver   /var/www/bin/phpunit -c  /var/www/app
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or if you want to &amp;lsquo;ssh&amp;rsquo; into the machine&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo docker exec -it app_webserver bash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_17&#34;&gt;Get the logs&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo docker logs -f app_webserver   
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_18&#34;&gt;Delete an image&lt;/h3&gt;
+
+&lt;p&gt;Let&amp;rsquo;s say it&amp;rsquo;s 3AM you&amp;rsquo;re trying desperately to modify the Dockerfile of the database but nothing change, so you want to nuke everything and start fresh&lt;/p&gt;
+
+&lt;p&gt;First stop and remove the container using&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo docker stop app_database2
+sudo docker rm app_database2
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;then delete the image itself&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo docker rmi allansimon/postgres-for-symfony
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_19&#34;&gt;Further improvements&lt;/h3&gt;
+
+&lt;p&gt;With that you should have a good starters to have your application running in dockers , while still providing an easy environment to deploy for your developers, but things can be of course furthered improve (I will try to cover them in other articles)&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Integrate it smoothly with your continous-testing system (for example gitlab-ci)&lt;/li&gt;
+&lt;li&gt;Split the containers in smaller ones (for example nginx and php-fpm in separate ones)&lt;/li&gt;
+&lt;li&gt;Put the data in Docker volumes to easily backup your data&lt;/li&gt;
+&lt;li&gt;Have a procedure to easily rollout a new release that include database migrations (using the excellent DoctrineMigration) without stopping the service or breaking things&lt;/li&gt;
+&lt;li&gt;Use kubernetes to manage your running containers to restart them if one crash etc.&lt;/li&gt;
+&lt;li&gt;Make your application scalable by being able to pop-out more instance of the web application and getting it to work nice with a loadbalancer&lt;/li&gt;
+&lt;li&gt;Make your database scalable by using tools like &lt;code&gt;pgpool II&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Be able to have our containers over several physical machines&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;toc_20&#34;&gt;Articles that helped me wrote this one and further reading&lt;/h3&gt;
+
+&lt;h4 id=&#34;toc_21&#34;&gt;About the content of this article&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://docs.ansible.com/docker_module.html&#34;&gt;Ansible documentation on docker&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://docs.ansible.com/docker_image_module.html&#34;&gt;Ansible documentation on docker images&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://patg.net/ansible,docker/2014/06/20/ansible-docker-image/&#34;&gt;How to build docker images with Ansible&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://victorlin.me/posts/2014/08/11/building-docker-image-with-ansible&#34;&gt;Other article on creating docker images with Ansible&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/denderello/dockerizing-symony-applications-symfony-live-berlin-2014&#34;&gt;Dockerizing Symfony Application&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/nevalla/building-high-availability-application-with-docker&#34;&gt;Building HA Application with Docker&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;toc_22&#34;&gt;Further reading&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://devopscube.com/how-to-link-docker-containers-across-hosts-the-ambassador-pattern/&#34;&gt;How to link docker containers accross host&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://getprismatic.com/story/1428327711576?share=MzE2MzYy.MTQyODMyNzcxMTU3Ng.6TZneNzk4ocS2YDOFkjk5AM0r-Y&#34;&gt;Using Apache Mesos to get a production ready environment&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/rajdeep/docker-swarm-introduction?next_slideshow=1&#34;&gt;Docker swarm&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.scoop.it/t/docker-by-docker&#34;&gt;List of articles on Docker&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://docs.ansible.com/playbooks_delegation.html&#34;&gt;Doing rolling update with ansible&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.digitalocean.com/community/tutorials/how-to-horizontally-scale-a-laravel-4-app-with-a-postgresql-database&#34;&gt;How to scale a Laravel application with postgresql&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.slideshare.net/pgodel/symfony-live-nyc-2014-rock-solid-deployment-of-symfony-apps&#34;&gt;Rock solide deployement of Symfony application&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>doctrine2 order by count many to many</title>
+      <link>http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/</link>
+      <pubDate>Thu, 09 Apr 2015 01:44:41 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/</guid>
+      <description>
+
+&lt;p&gt;Today I found a problem quite common but tricky enough for the solution
+to share it with you&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;The problem&lt;/h3&gt;
+
+&lt;p&gt;I have 2 Entities&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;User&lt;/li&gt;
+&lt;li&gt;Article&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;and a &amp;ldquo;likedByUsers&amp;rdquo; Many To Many relationship between both&lt;/p&gt;
+
+&lt;p&gt;Now I would like to get the Articles ordered by number of &amp;lsquo;likes&amp;rsquo;
+for an API call returning a list of Articles&lt;/p&gt;
+
+&lt;p&gt;if you feel smart you can try to find the solution by yourself
+it&amp;rsquo;s an interesting exercise about &amp;lsquo;how much do you know doctrine and SQL&amp;rsquo;&lt;/p&gt;
+
+&lt;p&gt;but let me tell you, the solution is like an Egg of Columbus, once you see
+it it becomes evident, but it was actually not that simple at first.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;The solution&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;// in your repository
+$builder = $this-&amp;gt;createQueryBuilder(&#39;a&#39;);
+    -&amp;gt;select(&#39;COUNT(u) AS HIDDEN nbrLikes&#39;, &#39;a&#39;)
+    -&amp;gt;leftJoin(&#39;a.likedByUsers&#39;, &#39;u&#39;) 
+    -&amp;gt;orderBy(&#39;nbrLikes&#39;, &#39;DESC&#39;)
+    -&amp;gt;groupBy(&#39;a&#39;)
+    -&amp;gt;getQuery()
+    -&amp;gt;getResult()
+;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Step by step&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;-&amp;gt;leftJoin(&#39;a.likedByUsers&#39;, &#39;u&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;as it&amp;rsquo;s a many to many relationship, and as doctrine lazy-load by default
+we need to explicitly tell him we will need the join, and the referenced
+entity (users) will be refered as &lt;code&gt;u&lt;/code&gt; in the other part of the query&lt;/p&gt;
+
+&lt;p&gt;now the interesting point here is the &lt;code&gt;leftJoin&lt;/code&gt;, most PHP developers
+are not familiar with the different type of Join&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;inner join&lt;/code&gt; would have taken only the articles and users who have &lt;strong&gt;At least&lt;/strong&gt; one relationship
+which mean that using this, you will not get back the articles with 0 likes&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;left join&lt;/code&gt; take ALL the row on the left side (so here articles) and the entity on the right will
+be null if there&amp;rsquo;s no relationship, so here that&amp;rsquo;s what we want, as then the &lt;code&gt;COUNT()&lt;/code&gt; will consider norelationship as &lt;code&gt;0&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;    -&amp;gt;groupBy(&#39;a&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;here it&amp;rsquo;s really important to group by the FULL entity and not just &lt;code&gt;a.id&lt;/code&gt;, otherwise SQL
+will complain that your other fields are not inside the GROUP BY (here nothing specific as doctrine,
+it&amp;rsquo;s pure SQL, just that Doctrine makes your life easier by permitting you not to precise
+every single field one by one&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    -&amp;gt;select(&#39;COUNT(u) AS HIDDEN nbrLikes&#39;, &#39;a&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here we have the actual interesting part
+we select a &lt;code&gt;COUNT&lt;/code&gt; in order to be able to use it in the &lt;code&gt;ORDER BY&lt;/code&gt; and also the
+entity article itself, however if we were just doing &lt;code&gt;&#39;COUNT(u) AS nbrLikes&#39; , a&lt;/code&gt;
+then for each result, we would not directly the entity, but an array of two values
+the count and then the entity (which would need additional treatment in my case
+as I&amp;rsquo;m just returning an array of Article to be serialized by the REST bundle).&lt;/p&gt;
+
+&lt;p&gt;That&amp;rsquo;s why we have &lt;code&gt;HIDDEN&lt;/code&gt;, it will tell doctrine to use it for the generated query
+but not to use when creating the result array, so that it returns only the entity&lt;/p&gt;
+
+&lt;p&gt;For those wondering if I only get the entity how to have my API call returning also
+a &lt;code&gt;number_of_likes&lt;/code&gt; in the JSON, I will later make an article about virtual property
+of the JSM Serializer&lt;/p&gt;
+
+&lt;p&gt;Hope you learn something in the process,&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>gitlab ci with docker runner</title>
+      <link>http://allan-simon.github.io/blog/posts/gitlab-ci-with-docker-runner/</link>
+      <pubDate>Sun, 29 Mar 2015 15:05:36 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/gitlab-ci-with-docker-runner/</guid>
+      <description>
+
+&lt;p&gt;In my company we&amp;rsquo;re using &lt;a href=&#34;https://gitlab.com&#34;&gt;Gitlab&lt;/a&gt; for managing our code
+and doing code review. For the last months we&amp;rsquo;ve been standardizing our stack
+on Symfony/Postgresql/php-fpm. Recently we&amp;rsquo;ve started automatizing our tests
+using phpunit. The next step was of course to have a start of continuous
+integration and to be able to run our tests at each Merge request.&lt;/p&gt;
+
+&lt;p&gt;In this article we&amp;rsquo;re going to view&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;How to install gitlab-ci on a separate server than your gitlab instance&lt;/li&gt;
+&lt;li&gt;How to put gitlab-ci behind your company frontal server&lt;/li&gt;
+&lt;li&gt;How to make gitlab-ci run your tests in a Docker container&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;Gitlab-CI in a separate instance&lt;/h2&gt;
+
+&lt;p&gt;To do continous-integration you got plenty of choice, the most popular one being
+&lt;a href=&#34;http://jenkins-ci.org&#34;&gt;jenkinks&lt;/a&gt;. However it seems to be that it is a bit bloated
+and has too much feature that we don&amp;rsquo;t need for the moment.&lt;/p&gt;
+
+&lt;p&gt;On the other side gitlab comes with its own CI system (named Gitlab-ci) that has
+the advantage to be damn simple for the moment and of course pretty much integrated
+to gitlab (no need to create new accounts, build status directly in gitlab etc.)&lt;/p&gt;
+
+&lt;p&gt;In order to install it you can use the &lt;a href=&#34;https://about.gitlab.com/downloads/&#34;&gt;ommibus package&lt;/a&gt;
+which will take care of installing everything from you&lt;/p&gt;
+
+&lt;p&gt;Then in order to have only gitlab-ci you can can follow the step &lt;a href=&#34;https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/gitlab-ci/README.md&#34;&gt;Running Gitlab on its own server&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Gitlab-CI behind your company&amp;rsquo;s frontal server&lt;/h2&gt;
+
+&lt;p&gt;Our company as one public IP under which we host all our services.
+We have then a frontal apache2 (but it could have been a nginx) which proxify
+then the request depending of the hostname. In that case it does not make
+sense for us to still have the Nginx that is installed with the omnibus package&lt;/p&gt;
+
+&lt;p&gt;So in order to deactivate it, in your &lt;code&gt;/etc/gitlab/gitlab.rb&lt;/code&gt; in the Nginx section
+you can add&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;nginx[&#39;enable&#39;] = false
+ci_nginx[&#39;enable&#39;] = false
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and then&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo gitlab-ctl reconfigure 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;then in your frontal you can put a vhost&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;VirtualHost  *:80&amp;gt;
+    ServerName gitlab-ci.example.com
+
+    ProxyRequests off
+    ProxyPreserveHost on
+    ProxyPass / http://LAN_IP_OF_YOUR_GITLAB_CI:8181/
+    ProxyPassReverse / http://LAN_IP_OF_YOUR_GITLAB_CI:8181/
+&amp;lt;/VirtualHost&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(by default gitlab-ci&amp;rsquo;s unicorn listen on port 8181)&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Tell Gitlab-ci to run your test into a docker container&lt;/h2&gt;
+
+&lt;p&gt;Gitlab-ci use what they call a &amp;ldquo;Runner&amp;rdquo; to run your test, it&amp;rsquo;s more
+or less a spare machine in which Gitlab-ci will clone your project
+and run a bash script you&amp;rsquo;ve provided in the Gitlab-ci admin panel&lt;/p&gt;
+
+&lt;p&gt;The goal of this article is not to do a deep introduction to &lt;a href=&#34;https://www.docker.com/&#34;&gt;Docker&lt;/a&gt;
+but basically it&amp;rsquo;s a powerful technology that permits you to run &amp;ldquo;containers&amp;rdquo;.
+You can consider a container as a virtual machine without the virtual part, and restricted
+to Linux. (more or less)&lt;/p&gt;
+
+&lt;p&gt;The container will brings their full advatanges with gitlab-ci as&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;they don&amp;rsquo;t take extra memory when not being runned&lt;/li&gt;
+&lt;li&gt;you can create a new container from a base image in a blink of eyes&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Fortunately for us a Docker image already exists with all the base
+things to have a Gitlab-ci Runner in a container. &lt;a href=&#34;https://github.com/sameersbn/docker-gitlab-ci-runner&#34;&gt;The repository&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;If you have already docker installed you can pull the image doing&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker pull sameersbn/gitlab-ci-runner:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then you need to register your runner to gitlab-ci you can do that with&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p /opt/your-project-runner
+docker run --name your-project-runner -it --rm \
+    -v /opt/your-project-runner:/home/gitlab_ci_runner/data \
+  sameersbn/gitlab-ci-runner:latest app:setup
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;it will ask you some information given to you by your instance of gitlab-ci&lt;/p&gt;
+
+&lt;p&gt;you can then pop a runner by doing&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker run --name your-project-runner -it -d \
+    -v /opt/your-project-runner:/home/gitlab_ci_runner/data \
+  sameersbn/gitlab-ci-runner:latest app:setup
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;you will certainly to customize some stuff on your container
+you can do so by connecting as root to it using&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker exec -it your-project-runner bash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;of course something to keep in mind is that container are meant to be stateless
+which mean that outside of the directories you map with &lt;code&gt;-v&lt;/code&gt; option
+the other information will be deleted when you restart the container&lt;/p&gt;
+
+&lt;p&gt;So if you need to always create the same kind of container, you can create
+your own Runner container by extending this one to fit your needs, like
+it has been done in the &lt;a href=&#34;https://github.com/sameersbn/docker-runner-gitlab&#34;&gt;docker image to run test for gitlab&amp;rsquo;s own source code&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In a next article we will see in details how to create step by step your own
+Gitlab-ci for your php/symfony project&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>symfony create your own third party bundle part 1/4</title>
+      <link>http://allan-simon.github.io/blog/posts/symfony-create-your-own-third-party-bundle/</link>
+      <pubDate>Sat, 28 Mar 2015 21:05:04 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/symfony-create-your-own-third-party-bundle/</guid>
+      <description>
+
+&lt;p&gt;So you&amp;rsquo;ve reached the point where you&amp;rsquo;re reusing the same service accross
+symfony application, again and again and you feel like this could even
+be useful for other people. You decide that it will be great if you could
+do like adults and have your own bundle.&lt;/p&gt;
+
+&lt;p&gt;Here is how to create one from scratch, you can find the repo here &lt;a href=&#34;https://travis-ci.org/we-bridge/OAuth2AccessBundle&#34;&gt;Oauth2AccessBundle&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;we cover these steps:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Creating the base repo in github and composer.json&lt;/li&gt;
+&lt;li&gt;Adding the base Classes&lt;/li&gt;
+&lt;li&gt;Permit users of your bundle to configure it&lt;/li&gt;
+&lt;li&gt;Make your bundle testable&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Create the base repo and composer.json&lt;/h3&gt;
+
+&lt;p&gt;Well for creating the base repo, nothing different from any new repo on github.
+I would however stressed out that you should chose since the beginning a license&lt;/p&gt;
+
+&lt;p&gt;I would recommend either&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The MIT license, the one I personnaly chose, it permits your bundle to be
+used without overthinking even by Companies with lawyer&lt;/li&gt;
+&lt;li&gt;The AGPL license, no the A is not a typo, like the GPL license it does
+oblige people which integrate your bundle into application to make the full
+application also in a GPL-compatible license and to redistribute the modified
+source code with the application itself. HOWEVER, at the difference of the GPL
+it cover also the case of websites/webservices/REST API (for the GPL, it only
+works if the company which has made modification sells the website itself
+to other customers)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;You can of course chose the license your want, but be sure of what they implies.
+(As said for example the GPL will not force people who use and modify your
+bundle in their own website to give you back patches etc.)&lt;/p&gt;
+
+&lt;p&gt;Then add a &lt;code&gt;composer.json&lt;/code&gt; file with that skeleton content&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;name&amp;quot; : &amp;quot;webridge/oauth2-access-bundle&amp;quot;,
+    &amp;quot;type&amp;quot; : &amp;quot;symfony-bundle&amp;quot;,
+    &amp;quot;description&amp;quot; : &amp;quot;Symfony Oauth2 consumer bundle&amp;quot;,
+    &amp;quot;keywords&amp;quot; : [&amp;quot;Symfony&amp;quot;, &amp;quot;Oauth2&amp;quot;],
+    &amp;quot;homepage&amp;quot; : &amp;quot;https://github.com/we-bridge/OAuth2AccessBundle&amp;quot;,
+    &amp;quot;license&amp;quot; : &amp;quot;MIT&amp;quot;,
+    &amp;quot;authors&amp;quot; :
+    [
+        {
+            &amp;quot;name&amp;quot; : &amp;quot;Allan SIMON&amp;quot;,
+            &amp;quot;email&amp;quot; : &amp;quot;allan.simon@supinfo.com&amp;quot;,
+            &amp;quot;homepage&amp;quot; : &amp;quot;http://allan-simon.github.io/blog&amp;quot;,
+            &amp;quot;role&amp;quot; : &amp;quot;Developer&amp;quot;
+        }
+    ],
+    &amp;quot;minimum-stability&amp;quot; : &amp;quot;beta&amp;quot;,
+    &amp;quot;require&amp;quot;: {
+        &amp;quot;php&amp;quot;: &amp;quot;&amp;gt;=5.3.2&amp;quot;
+    },
+    &amp;quot;autoload&amp;quot;: {
+        &amp;quot;psr-0&amp;quot;: { &amp;quot;Webridge\\Oauth2AccessBundle&amp;quot;: &amp;quot;&amp;quot; }
+    },
+    &amp;quot;target-dir&amp;quot; : &amp;quot;Webridge/Oauth2AccessBundle&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;name&lt;/code&gt; part is totally up to you but it needs to be unique accross
+composer packages so most of the time &lt;code&gt;your-name-or-company/your-bundle-name&lt;/code&gt;
+is safe.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;autload&lt;/code&gt; part precise in which namespace your bundle classes will be
+accessed&lt;/p&gt;
+
+&lt;p&gt;Now that we have the very base of our repository, we will see in next
+post how to create a very basic service without configuration.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>migrate down with doctrine migrations</title>
+      <link>http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/</link>
+      <pubDate>Sat, 14 Mar 2015 18:21:01 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/</guid>
+      <description>&lt;p&gt;if you&amp;rsquo;re using Doctrine in your Symfony2 project, you&amp;rsquo;re certainly using the
+excellent &lt;a href=&#34;http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html&#34;&gt;Doctrine Migration Bundle&lt;/a&gt;
+but you may have seen that documentation is not staging clearly how to migrate down&lt;/p&gt;
+
+&lt;p&gt;for that:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;php app/console doctrine:migrations:status
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;take the number in &amp;ldquo;Current Version&amp;rdquo; (format YYYYMMDDHHMMSS)&lt;/p&gt;
+
+&lt;p&gt;and then run&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;php app/console doctrine:migrations:execute YYYYMMDDHHMMSS --down
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;that&amp;rsquo;s all folks !&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>symfony 2.6 tips #1</title>
+      <link>http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/</link>
+      <pubDate>Wed, 11 Mar 2015 22:40:50 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/</guid>
+      <description>
+
+&lt;p&gt;Here a list of tips for symfony 2.6 I&amp;rsquo;ve gathered these days&lt;/p&gt;
+
+&lt;p&gt;###Skip test in phpunit&lt;/p&gt;
+
+&lt;p&gt;Imagine you&amp;rsquo;re rewriting your application to split &amp;lsquo;big&amp;rsquo; pages into
+set of smaller actions. You got your test already written but they
+are going to fail the time you finish the rewrite, and because you&amp;rsquo;re
+in company with tight deadline, you don&amp;rsquo;t have time to adapt the tests
+&amp;ldquo;right here right now&amp;rdquo; several possibilities&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Leave the tests failing until you fix them &lt;code&gt;master&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Delete the test.&lt;/li&gt;
+&lt;li&gt;Put between comments the failing tests.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;All these solutions are suboptimals, instead you can add this line at the beginning of your test method&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;public function testMyTestWhichYouWantToSkip()
+{
+    $this-&amp;gt;markTestSkipped(&amp;quot;message explaining why it&#39;s skipped&amp;quot;);
+    // your test code, unmodified
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;so that it will appear with a &lt;code&gt;S&lt;/code&gt; in the test report, so that you have a reminder that there&amp;rsquo;s something to fix.&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Disable form validation in test&lt;/h3&gt;
+
+&lt;p&gt;You&amp;rsquo;re writing functionnal test and you need to check the case of an form submitted with bogus data (to be sure your server side code is protected against hand-crafted request). By default the form you get in functionnal test will have the same checking rules than the one on server side, so in order to disable checking you can do&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$form[&#39;country&#39;]-&amp;gt;disableValidation()-&amp;gt;select(&#39;Invalid value&#39;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;(Doctrine) don&amp;rsquo;t use findById() when you just mean find()&lt;/h3&gt;
+
+&lt;p&gt;well, the title is self-explaining&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Redmine-cli and redmine API</title>
+      <link>http://allan-simon.github.io/blog/posts/redmine-cli/</link>
+      <pubDate>Wed, 25 Feb 2015 00:08:11 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/redmine-cli/</guid>
+      <description>
+
+&lt;p&gt;I found a tool to manage redmine from the cli, in python:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;pip install redmine-cli&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;then a config file &lt;code&gt;~/.redmine-cli&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[default]
+key=API_KEY_YOU_CAN_SEE_IN_YOUR_ACCOUNT_ON_REDMINE
+my_id=ID_YOU_CAN_ON_YOUR_PROFILE_PAGE
+root_url=HOME_PAGE_OF_REDMINE
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;then you can do&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;redmine open 123&lt;/code&gt; to open the issue 123 in your browser&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redmine issues&lt;/code&gt; to see your issues&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redmine issue 123&lt;/code&gt; to see information about issue 123&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;(it has more options I let you check the doc)&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/yanjost/redmine-cli&#34;&gt;original repo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/allan-simon/redmine-cli&#34;&gt;my fork where I have some features (like updating a ticket&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;(hopefully my modification are in PR on the original repo and will be soon integrated)
+my modification include so far:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;redmine issue 123 long&lt;/code&gt; to see more detailled information about the issue&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redmine update 123 &#39;in progress&#39;&lt;/code&gt; to update the status to &lt;code&gt;in progress&lt;/code&gt; (admitting your redmine has this status)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;The long story behind:&lt;/h3&gt;
+
+&lt;p&gt;As any good Linux user, I love the CLI (no, there&amp;rsquo;s no such thing
+as a &lt;strong&gt;good&lt;/strong&gt; Linux user who does not love the CLI). Starting from
+that, though I appreciate using Redmine to manage features to implement,
+bugs etc. I&amp;rsquo;m not really fan of needing to click here and there,
+especially when the only things I want is&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;know what a Merge request on gitlab referencing the ticket XXX is about&lt;/li&gt;
+&lt;li&gt;see what tickets are assigned to me&lt;/li&gt;
+&lt;li&gt;update a ticket status&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;It becomes even less practical when you want to update a list of ticket
+you can either:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select in the list, while keeping shift pressed, the list of ticket you want to update&lt;/li&gt;
+&lt;li&gt;right click,&lt;/li&gt;
+&lt;li&gt;update the status&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The problem of that technique is that, if you click a little too much on the right,
+on the left etc. you loose your selection, which can be very frustating
+Then you have the second technique&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;click on ticket N&lt;/li&gt;
+&lt;li&gt;click on update&lt;/li&gt;
+&lt;li&gt;update, click on submit&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;each of these steps impliying a page load, no need to tell you how much times
+it takes even for 5 tickets&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;The CLI will always be there for you: redmine-cli&lt;/h3&gt;
+
+&lt;p&gt;For now some month, whenever I&amp;rsquo;m looking for that little tool, the reflex is to
+search for it on github. As I knew there was a Redmine API and that we don&amp;rsquo;t have
+time for a NIH (Not Invented Here) syndrom, it was very likely such a CLI tool
+would already exist.&lt;/p&gt;
+
+&lt;p&gt;I found a several tool, &lt;a href=&#34;https://github.com/diasjorge/redmine-cli&#34;&gt;one in ruby&lt;/a&gt;
+which seems rather complete, but as it was not updated for 2 years, and I didn&amp;rsquo;t felt
+like installing ruby on my computer (I guess it&amp;rsquo;s already install but&amp;hellip;) and it was
+late, so losing 2 minutes to know how to install the project was too much&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ALWAYS PUT CLEAR INSTRUCTION , DUMB PROOF, ON HOW TO INSTALL YOUR TOOL&lt;/li&gt;
+&lt;li&gt;if a project is &amp;ldquo;complete&amp;rdquo; and its the reason why you&amp;rsquo;re not updating it, state it
+so that people know if the project is dead or just &amp;lsquo;in good shape enough but the author is still active&amp;rsquo;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So I found the python project, which was updated in 2014 and
+had clear installation instruction &lt;code&gt;pip install redmine-cli&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Missing feature: redmine API my love&lt;/h3&gt;
+
+&lt;p&gt;while implementing the feature I found that&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;the API call was returning a 200 (without nothing in the body)&lt;/li&gt;
+&lt;li&gt;BUT the status was not updated (though the ticket was showing activity &amp;lsquo;less than a minute ago&amp;rsquo;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;after some research I found &lt;a href=&#34;http://www.redmine.org/boards/2/topics/25920&#34;&gt;that redmine discussion&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;I need to declare the header &lt;code&gt;Application/Json&lt;/code&gt; (normal)&lt;/li&gt;
+&lt;li&gt;It needs to have the &lt;code&gt;status_id&lt;/code&gt; value as a string (and I was giving an integer)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The second point is raging because GUESS WHAT, that integer was given to me BY REDMINE ITSELF !
+So please please when you do an API&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Be consistent, if &lt;code&gt;status_id&lt;/code&gt; is an integer once, it must always be a integer&lt;/li&gt;
+&lt;li&gt;Have a clear documentation, with example&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Form name goes into global scope in javascript</title>
+      <link>http://allan-simon.github.io/blog/posts/form-name-goes-into-global-scope-javascript/</link>
+      <pubDate>Mon, 23 Feb 2015 17:11:21 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/form-name-goes-into-global-scope-javascript/</guid>
+      <description>
+
+&lt;p&gt;An interesting problem a friend of mine discovered today&lt;/p&gt;
+
+&lt;p&gt;Can you spot the problem?&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Le javascript&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;var CreateVersion = (function(){
+    &#39;use strict&#39;;
+
+    var foo = function(text) {
+        console.log(text);
+    };
+
+    return {
+        foo : foo 
+    };
+}());
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_1&#34;&gt;Le HTML&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;form name=&amp;quot;CreateVersion&amp;quot; method=&amp;quot;post&amp;quot; action=&amp;quot;&amp;quot;&amp;gt;
+    &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
+        &amp;lt;label&amp;gt;
+            &amp;lt;span&amp;gt;something&amp;lt;/span&amp;gt;
+            &amp;lt;!--
+                onClick on a span is a bad pratice and will be
+                the object of an other post
+            --&amp;gt;
+            &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;plop&#39;)&amp;quot;&amp;gt;plop/span&amp;gt;
+            &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;prout&#39;)&amp;quot;&amp;gt;prout&amp;lt;/span&amp;gt;
+        &amp;lt;/label&amp;gt;
+        &amp;lt;input
+            id=&amp;quot;CreateVersion_name&amp;quot;
+            name=&amp;quot;CreateVersion[name]&amp;quot;
+            class=&amp;quot;form-control version_name&amp;quot;
+            type=&amp;quot;text&amp;quot;
+        /&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
+        &amp;lt;label&amp;gt;
+            &amp;lt;span&amp;gt;something something&amp;lt;/span&amp;gt;:
+            &amp;lt;span class=&amp;quot;text_length&amp;quot;&amp;gt;0&amp;lt;/span&amp;gt;
+        &amp;lt;/label&amp;gt;
+        &amp;lt;input
+            id=&amp;quot;CreateVersion_articleNotes&amp;quot;
+            name=&amp;quot;CreateVersion[articleNotes]&amp;quot;
+            class=&amp;quot;form-control&amp;quot;
+            type=&amp;quot;text&amp;quot;
+        /&amp;gt;
+    &amp;lt;/div&amp;gt;
+    &amp;lt;hr/&amp;gt;
+    &amp;lt;div&amp;gt;
+        &amp;lt;button
+            type=&amp;quot;submit&amp;quot;
+            id=&amp;quot;CreateVersion_submit&amp;quot;
+            name=&amp;quot;CreateVersion[submit]&amp;quot;
+        &amp;gt;
+            submit
+        &amp;lt;/button&amp;gt;
+    &amp;lt;/div&amp;gt;
+&amp;lt;/form&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;Le erreur&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;TypeError: CreateVersion.foo is not a function
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;No, not in IE6, in last version of Firefox/Chrome&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;Le solution&lt;/h3&gt;
+
+&lt;p&gt;This line&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;lt;form name=&amp;quot;CreateVersion&amp;quot; method=&amp;quot;post&amp;quot; action=&amp;quot;&amp;quot;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;declare a Form with a name &lt;code&gt;CreateVersion&lt;/code&gt; which is exactly the same name as our
+Javascript module, and guess what ?&lt;/p&gt;
+
+&lt;p&gt;The name is exported in the DOM, which that when you do that&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;form name=&amp;quot;Foo&amp;quot;&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then you can do&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;document.Foo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;to access to the DOM node, and in the HTML itself, the &amp;ldquo;document&amp;rdquo; is implicit which
+mean that &amp;ldquo;document.Foo&amp;rdquo; collide with any javascript defined variable &amp;ldquo;Foo&amp;rdquo;&lt;/p&gt;
+
+&lt;p&gt;For more explanation see &lt;a href=&#34;http://stackoverflow.com/questions/1415747/javascript-function-and-form-name-conflict&#34;&gt;this stackoverflow question&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;How to avoid that:&lt;/h3&gt;
+
+&lt;p&gt;Some possibilities:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Make it a coding style policy that module name start contains something &amp;ldquo;javascript only&amp;rdquo; like &lt;code&gt;FooModule&lt;/code&gt; or &lt;code&gt;FooJS&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;put your modules in one big wrapping modules (like &lt;code&gt;MyCorp.Foo&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Workflow publishing blog post with hugo</title>
+      <link>http://allan-simon.github.io/blog/posts/workflow-publishing-blog-post-with-hugo/</link>
+      <pubDate>Fri, 20 Feb 2015 15:03:36 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/workflow-publishing-blog-post-with-hugo/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;ve added some functions in my shell to make it even more convenient
+to write/edit/publish articles with &lt;code&gt;hugo&lt;/code&gt; (just a self reminder)&lt;/p&gt;
+
+&lt;p&gt;so that now I have&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;new_blog_post name-of-your-blog-post&lt;/li&gt;
+&lt;li&gt;publish_blog&lt;/li&gt;
+&lt;li&gt;edit_last_blog_post&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;that can be run from anywhere in my terminal&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;export BLOG_ROOT=~/git/perso/blog
+export BLOG_THEME=hyde
+export GITHUB=git@github.com:allan-simon/blog.git
+
+function new_blog_post {
+    cd $BLOG_ROOT
+    LAST_BLOG_POST=$(hugo new posts/$1.md | cut -d &amp;quot; &amp;quot; -f 1) ;
+    export LAST_BLOG_POST ;
+    $EDITOR $LAST_BLOG_POST
+    cd -
+}
+
+function publish_blog {
+    cd $BLOG_ROOT;
+    hugo --theme=&amp;quot;$BLOG_THEME&amp;quot; --buildDrafts &amp;amp;&amp;amp; \
+    git add -A &amp;amp;&amp;amp;  \
+    git commit -m &amp;quot;Updating site&amp;quot; &amp;amp;&amp;amp; \
+    git push origin master &amp;amp;&amp;amp; \
+    git subtree push --prefix=public $GITHUB gh-pages --squash  &amp;amp;&amp;amp; \
+    echo &amp;quot;published&amp;quot;
+    cd $BLOG_ROOT
+}
+
+function edit_last_blog_post {
+    $EDITOR $LAST_BLOG_POST
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Functionnal tests in symfony2 with authentication</title>
+      <link>http://allan-simon.github.io/blog/posts/functionnal-tests-symfony2-and-authentication/</link>
+      <pubDate>Fri, 20 Feb 2015 14:28:13 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/functionnal-tests-symfony2-and-authentication/</guid>
+      <description>&lt;p&gt;Let&amp;rsquo;s say you have your symfony2 website, all setup correctly with its
+set of functionnal tests using phpunit, and now you start to have
+pages that only authenticated users can access to. My first solution was to
+create a client, make it load the login form, submit some valid credentials
+and then load the actual page to test. It was working fine as the client
+has a storage for cookie, it is acting like an actual browser in that case.&lt;/p&gt;
+
+&lt;p&gt;The problem was that the time to execute the test was much longer, which
+started to become a problem has the test suite was growing.&lt;/p&gt;
+
+&lt;p&gt;The first trick is to follow them method adviced by symfony, which is for the
+test environnement to enable the HTTP Basic Authentication method. For those
+who doesn&amp;rsquo;t know, the HTTP standard comme with a method to authentify a
+user-agent by directly sending the username/password in the HTTP header
+(which goes along the fact that HTTP is aimed to be stateless)&lt;/p&gt;
+
+&lt;p&gt;in your &lt;code&gt;config_test.yml&lt;/code&gt; add this (replace &lt;code&gt;NAME_OF_YOUR_FIREWALL&lt;/code&gt;)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;security:
+    firewalls:
+        NAME_OF_YOUR_FIREWALL:
+            http_basic: ~
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The second trick, to not have to repeat the username/password in all your
+functionnal tests, is to use the &lt;a href=&#34;https://github.com/liip/LiipFunctionalTestBundle&#34;&gt;LiipFunctionnalBundle&lt;/a&gt;
+follow the installation instruction and then make your functionnal test inherit
+from their class, like this&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+//...
+use Liip\FunctionalTestBundle\Test\WebTestCase;
+
+class YourTest extends WebTestCase
+{
+ // your code
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;then you can precise in &lt;code&gt;config_test.yml&lt;/code&gt; your credentials:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;liip_functional_test:
+    authentication:
+        username: &amp;quot;XXXXX&amp;quot;
+        password: &amp;quot;YYYYY&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;finally to create an authenticated client, use this method&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;?php
+//...
+use Liip\FunctionalTestBundle\Test\WebTestCase;
+
+class YourTest extends WebTestCase
+{
+    public testYourFeature()
+    {
+        // true = &amp;quot;authenticated&amp;quot;
+        $client static::makeClient(true);
+        // ...
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Solve composer github api limitation</title>
+      <link>http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/</link>
+      <pubDate>Tue, 10 Feb 2015 18:19:22 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/</guid>
+      <description>
+
+&lt;h3 id=&#34;toc_0&#34;&gt;Could not fetch X enter your GitHub credentials to go over the API rate limit&lt;/h3&gt;
+
+&lt;p&gt;The problem is that composer is retrieving nearly all the packages from github
+using the anonymous access github API. In order to solve it you need to generate
+a token&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;you need a github account (or ask a friend)&lt;/li&gt;
+&lt;li&gt;go on your setting page &lt;a href=&#34;https://github.com/settings/applications&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;click on &lt;code&gt;Generate new token&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;now two possibilities&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_1&#34;&gt;1 - Put this token in one specific project&lt;/h4&gt;
+
+&lt;p&gt;for this simply run&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;composer config -g github-oauth.github.com YOUR_TOKEN
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;php composer.phar config -g github-oauth.github.com YOUR_TOKEN
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(depending on how you installed composer)&lt;/p&gt;
+
+&lt;p&gt;it will add that to your project&amp;rsquo;s composer.json file&lt;/p&gt;
+
+&lt;h4 id=&#34;toc_2&#34;&gt;2 -  Put this token in your global composer configuration&lt;/h4&gt;
+
+&lt;p&gt;If your project is an open-source or company project you may not want
+to commit your token on the git of your project/company&lt;/p&gt;
+
+&lt;p&gt;for this edit the file &lt;code&gt;~/.composer/config.json&lt;/code&gt; and put in it:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    &amp;quot;config&amp;quot;: {
+        &amp;quot;github-oauth&amp;quot;: { &amp;quot;github.com&amp;quot;: &amp;quot;YOUR_TOKEN&amp;quot; }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;that&amp;rsquo;s all folks!&lt;/p&gt;
+
+&lt;p&gt;Source:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://coderwall.com/p/kz4egw/composer-install-github-rate-limiting-work-around&#34;&gt;coderwall.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/composer/composer/issues/3542&#34;&gt;composer&amp;rsquo;s github&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/blog/1509-personal-api-tokens&#34;&gt;github&amp;rsquo;s blog&lt;/a&gt; More details about Github token&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

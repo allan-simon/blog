@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> symfony 2.6 tips #1 &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>symfony 2.6 tips #1</h1>
+  <span class="post-date">Wed, Mar 11, 2015</span>
+      
+
+<p>Here a list of tips for symfony 2.6 I&rsquo;ve gathered these days</p>
+
+<p>###Skip test in phpunit</p>
+
+<p>Imagine you&rsquo;re rewriting your application to split &lsquo;big&rsquo; pages into
+set of smaller actions. You got your test already written but they
+are going to fail the time you finish the rewrite, and because you&rsquo;re
+in company with tight deadline, you don&rsquo;t have time to adapt the tests
+&ldquo;right here right now&rdquo; several possibilities</p>
+
+<ul>
+<li>Leave the tests failing until you fix them <code>master</code>.</li>
+<li>Delete the test.</li>
+<li>Put between comments the failing tests.</li>
+</ul>
+
+<p>All these solutions are suboptimals, instead you can add this line at the beginning of your test method</p>
+
+<pre><code>public function testMyTestWhichYouWantToSkip()
+{
+    $this-&gt;markTestSkipped(&quot;message explaining why it's skipped&quot;);
+    // your test code, unmodified
+}
+</code></pre>
+
+<p>so that it will appear with a <code>S</code> in the test report, so that you have a reminder that there&rsquo;s something to fix.</p>
+
+<h3 id="toc_0">Disable form validation in test</h3>
+
+<p>You&rsquo;re writing functionnal test and you need to check the case of an form submitted with bogus data (to be sure your server side code is protected against hand-crafted request). By default the form you get in functionnal test will have the same checking rules than the one on server side, so in order to disable checking you can do</p>
+
+<pre><code>$form['country']-&gt;disableValidation()-&gt;select('Invalid value');
+</code></pre>
+
+<h3 id="toc_1">(Doctrine) don&rsquo;t use findById() when you just mean find()</h3>
+
+<p>well, the title is self-explaining</p>
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>

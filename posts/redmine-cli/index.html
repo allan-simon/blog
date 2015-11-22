@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> Redmine-cli and redmine API &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>Redmine-cli and redmine API</h1>
+  <span class="post-date">Wed, Feb 25, 2015</span>
+      
+
+<p>I found a tool to manage redmine from the cli, in python:</p>
+
+<p><code>pip install redmine-cli</code></p>
+
+<p>then a config file <code>~/.redmine-cli</code></p>
+
+<pre><code>[default]
+key=API_KEY_YOU_CAN_SEE_IN_YOUR_ACCOUNT_ON_REDMINE
+my_id=ID_YOU_CAN_ON_YOUR_PROFILE_PAGE
+root_url=HOME_PAGE_OF_REDMINE
+</code></pre>
+
+<p>then you can do</p>
+
+<ol>
+<li><code>redmine open 123</code> to open the issue 123 in your browser</li>
+<li><code>redmine issues</code> to see your issues</li>
+<li><code>redmine issue 123</code> to see information about issue 123</li>
+</ol>
+
+<p>(it has more options I let you check the doc)</p>
+
+<ul>
+<li><a href="https://github.com/yanjost/redmine-cli">original repo</a></li>
+<li><a href="https://github.com/allan-simon/redmine-cli">my fork where I have some features (like updating a ticket</a></li>
+</ul>
+
+<p>(hopefully my modification are in PR on the original repo and will be soon integrated)
+my modification include so far:</p>
+
+<ul>
+<li><code>redmine issue 123 long</code> to see more detailled information about the issue</li>
+<li><code>redmine update 123 'in progress'</code> to update the status to <code>in progress</code> (admitting your redmine has this status)</li>
+</ul>
+
+<h3 id="toc_0">The long story behind:</h3>
+
+<p>As any good Linux user, I love the CLI (no, there&rsquo;s no such thing
+as a <strong>good</strong> Linux user who does not love the CLI). Starting from
+that, though I appreciate using Redmine to manage features to implement,
+bugs etc. I&rsquo;m not really fan of needing to click here and there,
+especially when the only things I want is</p>
+
+<ul>
+<li>know what a Merge request on gitlab referencing the ticket XXX is about</li>
+<li>see what tickets are assigned to me</li>
+<li>update a ticket status</li>
+</ul>
+
+<p>It becomes even less practical when you want to update a list of ticket
+you can either:</p>
+
+<ol>
+<li>select in the list, while keeping shift pressed, the list of ticket you want to update</li>
+<li>right click,</li>
+<li>update the status</li>
+</ol>
+
+<p>The problem of that technique is that, if you click a little too much on the right,
+on the left etc. you loose your selection, which can be very frustating
+Then you have the second technique</p>
+
+<ol>
+<li>click on ticket N</li>
+<li>click on update</li>
+<li>update, click on submit</li>
+</ol>
+
+<p>each of these steps impliying a page load, no need to tell you how much times
+it takes even for 5 tickets</p>
+
+<h3 id="toc_1">The CLI will always be there for you: redmine-cli</h3>
+
+<p>For now some month, whenever I&rsquo;m looking for that little tool, the reflex is to
+search for it on github. As I knew there was a Redmine API and that we don&rsquo;t have
+time for a NIH (Not Invented Here) syndrom, it was very likely such a CLI tool
+would already exist.</p>
+
+<p>I found a several tool, <a href="https://github.com/diasjorge/redmine-cli">one in ruby</a>
+which seems rather complete, but as it was not updated for 2 years, and I didn&rsquo;t felt
+like installing ruby on my computer (I guess it&rsquo;s already install but&hellip;) and it was
+late, so losing 2 minutes to know how to install the project was too much</p>
+
+<ul>
+<li>ALWAYS PUT CLEAR INSTRUCTION , DUMB PROOF, ON HOW TO INSTALL YOUR TOOL</li>
+<li>if a project is &ldquo;complete&rdquo; and its the reason why you&rsquo;re not updating it, state it
+so that people know if the project is dead or just &lsquo;in good shape enough but the author is still active&rsquo;</li>
+</ul>
+
+<p>So I found the python project, which was updated in 2014 and
+had clear installation instruction <code>pip install redmine-cli</code></p>
+
+<h3 id="toc_2">Missing feature: redmine API my love</h3>
+
+<p>while implementing the feature I found that</p>
+
+<ul>
+<li>the API call was returning a 200 (without nothing in the body)</li>
+<li>BUT the status was not updated (though the ticket was showing activity &lsquo;less than a minute ago&rsquo;)</li>
+</ul>
+
+<p>after some research I found <a href="http://www.redmine.org/boards/2/topics/25920">that redmine discussion</a></p>
+
+<ul>
+<li>I need to declare the header <code>Application/Json</code> (normal)</li>
+<li>It needs to have the <code>status_id</code> value as a string (and I was giving an integer)</li>
+</ul>
+
+<p>The second point is raging because GUESS WHAT, that integer was given to me BY REDMINE ITSELF !
+So please please when you do an API</p>
+
+<ul>
+<li>Be consistent, if <code>status_id</code> is an integer once, it must always be a integer</li>
+<li>Have a clear documentation, with example</li>
+</ul>
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>

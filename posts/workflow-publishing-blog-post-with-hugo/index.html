@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> Workflow publishing blog post with hugo &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>Workflow publishing blog post with hugo</h1>
+  <span class="post-date">Fri, Feb 20, 2015</span>
+      <p>I&rsquo;ve added some functions in my shell to make it even more convenient
+to write/edit/publish articles with <code>hugo</code> (just a self reminder)</p>
+
+<p>so that now I have</p>
+
+<ul>
+<li>new_blog_post name-of-your-blog-post</li>
+<li>publish_blog</li>
+<li>edit_last_blog_post</li>
+</ul>
+
+<p>that can be run from anywhere in my terminal</p>
+
+<pre><code>export BLOG_ROOT=~/git/perso/blog
+export BLOG_THEME=hyde
+export GITHUB=git@github.com:allan-simon/blog.git
+
+function new_blog_post {
+    cd $BLOG_ROOT
+    LAST_BLOG_POST=$(hugo new posts/$1.md | cut -d &quot; &quot; -f 1) ;
+    export LAST_BLOG_POST ;
+    $EDITOR $LAST_BLOG_POST
+    cd -
+}
+
+function publish_blog {
+    cd $BLOG_ROOT;
+    hugo --theme=&quot;$BLOG_THEME&quot; --buildDrafts &amp;&amp; \
+    git add -A &amp;&amp;  \
+    git commit -m &quot;Updating site&quot; &amp;&amp; \
+    git push origin master &amp;&amp; \
+    git subtree push --prefix=public $GITHUB gh-pages --squash  &amp;&amp; \
+    echo &quot;published&quot;
+    cd $BLOG_ROOT
+}
+
+function edit_last_blog_post {
+    $EDITOR $LAST_BLOG_POST
+}
+</code></pre>
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>

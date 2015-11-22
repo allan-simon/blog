@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> doctrine2 order by count many to many &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>doctrine2 order by count many to many</h1>
+  <span class="post-date">Thu, Apr 9, 2015</span>
+      
+
+<p>Today I found a problem quite common but tricky enough for the solution
+to share it with you</p>
+
+<h3 id="toc_0">The problem</h3>
+
+<p>I have 2 Entities</p>
+
+<ul>
+<li>User</li>
+<li>Article</li>
+</ul>
+
+<p>and a &ldquo;likedByUsers&rdquo; Many To Many relationship between both</p>
+
+<p>Now I would like to get the Articles ordered by number of &lsquo;likes&rsquo;
+for an API call returning a list of Articles</p>
+
+<p>if you feel smart you can try to find the solution by yourself
+it&rsquo;s an interesting exercise about &lsquo;how much do you know doctrine and SQL&rsquo;</p>
+
+<p>but let me tell you, the solution is like an Egg of Columbus, once you see
+it it becomes evident, but it was actually not that simple at first.</p>
+
+<h3 id="toc_1">The solution</h3>
+
+<pre><code>// in your repository
+$builder = $this-&gt;createQueryBuilder('a');
+    -&gt;select('COUNT(u) AS HIDDEN nbrLikes', 'a')
+    -&gt;leftJoin('a.likedByUsers', 'u') 
+    -&gt;orderBy('nbrLikes', 'DESC')
+    -&gt;groupBy('a')
+    -&gt;getQuery()
+    -&gt;getResult()
+;
+</code></pre>
+
+<h3 id="toc_2">Step by step</h3>
+
+<pre><code>-&gt;leftJoin('a.likedByUsers', 'u')
+</code></pre>
+
+<p>as it&rsquo;s a many to many relationship, and as doctrine lazy-load by default
+we need to explicitly tell him we will need the join, and the referenced
+entity (users) will be refered as <code>u</code> in the other part of the query</p>
+
+<p>now the interesting point here is the <code>leftJoin</code>, most PHP developers
+are not familiar with the different type of Join</p>
+
+<ul>
+<li><code>inner join</code> would have taken only the articles and users who have <strong>At least</strong> one relationship
+which mean that using this, you will not get back the articles with 0 likes</li>
+<li><code>left join</code> take ALL the row on the left side (so here articles) and the entity on the right will
+be null if there&rsquo;s no relationship, so here that&rsquo;s what we want, as then the <code>COUNT()</code> will consider norelationship as <code>0</code></li>
+</ul>
+
+<pre><code>    -&gt;groupBy('a')
+</code></pre>
+
+<p>here it&rsquo;s really important to group by the FULL entity and not just <code>a.id</code>, otherwise SQL
+will complain that your other fields are not inside the GROUP BY (here nothing specific as doctrine,
+it&rsquo;s pure SQL, just that Doctrine makes your life easier by permitting you not to precise
+every single field one by one</p>
+
+<pre><code>    -&gt;select('COUNT(u) AS HIDDEN nbrLikes', 'a')
+</code></pre>
+
+<p>Here we have the actual interesting part
+we select a <code>COUNT</code> in order to be able to use it in the <code>ORDER BY</code> and also the
+entity article itself, however if we were just doing <code>'COUNT(u) AS nbrLikes' , a</code>
+then for each result, we would not directly the entity, but an array of two values
+the count and then the entity (which would need additional treatment in my case
+as I&rsquo;m just returning an array of Article to be serialized by the REST bundle).</p>
+
+<p>That&rsquo;s why we have <code>HIDDEN</code>, it will tell doctrine to use it for the generated query
+but not to use when creating the result array, so that it returns only the entity</p>
+
+<p>For those wondering if I only get the entity how to have my API call returning also
+a <code>number_of_likes</code> in the JSON, I will later make an article about virtual property
+of the JSM Serializer</p>
+
+<p>Hope you learn something in the process,</p>
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>

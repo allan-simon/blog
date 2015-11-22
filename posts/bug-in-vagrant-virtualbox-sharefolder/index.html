@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> bug in Vagrant with Virtualbox sharefolder &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>bug in Vagrant with Virtualbox sharefolder</h1>
+  <span class="post-date">Sun, Aug 23, 2015</span>
+      
+
+<h2 id="toc_0">The problem: serving static files</h2>
+
+<p>The problem will affect you if you try to serve static files
+from your vagrant folder if you use the default from virtualbox</p>
+
+<p>For example you got your nginx or apache to serve css files
+and when you update them, they don&rsquo;t get updated, and sometimes
+they even come out with some garbage bytes at the end of it</p>
+
+<h2 id="toc_1">The reason, a long standing bug in virtual box</h2>
+
+<p>after reading <a href="https://github.com/mitchellh/vagrant/issues/351">this bug report</a> in vagrant repository</p>
+
+<p>I&rsquo;ve found that the underlying bug is from virtualbox, bug which has been reported <a href="https://www.virtualbox.org/ticket/12597">here</a></p>
+
+<h2 id="toc_2">The solutions: deactivate send or switch of sharefolder type</h2>
+
+<p>If you use Nginx or apache you can just followed the <a href="https://docs.vagrantup.com/v2/synced-folders/virtualbox.html">official workaround</a></p>
+
+<p>In Nginx:</p>
+
+<pre><code>sendfile off;
+</code></pre>
+
+<p>In Apache:</p>
+
+<pre><code>EnableSendfile Off
+</code></pre>
+
+<p>If you are like me and you&rsquo;re serving your files from go then you have no
+other choice than to swithc the sharefolder type, nfs for Unix-ish OS and
+SMB for windows</p>
+
+<p>A colleague of mine made this to have a transparent switch for your developers</p>
+
+<pre><code>def host_box_is_unixy?
+  (RUBY_PLATFORM !~ /cygwin|mswin|mingw|bccwin|wince|emx/)
+end
+
+
+Vagrant.configure(2) do |config|
+
+   # your stuffs
+
+  if host_box_is_unixy?
+    config.vm.synced_folder &quot;./&quot;, &quot;/vagrant&quot;, type: &quot;nfs&quot;
+  else
+    config.vm.synced_folder &quot;./&quot;, &quot;/vagrant&quot;, type: &quot;smb&quot;, mount_options: ['ip=192.168.50.1'] #host side of :private_network
+    config.vm.network &quot;private_network&quot;, ip: &quot;192.168.50.12&quot;
+  end
+</code></pre>
+
+<p>NFS and SMB sharefolder don&rsquo;t have this bug so you should be fine with that</p>
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
