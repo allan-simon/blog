@@ -263,8 +263,8 @@ a &lt;code&gt;migration&lt;/code&gt; tool =&amp;gt; Doctrine Migration because:&
 
 &lt;p&gt;In order to install it, you need to edit the composer.json and add this two lines in the &lt;code&gt;require&lt;/code&gt; section&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;        &amp;quot;doctrine/migrations&amp;quot;: &amp;quot;1.0.*@dev&amp;quot;,
-        &amp;quot;doctrine/doctrine-migrations-bundle&amp;quot;: &amp;quot;1.0.*&amp;quot;
+&lt;pre&gt;&lt;code&gt;        &amp;quot;doctrine/migrations&amp;quot;: &amp;quot;~1.1&amp;quot;,
+        &amp;quot;doctrine/doctrine-migrations-bundle&amp;quot;: &amp;quot;~1.1&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;and then run &lt;code&gt;composer update&lt;/code&gt;&lt;/p&gt;
