@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> murmur hash v3 in MySQL utf8 compatible &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>murmur hash v3 in MySQL utf8 compatible</h1>
+  <span class="post-date">Sun, Mar 20, 2016</span>
+      
+
+<p>#Murmur hash v3 in MySQL utf8 compatible</p>
+
+<p>These days for performance purpose, I needed to replace some <code>autoincrement</code> Id
+by a hash calculated one, in order to have a determinist way to retrieve from
+an object, it&rsquo;s record in database, and easily recognize duplicate.</p>
+
+<p>For that I have chosen the <a href="https://en.wikipedia.org/wiki/MurmurHash">murmur hash v3 function</a></p>
+
+<p>For new records, I could use the python module (leveraging C code) <a href="https://pypi.python.org/pypi/mmh3/2.3.1">mmh3</a></p>
+
+<p>But as I needed to update million of existing record, I couldn&rsquo;t possibly
+imagine doing that by calling a python script.</p>
+
+<h2 id="toc_0">First solution: user defined function copy/pasted from a gist</h2>
+
+<p>Instead I found that somebody already created a user defined function for that
+and posted it on a <a href="https://gist.github.com/ghafran/8883678">gist here</a></p>
+
+<p>With that I could now do</p>
+
+<pre><code class="language-sql">UPDATE my_table
+SET hashed_field = murmur_hash_v3(
+    CONCAT(other_field, another_field),
+    0
+);
+</code></pre>
+
+<p>and update in a minute my records which would have normally taken
+a good hour with a python script iterating on the records</p>
+
+<h2 id="toc_1">Problem: it does not handle utf-8 strings</h2>
+
+<p>But we soon run onto a problem with utf-8 records, the hash were different between
+python and mysql version of the hash</p>
+
+<h2 id="toc_2">Solutions, plitting by bytes instead of character</h2>
+
+<p>The problem is that <code>ascii()</code> methods in MySQL is not made to handle non-ascii characters, and that the methods is iterating on each <strong>character</strong></p>
+
+<p>so to solved the problem, we first casted the string into a <code>binary</code> type.</p>
+
+<pre><code class="language-sql">SET keyx = CAST(key_char AS BINARY);
+</code></pre>
+
+<p>That way, the split was now done on bytes instead of characters</p>
+
+<h2 id="toc_3">The function now:</h2>
+
+<p>Now you can copy paste this version :)</p>
+
+<pre><code class="language-sql">        DELIMMITER //
+
+       CREATE FUNCTION `murmur_hash_v3`(`key_char` TEXT, `seed` int unsigned)
+            RETURNS int unsigned
+            DETERMINISTIC
+        BEGIN
+            DECLARE keyx BLOB;
+            DECLARE remainder,bytes,c1,c2,i, m1,m2 INT unsigned;
+            DECLARE h1,k1,h1b BIGINT unsigned;
+            SET keyx = CAST(key_char AS BINARY);
+            SET remainder = LENGTH(keyx) &amp; 3;
+            SET bytes = LENGTH(keyx) - remainder;
+            SET h1 = seed;
+            SET c1 = 0xcc9e2d51;
+            SET c2 = 0x1b873593;
+            SET m1 = 0x85ebca6b, m2 = 0xc2b2ae35;
+            SET i = 1;
+
+            WHILE i &lt;= bytes DO
+                SET k1 =
+                     (ascii(mid(keyx,i , 1)) &amp; 0xff)        |
+                    ((ascii(mid(keyx,i+1,1)) &amp; 0xff) &lt;&lt; 8)  |
+                    ((ascii(mid(keyx,i+2,1)) &amp; 0xff) &lt;&lt; 16) |
+                    ((ascii(mid(keyx,i+3,1)) &amp; 0xff) &lt;&lt; 24)
+                  ;
+                SET i = i + 4;
+
+                SET k1 = (k1*c1) &amp; 0xffffffff;
+                SET k1 = ((k1 &lt;&lt; 15) | (k1 &gt;&gt; 17))&amp; 0xffffffff;
+                SET k1 = (k1*c2) &amp; 0xffffffff;
+
+                SET h1 = h1 ^ k1;
+                SET h1 = ((h1 &lt;&lt; 13) | (h1 &gt;&gt; 19))&amp; 0xffffffff;
+                SET h1b = (h1*5) &amp; 0xffffffff;
+                SET h1 = (h1b+0xe6546b64)&amp; 0xffffffff;
+            END WHILE;
+
+            SET k1 = 0;
+
+            IF remainder&gt;=3 THEN SET k1 = k1^((ascii(mid(keyx,i + 2,1)) &amp; 0xff) &lt;&lt; 16); END IF;
+            IF remainder&gt;=2 THEN SET k1 = k1^((ascii(mid(keyx,i + 1,1)) &amp; 0xff) &lt;&lt;  8); END IF;
+            IF remainder&gt;=1 THEN SET k1 = k1^((ascii(mid(keyx,i + 0,1)) &amp; 0xff) &lt;&lt;  0);
+                SET k1 = (k1*c1) &amp; 0xffffffff;
+                SET k1 = ((k1 &lt;&lt; 15) | (k1 &gt;&gt; 17))&amp; 0xffffffff;
+                SET k1 = (k1*c2) &amp; 0xffffffff;
+                SET h1 = h1 ^ k1;
+            END IF;
+
+            SET h1 = h1 ^ LENGTH(keyx);
+            SET h1 = h1 ^ (h1 &gt;&gt; 16);
+            SET h1 = (h1*m1) &amp; 0xffffffff;
+
+            SET h1 = h1 ^ (h1 &gt;&gt; 13);
+            SET h1 = (h1*m2) &amp; 0xffffffff;
+            SET h1 = h1 ^ (h1 &gt;&gt; 16);
+
+            RETURN h1;
+        END;
+    //
+    DELIMITER ;
+</code></pre>
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
