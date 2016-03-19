@@ -7,7 +7,129 @@
     <language>en-us</language>
     
     
-    <updated>Sun, 23 Aug 2015 03:43:56 CST</updated>
+    <updated>Sun, 20 Mar 2016 02:51:21 CST</updated>
+    
+    <item>
+      <title>murmur hash v3 in MySQL utf8 compatible</title>
+      <link>http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/</link>
+      <pubDate>Sun, 20 Mar 2016 02:51:21 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/</guid>
+      <description>
+
+&lt;p&gt;#Murmur hash v3 in MySQL utf8 compatible&lt;/p&gt;
+
+&lt;p&gt;These days for performance purpose, I needed to replace some &lt;code&gt;autoincrement&lt;/code&gt; Id
+by a hash calculated one, in order to have a determinist way to retrieve from
+an object, it&amp;rsquo;s record in database, and easily recognize duplicate.&lt;/p&gt;
+
+&lt;p&gt;For that I have chosen the &lt;a href=&#34;https://en.wikipedia.org/wiki/MurmurHash&#34;&gt;murmur hash v3 function&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;For new records, I could use the python module (leveraging C code) &lt;a href=&#34;https://pypi.python.org/pypi/mmh3/2.3.1&#34;&gt;mmh3&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;But as I needed to update million of existing record, I couldn&amp;rsquo;t possibly
+imagine doing that by calling a python script.&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;First solution: user defined function copy/pasted from a gist&lt;/h2&gt;
+
+&lt;p&gt;Instead I found that somebody already created a user defined function for that
+and posted it on a &lt;a href=&#34;https://gist.github.com/ghafran/8883678&#34;&gt;gist here&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;With that I could now do&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;UPDATE my_table
+SET hashed_field = murmur_hash_v3(
+    CONCAT(other_field, another_field),
+    0
+);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and update in a minute my records which would have normally taken
+a good hour with a python script iterating on the records&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;Problem: it does not handle utf-8 strings&lt;/h2&gt;
+
+&lt;p&gt;But we soon run onto a problem with utf-8 records, the hash were different between
+python and mysql version of the hash&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;Solutions, plitting by bytes instead of character&lt;/h2&gt;
+
+&lt;p&gt;The problem is that &lt;code&gt;ascii()&lt;/code&gt; methods in MySQL is not made to handle non-ascii characters, and that the methods is iterating on each &lt;strong&gt;character&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;so to solved the problem, we first casted the string into a &lt;code&gt;binary&lt;/code&gt; type.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SET keyx = CAST(key_char AS BINARY);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That way, the split was now done on bytes instead of characters&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_3&#34;&gt;The function now:&lt;/h2&gt;
+
+&lt;p&gt;Now you can copy paste this version :)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;        DELIMMITER //
+
+       CREATE FUNCTION `murmur_hash_v3`(`key_char` TEXT, `seed` int unsigned)
+            RETURNS int unsigned
+            DETERMINISTIC
+        BEGIN
+            DECLARE keyx BLOB;
+            DECLARE remainder,bytes,c1,c2,i, m1,m2 INT unsigned;
+            DECLARE h1,k1,h1b BIGINT unsigned;
+            SET keyx = CAST(key_char AS BINARY);
+            SET remainder = LENGTH(keyx) &amp;amp; 3;
+            SET bytes = LENGTH(keyx) - remainder;
+            SET h1 = seed;
+            SET c1 = 0xcc9e2d51;
+            SET c2 = 0x1b873593;
+            SET m1 = 0x85ebca6b, m2 = 0xc2b2ae35;
+            SET i = 1;
+
+            WHILE i &amp;lt;= bytes DO
+                SET k1 =
+                     (ascii(mid(keyx,i , 1)) &amp;amp; 0xff)        |
+                    ((ascii(mid(keyx,i+1,1)) &amp;amp; 0xff) &amp;lt;&amp;lt; 8)  |
+                    ((ascii(mid(keyx,i+2,1)) &amp;amp; 0xff) &amp;lt;&amp;lt; 16) |
+                    ((ascii(mid(keyx,i+3,1)) &amp;amp; 0xff) &amp;lt;&amp;lt; 24)
+                  ;
+                SET i = i + 4;
+
+                SET k1 = (k1*c1) &amp;amp; 0xffffffff;
+                SET k1 = ((k1 &amp;lt;&amp;lt; 15) | (k1 &amp;gt;&amp;gt; 17))&amp;amp; 0xffffffff;
+                SET k1 = (k1*c2) &amp;amp; 0xffffffff;
+
+                SET h1 = h1 ^ k1;
+                SET h1 = ((h1 &amp;lt;&amp;lt; 13) | (h1 &amp;gt;&amp;gt; 19))&amp;amp; 0xffffffff;
+                SET h1b = (h1*5) &amp;amp; 0xffffffff;
+                SET h1 = (h1b+0xe6546b64)&amp;amp; 0xffffffff;
+            END WHILE;
+
+            SET k1 = 0;
+
+            IF remainder&amp;gt;=3 THEN SET k1 = k1^((ascii(mid(keyx,i + 2,1)) &amp;amp; 0xff) &amp;lt;&amp;lt; 16); END IF;
+            IF remainder&amp;gt;=2 THEN SET k1 = k1^((ascii(mid(keyx,i + 1,1)) &amp;amp; 0xff) &amp;lt;&amp;lt;  8); END IF;
+            IF remainder&amp;gt;=1 THEN SET k1 = k1^((ascii(mid(keyx,i + 0,1)) &amp;amp; 0xff) &amp;lt;&amp;lt;  0);
+                SET k1 = (k1*c1) &amp;amp; 0xffffffff;
+                SET k1 = ((k1 &amp;lt;&amp;lt; 15) | (k1 &amp;gt;&amp;gt; 17))&amp;amp; 0xffffffff;
+                SET k1 = (k1*c2) &amp;amp; 0xffffffff;
+                SET h1 = h1 ^ k1;
+            END IF;
+
+            SET h1 = h1 ^ LENGTH(keyx);
+            SET h1 = h1 ^ (h1 &amp;gt;&amp;gt; 16);
+            SET h1 = (h1*m1) &amp;amp; 0xffffffff;
+
+            SET h1 = h1 ^ (h1 &amp;gt;&amp;gt; 13);
+            SET h1 = (h1*m2) &amp;amp; 0xffffffff;
+            SET h1 = h1 ^ (h1 &amp;gt;&amp;gt; 16);
+
+            RETURN h1;
+        END;
+    //
+    DELIMITER ;
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>bug in Vagrant with Virtualbox sharefolder</title>
@@ -2223,70 +2345,6 @@ class YourTest extends WebTestCase
     }
 }
 &lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Solve composer github api limitation</title>
-      <link>http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/</link>
-      <pubDate>Tue, 10 Feb 2015 18:19:22 CST</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/</guid>
-      <description>
-
-&lt;h3 id=&#34;toc_0&#34;&gt;Could not fetch X enter your GitHub credentials to go over the API rate limit&lt;/h3&gt;
-
-&lt;p&gt;The problem is that composer is retrieving nearly all the packages from github
-using the anonymous access github API. In order to solve it you need to generate
-a token&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;you need a github account (or ask a friend)&lt;/li&gt;
-&lt;li&gt;go on your setting page &lt;a href=&#34;https://github.com/settings/applications&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;click on &lt;code&gt;Generate new token&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;now two possibilities&lt;/p&gt;
-
-&lt;h4 id=&#34;toc_1&#34;&gt;1 - Put this token in one specific project&lt;/h4&gt;
-
-&lt;p&gt;for this simply run&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;composer config -g github-oauth.github.com YOUR_TOKEN
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;php composer.phar config -g github-oauth.github.com YOUR_TOKEN
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;(depending on how you installed composer)&lt;/p&gt;
-
-&lt;p&gt;it will add that to your project&amp;rsquo;s composer.json file&lt;/p&gt;
-
-&lt;h4 id=&#34;toc_2&#34;&gt;2 -  Put this token in your global composer configuration&lt;/h4&gt;
-
-&lt;p&gt;If your project is an open-source or company project you may not want
-to commit your token on the git of your project/company&lt;/p&gt;
-
-&lt;p&gt;for this edit the file &lt;code&gt;~/.composer/config.json&lt;/code&gt; and put in it:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-    &amp;quot;config&amp;quot;: {
-        &amp;quot;github-oauth&amp;quot;: { &amp;quot;github.com&amp;quot;: &amp;quot;YOUR_TOKEN&amp;quot; }
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;that&amp;rsquo;s all folks!&lt;/p&gt;
-
-&lt;p&gt;Source:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://coderwall.com/p/kz4egw/composer-install-github-rate-limiting-work-around&#34;&gt;coderwall.com&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/composer/composer/issues/3542&#34;&gt;composer&amp;rsquo;s github&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/blog/1509-personal-api-tokens&#34;&gt;github&amp;rsquo;s blog&lt;/a&gt; More details about Github token&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
