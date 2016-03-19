@@ -60,7 +60,7 @@
 
     
 
-<p>#Murmur hash v3 in MySQL utf8 compatible</p>
+<h1 id="toc_0">Murmur hash v3 in MySQL utf8 compatible</h1>
 
 <p>These days for performance purpose, I needed to replace some <code>autoincrement</code> Id
 by a hash calculated one, in order to have a determinist way to retrieve from
@@ -73,7 +73,7 @@ an object, it&rsquo;s record in database, and easily recognize duplicate.</p>
 <p>But as I needed to update million of existing record, I couldn&rsquo;t possibly
 imagine doing that by calling a python script.</p>
 
-<h2 id="toc_0">First solution: user defined function copy/pasted from a gist</h2>
+<h2 id="toc_1">First solution: user defined function copy/pasted from a gist</h2>
 
 <p>Instead I found that somebody already created a user defined function for that
 and posted it on a <a href="https://gist.github.com/ghafran/8883678">gist here</a></p>
@@ -90,12 +90,12 @@ SET hashed_field = murmur_hash_v3(
 <p>and update in a minute my records which would have normally taken
 a good hour with a python script iterating on the records</p>
 
-<h2 id="toc_1">Problem: it does not handle utf-8 strings</h2>
+<h2 id="toc_2">Problem: it does not handle utf-8 strings</h2>
 
 <p>But we soon run onto a problem with utf-8 records, the hash were different between
 python and mysql version of the hash</p>
 
-<h2 id="toc_2">Solutions, plitting by bytes instead of character</h2>
+<h2 id="toc_3">Solutions, plitting by bytes instead of character</h2>
 
 <p>The problem is that <code>ascii()</code> methods in MySQL is not made to handle non-ascii characters, and that the methods is iterating on each <strong>character</strong></p>
 
@@ -106,7 +106,7 @@ python and mysql version of the hash</p>
 
 <p>That way, the split was now done on bytes instead of characters</p>
 
-<h2 id="toc_3">The function now:</h2>
+<h2 id="toc_4">The function now:</h2>
 
 <p>Now you can copy paste this version :)</p>
 

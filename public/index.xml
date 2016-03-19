@@ -17,7 +17,7 @@
       <guid>http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/</guid>
       <description>
 
-&lt;p&gt;#Murmur hash v3 in MySQL utf8 compatible&lt;/p&gt;
+&lt;h1 id=&#34;toc_0&#34;&gt;Murmur hash v3 in MySQL utf8 compatible&lt;/h1&gt;
 
 &lt;p&gt;These days for performance purpose, I needed to replace some &lt;code&gt;autoincrement&lt;/code&gt; Id
 by a hash calculated one, in order to have a determinist way to retrieve from
@@ -30,7 +30,7 @@ an object, it&amp;rsquo;s record in database, and easily recognize duplicate.&lt
 &lt;p&gt;But as I needed to update million of existing record, I couldn&amp;rsquo;t possibly
 imagine doing that by calling a python script.&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_0&#34;&gt;First solution: user defined function copy/pasted from a gist&lt;/h2&gt;
+&lt;h2 id=&#34;toc_1&#34;&gt;First solution: user defined function copy/pasted from a gist&lt;/h2&gt;
 
 &lt;p&gt;Instead I found that somebody already created a user defined function for that
 and posted it on a &lt;a href=&#34;https://gist.github.com/ghafran/8883678&#34;&gt;gist here&lt;/a&gt;&lt;/p&gt;
@@ -47,12 +47,12 @@ SET hashed_field = murmur_hash_v3(
 &lt;p&gt;and update in a minute my records which would have normally taken
 a good hour with a python script iterating on the records&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_1&#34;&gt;Problem: it does not handle utf-8 strings&lt;/h2&gt;
+&lt;h2 id=&#34;toc_2&#34;&gt;Problem: it does not handle utf-8 strings&lt;/h2&gt;
 
 &lt;p&gt;But we soon run onto a problem with utf-8 records, the hash were different between
 python and mysql version of the hash&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_2&#34;&gt;Solutions, plitting by bytes instead of character&lt;/h2&gt;
+&lt;h2 id=&#34;toc_3&#34;&gt;Solutions, plitting by bytes instead of character&lt;/h2&gt;
 
 &lt;p&gt;The problem is that &lt;code&gt;ascii()&lt;/code&gt; methods in MySQL is not made to handle non-ascii characters, and that the methods is iterating on each &lt;strong&gt;character&lt;/strong&gt;&lt;/p&gt;
 
@@ -63,7 +63,7 @@ python and mysql version of the hash&lt;/p&gt;
 
 &lt;p&gt;That way, the split was now done on bytes instead of characters&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_3&#34;&gt;The function now:&lt;/h2&gt;
+&lt;h2 id=&#34;toc_4&#34;&gt;The function now:&lt;/h2&gt;
 
 &lt;p&gt;Now you can copy paste this version :)&lt;/p&gt;
 

@@ -5,7 +5,7 @@ title = "murmur hash v3 in MySQL utf8 compatible"
 
 +++
 
-#Murmur hash v3 in MySQL utf8 compatible
+# Murmur hash v3 in MySQL utf8 compatible
 
 These days for performance purpose, I needed to replace some `autoincrement` Id
 by a hash calculated one, in order to have a determinist way to retrieve from
