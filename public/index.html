@@ -51,6 +51,42 @@
       
   <div class="post">
     <h1 class="post-title">
+      <a href="http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/">
+        how to sum all numbers in file in bash
+      </a>
+    </h1>
+
+    <span class="post-date">Sun, Mar 20, 2016</span>
+
+    
+
+<h1 id="toc_0">I have a file, with one number by line, how to get the sum</h1>
+
+<pre><code class="language-bash">paste -s -d+  myfile_with_numbers | bc 
+</code></pre>
+
+<p>and if you have a csv, delimited by <code>,</code> and for which the number is on
+the 2nd field:</p>
+
+<pre><code>cut -d,  my_file.csv -f 2 | paste -s -d+  | bc 
+</code></pre>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="http://allan-simon.github.io/blog/posts/how/">
+        how
+      </a>
+    </h1>
+
+    <span class="post-date">Sun, Mar 20, 2016</span>
+
+    
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/">
         murmur hash v3 in MySQL utf8 compatible
       </a>

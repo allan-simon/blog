@@ -7,7 +7,37 @@
     <language>en-us</language>
     
     
-    <updated>Sun, 20 Mar 2016 02:51:21 CST</updated>
+    <updated>Sun, 20 Mar 2016 03:42:37 CST</updated>
+    
+    <item>
+      <title>how to sum all numbers in file in bash</title>
+      <link>http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/</link>
+      <pubDate>Sun, 20 Mar 2016 03:42:37 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/</guid>
+      <description>
+
+&lt;h1 id=&#34;toc_0&#34;&gt;I have a file, with one number by line, how to get the sum&lt;/h1&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;paste -s -d+  myfile_with_numbers | bc 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and if you have a csv, delimited by &lt;code&gt;,&lt;/code&gt; and for which the number is on
+the 2nd field:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cut -d,  my_file.csv -f 2 | paste -s -d+  | bc 
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>how</title>
+      <link>http://allan-simon.github.io/blog/posts/how/</link>
+      <pubDate>Sun, 20 Mar 2016 03:42:12 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/how/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>murmur hash v3 in MySQL utf8 compatible</title>
@@ -2224,127 +2254,6 @@ mean that &amp;ldquo;document.Foo&amp;rdquo; collide with any javascript defined
 &lt;li&gt;Make it a coding style policy that module name start contains something &amp;ldquo;javascript only&amp;rdquo; like &lt;code&gt;FooModule&lt;/code&gt; or &lt;code&gt;FooJS&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;put your modules in one big wrapping modules (like &lt;code&gt;MyCorp.Foo&lt;/code&gt;)&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Workflow publishing blog post with hugo</title>
-      <link>http://allan-simon.github.io/blog/posts/workflow-publishing-blog-post-with-hugo/</link>
-      <pubDate>Fri, 20 Feb 2015 15:03:36 CST</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/posts/workflow-publishing-blog-post-with-hugo/</guid>
-      <description>&lt;p&gt;I&amp;rsquo;ve added some functions in my shell to make it even more convenient
-to write/edit/publish articles with &lt;code&gt;hugo&lt;/code&gt; (just a self reminder)&lt;/p&gt;
-
-&lt;p&gt;so that now I have&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;new_blog_post name-of-your-blog-post&lt;/li&gt;
-&lt;li&gt;publish_blog&lt;/li&gt;
-&lt;li&gt;edit_last_blog_post&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;that can be run from anywhere in my terminal&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;export BLOG_ROOT=~/git/perso/blog
-export BLOG_THEME=hyde
-export GITHUB=git@github.com:allan-simon/blog.git
-
-function new_blog_post {
-    cd $BLOG_ROOT
-    LAST_BLOG_POST=$(hugo new posts/$1.md | cut -d &amp;quot; &amp;quot; -f 1) ;
-    export LAST_BLOG_POST ;
-    $EDITOR $LAST_BLOG_POST
-    cd -
-}
-
-function publish_blog {
-    cd $BLOG_ROOT;
-    hugo --theme=&amp;quot;$BLOG_THEME&amp;quot; --buildDrafts &amp;amp;&amp;amp; \
-    git add -A &amp;amp;&amp;amp;  \
-    git commit -m &amp;quot;Updating site&amp;quot; &amp;amp;&amp;amp; \
-    git push origin master &amp;amp;&amp;amp; \
-    git subtree push --prefix=public $GITHUB gh-pages --squash  &amp;amp;&amp;amp; \
-    echo &amp;quot;published&amp;quot;
-    cd $BLOG_ROOT
-}
-
-function edit_last_blog_post {
-    $EDITOR $LAST_BLOG_POST
-}
-&lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Functionnal tests in symfony2 with authentication</title>
-      <link>http://allan-simon.github.io/blog/posts/functionnal-tests-symfony2-and-authentication/</link>
-      <pubDate>Fri, 20 Feb 2015 14:28:13 CST</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/posts/functionnal-tests-symfony2-and-authentication/</guid>
-      <description>&lt;p&gt;Let&amp;rsquo;s say you have your symfony2 website, all setup correctly with its
-set of functionnal tests using phpunit, and now you start to have
-pages that only authenticated users can access to. My first solution was to
-create a client, make it load the login form, submit some valid credentials
-and then load the actual page to test. It was working fine as the client
-has a storage for cookie, it is acting like an actual browser in that case.&lt;/p&gt;
-
-&lt;p&gt;The problem was that the time to execute the test was much longer, which
-started to become a problem has the test suite was growing.&lt;/p&gt;
-
-&lt;p&gt;The first trick is to follow them method adviced by symfony, which is for the
-test environnement to enable the HTTP Basic Authentication method. For those
-who doesn&amp;rsquo;t know, the HTTP standard comme with a method to authentify a
-user-agent by directly sending the username/password in the HTTP header
-(which goes along the fact that HTTP is aimed to be stateless)&lt;/p&gt;
-
-&lt;p&gt;in your &lt;code&gt;config_test.yml&lt;/code&gt; add this (replace &lt;code&gt;NAME_OF_YOUR_FIREWALL&lt;/code&gt;)&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;security:
-    firewalls:
-        NAME_OF_YOUR_FIREWALL:
-            http_basic: ~
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The second trick, to not have to repeat the username/password in all your
-functionnal tests, is to use the &lt;a href=&#34;https://github.com/liip/LiipFunctionalTestBundle&#34;&gt;LiipFunctionnalBundle&lt;/a&gt;
-follow the installation instruction and then make your functionnal test inherit
-from their class, like this&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;?php
-//...
-use Liip\FunctionalTestBundle\Test\WebTestCase;
-
-class YourTest extends WebTestCase
-{
- // your code
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;then you can precise in &lt;code&gt;config_test.yml&lt;/code&gt; your credentials:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;liip_functional_test:
-    authentication:
-        username: &amp;quot;XXXXX&amp;quot;
-        password: &amp;quot;YYYYY&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;finally to create an authenticated client, use this method&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;?php
-//...
-use Liip\FunctionalTestBundle\Test\WebTestCase;
-
-class YourTest extends WebTestCase
-{
-    public testYourFeature()
-    {
-        // true = &amp;quot;authenticated&amp;quot;
-        $client static::makeClient(true);
-        // ...
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
