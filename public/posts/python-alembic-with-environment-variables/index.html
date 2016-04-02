@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title> python alembic with environment variables &middot; Allan&#39;s blog </title>
+
+  
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
+  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+</head>
+
+<body>
+
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/blog">Allan&#39;s blog</a></h1>
+      <p class="lead">
+       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
+      </p>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li><a href="/blog/about">About</a> </li>
+      
+    </ul>
+
+    <p>© Creative-Common attribution</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+<div class="post">
+  <h1>python alembic with environment variables</h1>
+  <span class="post-date">Sun, Apr 3, 2016</span>
+      <p>At my job we&rsquo;re currently using <a href="http://alembic.readthedocs.org/">alembic</a>
+to manage our database migrations (i.e adding a new table / index etc.)</p>
+
+<p>The tool is pretty mature and has been here for a while, so it covers
+a lot of advanced case (like handling several databases, having a tree
+of migrations etc.) while still being simple for simple case</p>
+
+<p>The only not straighforward thing I found was that it&rsquo;s not easy
+to integrate with 12Factor-apps, i.e my code is running in a lot
+of differents environments (vagrant+docker on my local machine,
+the QA environments,  the pre-production, production etc.)</p>
+
+<p>And of course I don&rsquo;t want to have to maintain in the configuration
+file all the different combination, and even less do I want to
+write down my database password, so instead we&rsquo;re relying on environment
+variables</p>
+
+<p>In order to achieve this, once you&rsquo;ve done your <code>alembic init</code>, take
+your <code>migrations</code> folder created by alembic, and in it modify the
+<code>env.py</code> file to look like this: (the important part is the <code>get_url</code>
+methods)</p>
+
+<pre><code class="language-python">
+from __future__ import with_statement
+import os
+from alembic import context
+from sqlalchemy import engine_from_config, pool, create_engine
+from logging.config import fileConfig
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
+fileConfig(config.config_file_name)
+
+# add your model's MetaData object here
+# for 'autogenerate' support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
+target_metadata = None
+
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option(&quot;my_important_option&quot;)
+# ... etc.
+
+def get_url():
+    return &quot;mysql+pymysql://%s:%s@%s/%s&quot; % (
+        os.getenv(&quot;DB_USER&quot;, &quot;vagrant&quot;),
+        os.getenv(&quot;DB_PASSWORD&quot;, &quot;vagrant&quot;),
+        os.getenv(&quot;DB_HOST&quot;, &quot;db&quot;),
+        os.getenv(&quot;DB_NAME&quot;, &quot;vagrant&quot;),
+    )
+
+def run_migrations_offline():
+    &quot;&quot;&quot;Run migrations in 'offline' mode.
+
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
+    &quot;&quot;&quot;
+    url = get_url()
+    context.configure(
+        url=url, target_metadata=target_metadata, literal_binds=True)
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online():
+    &quot;&quot;&quot;Run migrations in 'online' mode.
+
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
+
+    &quot;&quot;&quot;
+    connectable = create_engine(get_url())
+
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
+
+</code></pre>
+
+<p>Of course you can adapt it to your need/database/driver, normally
+you just need to update that <code>get_url</code> method</p>
+
+</div>
+</div>
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  </body>
+</html>
