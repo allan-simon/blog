@@ -7,7 +7,119 @@
     <language>en-us</language>
     
     
-    <updated>Sun, 20 Mar 2016 03:42:37 CST</updated>
+    <updated>Sun, 03 Apr 2016 03:09:40 CST</updated>
+    
+    <item>
+      <title>python alembic with environment variables</title>
+      <link>http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/</link>
+      <pubDate>Sun, 03 Apr 2016 03:09:40 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/</guid>
+      <description>&lt;p&gt;At my job we&amp;rsquo;re currently using &lt;a href=&#34;http://alembic.readthedocs.org/&#34;&gt;alembic&lt;/a&gt;
+to manage our database migrations (i.e adding a new table / index etc.)&lt;/p&gt;
+
+&lt;p&gt;The tool is pretty mature and has been here for a while, so it covers
+a lot of advanced case (like handling several databases, having a tree
+of migrations etc.) while still being simple for simple case&lt;/p&gt;
+
+&lt;p&gt;The only not straighforward thing I found was that it&amp;rsquo;s not easy
+to integrate with 12Factor-apps, i.e my code is running in a lot
+of differents environments (vagrant+docker on my local machine,
+the QA environments,  the pre-production, production etc.)&lt;/p&gt;
+
+&lt;p&gt;And of course I don&amp;rsquo;t want to have to maintain in the configuration
+file all the different combination, and even less do I want to
+write down my database password, so instead we&amp;rsquo;re relying on environment
+variables&lt;/p&gt;
+
+&lt;p&gt;In order to achieve this, once you&amp;rsquo;ve done your &lt;code&gt;alembic init&lt;/code&gt;, take
+your &lt;code&gt;migrations&lt;/code&gt; folder created by alembic, and in it modify the
+&lt;code&gt;env.py&lt;/code&gt; file to look like this: (the important part is the &lt;code&gt;get_url&lt;/code&gt;
+methods)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;
+from __future__ import with_statement
+import os
+from alembic import context
+from sqlalchemy import engine_from_config, pool, create_engine
+from logging.config import fileConfig
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
+fileConfig(config.config_file_name)
+
+# add your model&#39;s MetaData object here
+# for &#39;autogenerate&#39; support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
+target_metadata = None
+
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option(&amp;quot;my_important_option&amp;quot;)
+# ... etc.
+
+def get_url():
+    return &amp;quot;mysql+pymysql://%s:%s@%s/%s&amp;quot; % (
+        os.getenv(&amp;quot;DB_USER&amp;quot;, &amp;quot;vagrant&amp;quot;),
+        os.getenv(&amp;quot;DB_PASSWORD&amp;quot;, &amp;quot;vagrant&amp;quot;),
+        os.getenv(&amp;quot;DB_HOST&amp;quot;, &amp;quot;db&amp;quot;),
+        os.getenv(&amp;quot;DB_NAME&amp;quot;, &amp;quot;vagrant&amp;quot;),
+    )
+
+def run_migrations_offline():
+    &amp;quot;&amp;quot;&amp;quot;Run migrations in &#39;offline&#39; mode.
+
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don&#39;t even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
+    &amp;quot;&amp;quot;&amp;quot;
+    url = get_url()
+    context.configure(
+        url=url, target_metadata=target_metadata, literal_binds=True)
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online():
+    &amp;quot;&amp;quot;&amp;quot;Run migrations in &#39;online&#39; mode.
+
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
+
+    &amp;quot;&amp;quot;&amp;quot;
+    connectable = create_engine(get_url())
+
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Of course you can adapt it to your need/database/driver, normally
+you just need to update that &lt;code&gt;get_url&lt;/code&gt; method&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>how to sum all numbers in file in bash</title>
@@ -2138,121 +2250,6 @@ So please please when you do an API&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Be consistent, if &lt;code&gt;status_id&lt;/code&gt; is an integer once, it must always be a integer&lt;/li&gt;
 &lt;li&gt;Have a clear documentation, with example&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Form name goes into global scope in javascript</title>
-      <link>http://allan-simon.github.io/blog/posts/form-name-goes-into-global-scope-javascript/</link>
-      <pubDate>Mon, 23 Feb 2015 17:11:21 CST</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/posts/form-name-goes-into-global-scope-javascript/</guid>
-      <description>
-
-&lt;p&gt;An interesting problem a friend of mine discovered today&lt;/p&gt;
-
-&lt;p&gt;Can you spot the problem?&lt;/p&gt;
-
-&lt;h3 id=&#34;toc_0&#34;&gt;Le javascript&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;var CreateVersion = (function(){
-    &#39;use strict&#39;;
-
-    var foo = function(text) {
-        console.log(text);
-    };
-
-    return {
-        foo : foo 
-    };
-}());
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;toc_1&#34;&gt;Le HTML&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;form name=&amp;quot;CreateVersion&amp;quot; method=&amp;quot;post&amp;quot; action=&amp;quot;&amp;quot;&amp;gt;
-    &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
-        &amp;lt;label&amp;gt;
-            &amp;lt;span&amp;gt;something&amp;lt;/span&amp;gt;
-            &amp;lt;!--
-                onClick on a span is a bad pratice and will be
-                the object of an other post
-            --&amp;gt;
-            &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;plop&#39;)&amp;quot;&amp;gt;plop/span&amp;gt;
-            &amp;lt;span onclick=&amp;quot;CreateVersion.foo(&#39;prout&#39;)&amp;quot;&amp;gt;prout&amp;lt;/span&amp;gt;
-        &amp;lt;/label&amp;gt;
-        &amp;lt;input
-            id=&amp;quot;CreateVersion_name&amp;quot;
-            name=&amp;quot;CreateVersion[name]&amp;quot;
-            class=&amp;quot;form-control version_name&amp;quot;
-            type=&amp;quot;text&amp;quot;
-        /&amp;gt;
-    &amp;lt;/div&amp;gt;
-    &amp;lt;div class=&amp;quot;form-group&amp;quot;&amp;gt;
-        &amp;lt;label&amp;gt;
-            &amp;lt;span&amp;gt;something something&amp;lt;/span&amp;gt;:
-            &amp;lt;span class=&amp;quot;text_length&amp;quot;&amp;gt;0&amp;lt;/span&amp;gt;
-        &amp;lt;/label&amp;gt;
-        &amp;lt;input
-            id=&amp;quot;CreateVersion_articleNotes&amp;quot;
-            name=&amp;quot;CreateVersion[articleNotes]&amp;quot;
-            class=&amp;quot;form-control&amp;quot;
-            type=&amp;quot;text&amp;quot;
-        /&amp;gt;
-    &amp;lt;/div&amp;gt;
-    &amp;lt;hr/&amp;gt;
-    &amp;lt;div&amp;gt;
-        &amp;lt;button
-            type=&amp;quot;submit&amp;quot;
-            id=&amp;quot;CreateVersion_submit&amp;quot;
-            name=&amp;quot;CreateVersion[submit]&amp;quot;
-        &amp;gt;
-            submit
-        &amp;lt;/button&amp;gt;
-    &amp;lt;/div&amp;gt;
-&amp;lt;/form&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;toc_2&#34;&gt;Le erreur&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;TypeError: CreateVersion.foo is not a function
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;No, not in IE6, in last version of Firefox/Chrome&lt;/p&gt;
-
-&lt;h3 id=&#34;toc_3&#34;&gt;Le solution&lt;/h3&gt;
-
-&lt;p&gt;This line&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    &amp;lt;form name=&amp;quot;CreateVersion&amp;quot; method=&amp;quot;post&amp;quot; action=&amp;quot;&amp;quot;&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;declare a Form with a name &lt;code&gt;CreateVersion&lt;/code&gt; which is exactly the same name as our
-Javascript module, and guess what ?&lt;/p&gt;
-
-&lt;p&gt;The name is exported in the DOM, which that when you do that&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;form name=&amp;quot;Foo&amp;quot;&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then you can do&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;document.Foo
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;to access to the DOM node, and in the HTML itself, the &amp;ldquo;document&amp;rdquo; is implicit which
-mean that &amp;ldquo;document.Foo&amp;rdquo; collide with any javascript defined variable &amp;ldquo;Foo&amp;rdquo;&lt;/p&gt;
-
-&lt;p&gt;For more explanation see &lt;a href=&#34;http://stackoverflow.com/questions/1415747/javascript-function-and-form-name-conflict&#34;&gt;this stackoverflow question&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;toc_4&#34;&gt;How to avoid that:&lt;/h3&gt;
-
-&lt;p&gt;Some possibilities:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Make it a coding style policy that module name start contains something &amp;ldquo;javascript only&amp;rdquo; like &lt;code&gt;FooModule&lt;/code&gt; or &lt;code&gt;FooJS&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;put your modules in one big wrapping modules (like &lt;code&gt;MyCorp.Foo&lt;/code&gt;)&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>
