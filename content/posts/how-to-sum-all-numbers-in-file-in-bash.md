@@ -5,7 +5,7 @@ title = "how to sum all numbers in file in bash"
 
 +++
 
-# I have a file, with one number by line, how to get the sum
+### I have a file, with one number by line, how to get the sum
 
 ```bash
 paste -s -d+  myfile_with_numbers | bc 
