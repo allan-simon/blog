@@ -3,6 +3,15 @@ languageCode = "en-us"
 title = "Allan's blog"
 
 [Params]
+    keywords = ["linux", "architect", "python", "rust", "php", "rest"]
     Description = "Tips, tricks and random thoughts on Linux/Vim/rust/php/devops"
     author = "Allan SIMON"
     Copyright = "© Creative-Common attribution"
+
+[permalinks]
+    post = "/:year/:month/:slug/"
+    page = "/:slug/"
+
+[taxonomies]
+    tag = "tags"
+    category = "categories"

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Posts on Allan&#39;s blog </title>
-      <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://allan-simon.github.io/blog/posts/index.xml/</link>
+    <title>Posts on Allan&#39;s blog</title>
+    <link>http://allan-simon.github.io/blog/posts/</link>
+    <description>Recent content in Posts on Allan&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    
-    
-    <updated>Sun, 03 Apr 2016 04:35:20 CST</updated>
+    <lastBuildDate>Sun, 03 Apr 2016 04:35:20 +0800</lastBuildDate>
+    <atom:link href="http://allan-simon.github.io/blog/posts/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>alembic use sql statement instead of sqlalchemy</title>
       <link>http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/</link>
-      <pubDate>Sun, 03 Apr 2016 04:35:20 CST</pubDate>
+      <pubDate>Sun, 03 Apr 2016 04:35:20 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/</guid>
       <description>&lt;p&gt;I know it&amp;rsquo;s pretty popular to use the wonderful &lt;code&gt;sqlalchemy&lt;/code&gt; ORM
@@ -56,7 +56,7 @@ def downgrade():
     <item>
       <title>python alembic with environment variables</title>
       <link>http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/</link>
-      <pubDate>Sun, 03 Apr 2016 03:09:40 CST</pubDate>
+      <pubDate>Sun, 03 Apr 2016 03:09:40 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/</guid>
       <description>&lt;p&gt;At my job we&amp;rsquo;re currently using &lt;a href=&#34;http://alembic.readthedocs.org/&#34;&gt;alembic&lt;/a&gt;
@@ -168,12 +168,12 @@ you just need to update that &lt;code&gt;get_url&lt;/code&gt; method&lt;/p&gt;
     <item>
       <title>how to sum all numbers in file in bash</title>
       <link>http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/</link>
-      <pubDate>Sun, 20 Mar 2016 03:42:37 CST</pubDate>
+      <pubDate>Sun, 20 Mar 2016 03:42:37 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/</guid>
       <description>
 
-&lt;h3 id=&#34;toc_0&#34;&gt;I have a file, with one number by line, how to get the sum&lt;/h3&gt;
+&lt;h3 id=&#34;i-have-a-file-with-one-number-by-line-how-to-get-the-sum:764e3c47ee291b9ff48d57d25ed103c7&#34;&gt;I have a file, with one number by line, how to get the sum&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;paste -s -d+  myfile_with_numbers | bc 
 &lt;/code&gt;&lt;/pre&gt;
@@ -189,12 +189,12 @@ the 2nd field:&lt;/p&gt;
     <item>
       <title>murmur hash v3 in MySQL utf8 compatible</title>
       <link>http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/</link>
-      <pubDate>Sun, 20 Mar 2016 02:51:21 CST</pubDate>
+      <pubDate>Sun, 20 Mar 2016 02:51:21 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/</guid>
       <description>
 
-&lt;h1 id=&#34;toc_0&#34;&gt;Murmur hash v3 in MySQL utf8 compatible&lt;/h1&gt;
+&lt;h1 id=&#34;murmur-hash-v3-in-mysql-utf8-compatible:905a344dd7cee3e2417a03c311b84a02&#34;&gt;Murmur hash v3 in MySQL utf8 compatible&lt;/h1&gt;
 
 &lt;p&gt;These days for performance purpose, I needed to replace some &lt;code&gt;autoincrement&lt;/code&gt; Id
 by a hash calculated one, in order to have a determinist way to retrieve from
@@ -207,7 +207,7 @@ an object, it&amp;rsquo;s record in database, and easily recognize duplicate.&lt
 &lt;p&gt;But as I needed to update million of existing record, I couldn&amp;rsquo;t possibly
 imagine doing that by calling a python script.&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_1&#34;&gt;First solution: user defined function copy/pasted from a gist&lt;/h2&gt;
+&lt;h2 id=&#34;first-solution-user-defined-function-copy-pasted-from-a-gist:905a344dd7cee3e2417a03c311b84a02&#34;&gt;First solution: user defined function copy/pasted from a gist&lt;/h2&gt;
 
 &lt;p&gt;Instead I found that somebody already created a user defined function for that
 and posted it on a &lt;a href=&#34;https://gist.github.com/ghafran/8883678&#34;&gt;gist here&lt;/a&gt;&lt;/p&gt;
@@ -224,12 +224,12 @@ SET hashed_field = murmur_hash_v3(
 &lt;p&gt;and update in a minute my records which would have normally taken
 a good hour with a python script iterating on the records&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_2&#34;&gt;Problem: it does not handle utf-8 strings&lt;/h2&gt;
+&lt;h2 id=&#34;problem-it-does-not-handle-utf-8-strings:905a344dd7cee3e2417a03c311b84a02&#34;&gt;Problem: it does not handle utf-8 strings&lt;/h2&gt;
 
 &lt;p&gt;But we soon run onto a problem with utf-8 records, the hash were different between
 python and mysql version of the hash&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_3&#34;&gt;Solutions, plitting by bytes instead of character&lt;/h2&gt;
+&lt;h2 id=&#34;solutions-plitting-by-bytes-instead-of-character:905a344dd7cee3e2417a03c311b84a02&#34;&gt;Solutions, plitting by bytes instead of character&lt;/h2&gt;
 
 &lt;p&gt;The problem is that &lt;code&gt;ascii()&lt;/code&gt; methods in MySQL is not made to handle non-ascii characters, and that the methods is iterating on each &lt;strong&gt;character&lt;/strong&gt;&lt;/p&gt;
 
@@ -240,7 +240,7 @@ python and mysql version of the hash&lt;/p&gt;
 
 &lt;p&gt;That way, the split was now done on bytes instead of characters&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_4&#34;&gt;The function now:&lt;/h2&gt;
+&lt;h2 id=&#34;the-function-now:905a344dd7cee3e2417a03c311b84a02&#34;&gt;The function now:&lt;/h2&gt;
 
 &lt;p&gt;Now you can copy paste this version :)&lt;/p&gt;
 
@@ -311,12 +311,12 @@ python and mysql version of the hash&lt;/p&gt;
     <item>
       <title>bug in Vagrant with Virtualbox sharefolder</title>
       <link>http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/</link>
-      <pubDate>Sun, 23 Aug 2015 03:43:56 CST</pubDate>
+      <pubDate>Sun, 23 Aug 2015 03:43:56 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/</guid>
       <description>
 
-&lt;h2 id=&#34;toc_0&#34;&gt;The problem: serving static files&lt;/h2&gt;
+&lt;h2 id=&#34;the-problem-serving-static-files:841a2f7d6b52b26d6728896000405247&#34;&gt;The problem: serving static files&lt;/h2&gt;
 
 &lt;p&gt;The problem will affect you if you try to serve static files
 from your vagrant folder if you use the default from virtualbox&lt;/p&gt;
@@ -325,13 +325,13 @@ from your vagrant folder if you use the default from virtualbox&lt;/p&gt;
 and when you update them, they don&amp;rsquo;t get updated, and sometimes
 they even come out with some garbage bytes at the end of it&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_1&#34;&gt;The reason, a long standing bug in virtual box&lt;/h2&gt;
+&lt;h2 id=&#34;the-reason-a-long-standing-bug-in-virtual-box:841a2f7d6b52b26d6728896000405247&#34;&gt;The reason, a long standing bug in virtual box&lt;/h2&gt;
 
 &lt;p&gt;after reading &lt;a href=&#34;https://github.com/mitchellh/vagrant/issues/351&#34;&gt;this bug report&lt;/a&gt; in vagrant repository&lt;/p&gt;
 
 &lt;p&gt;I&amp;rsquo;ve found that the underlying bug is from virtualbox, bug which has been reported &lt;a href=&#34;https://www.virtualbox.org/ticket/12597&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_2&#34;&gt;The solutions: deactivate send or switch of sharefolder type&lt;/h2&gt;
+&lt;h2 id=&#34;the-solutions-deactivate-send-or-switch-of-sharefolder-type:841a2f7d6b52b26d6728896000405247&#34;&gt;The solutions: deactivate send or switch of sharefolder type&lt;/h2&gt;
 
 &lt;p&gt;If you use Nginx or apache you can just followed the &lt;a href=&#34;https://docs.vagrantup.com/v2/synced-folders/virtualbox.html&#34;&gt;official workaround&lt;/a&gt;&lt;/p&gt;
 
@@ -375,7 +375,7 @@ Vagrant.configure(2) do |config|
     <item>
       <title>create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD</title>
       <link>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/</link>
-      <pubDate>Sun, 24 May 2015 18:26:09 CST</pubDate>
+      <pubDate>Sun, 24 May 2015 18:26:09 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/</guid>
       <description>
@@ -394,7 +394,7 @@ create the base of a symfony2 project used to generate a REST Api.&lt;/p&gt;
 &lt;li&gt;and how to generate a full &lt;a href=&#34;https://en.wikipedia.org/wiki/Create,_read,_update_and_delete&#34;&gt;CRUD (create/read/update/delete)&lt;/a&gt; with form checking&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;toc_0&#34;&gt;Very important Note /!\ (can save you hours of debugging):&lt;/h4&gt;
+&lt;h4 id=&#34;very-important-note-can-save-you-hours-of-debugging:886c467e0485f96e920181fb71f032f5&#34;&gt;Very important Note /!\ (can save you hours of debugging):&lt;/h4&gt;
 
 &lt;p&gt;if at any moment you got some strange 500 errors, run&lt;/p&gt;
 
@@ -404,7 +404,7 @@ php app/console cache:clear --env prod
 
 &lt;p&gt;as sometimes, especially when you change the configuration files, the production environment will not update directly all the files, creating some weird errors.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_1&#34;&gt;Creating the entity Article&lt;/h3&gt;
+&lt;h3 id=&#34;creating-the-entity-article:886c467e0485f96e920181fb71f032f5&#34;&gt;Creating the entity Article&lt;/h3&gt;
 
 &lt;p&gt;for the moment we will limit ourselves to one entity &lt;code&gt;Article&lt;/code&gt; which will contain for the moment only:&lt;/p&gt;
 
@@ -538,7 +538,7 @@ you don&amp;rsquo;t need to do anything more to get it working.&lt;/p&gt;
 with the value null will not be seralized. In order to get an id, we need to save first
 the object in database&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_2&#34;&gt;Generate a database migration&lt;/h3&gt;
+&lt;h3 id=&#34;generate-a-database-migration:886c467e0485f96e920181fb71f032f5&#34;&gt;Generate a database migration&lt;/h3&gt;
 
 &lt;p&gt;for the moment our database is empty (and existing as it was created during the &lt;code&gt;vagrant up&lt;/code&gt;
 if you check the provisionning folder , one of the file contains a task to create a database)&lt;/p&gt;
@@ -598,7 +598,7 @@ Generated new migration class to &amp;quot;/vagrant/MyApplication/app/DoctrineMi
 
 &lt;p&gt;Note3: the migrate command will run all the migrations that are not run yet on your machine, regardless on how are missing.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_3&#34;&gt;Save an article in database&lt;/h3&gt;
+&lt;h3 id=&#34;save-an-article-in-database:886c467e0485f96e920181fb71f032f5&#34;&gt;Save an article in database&lt;/h3&gt;
 
 &lt;p&gt;For the sake of the example, for the moment we create the Article entity on the fly at each request, now we&amp;rsquo;re going to persist it in database before serialization (i.e before the &lt;code&gt;return&lt;/code&gt; of the controller) in order to get an Id.&lt;/p&gt;
 
@@ -667,9 +667,9 @@ class ArticlesController extends FOSRestController
 
 &lt;p&gt;So let&amp;rsquo;s clean that&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_4&#34;&gt;Retrieve an article from database&lt;/h3&gt;
+&lt;h3 id=&#34;retrieve-an-article-from-database:886c467e0485f96e920181fb71f032f5&#34;&gt;Retrieve an article from database&lt;/h3&gt;
 
-&lt;h4 id=&#34;toc_5&#34;&gt;The normal way (using the repository)&lt;/h4&gt;
+&lt;h4 id=&#34;the-normal-way-using-the-repository:886c467e0485f96e920181fb71f032f5&#34;&gt;The normal way (using the repository)&lt;/h4&gt;
 
 &lt;p&gt;Now that we have some Article in database (accidentally created by our previous code), it&amp;rsquo;s time to clean &lt;code&gt;GET /api/articles/{id}&lt;/code&gt; to actually works as expected&lt;/p&gt;
 
@@ -712,7 +712,7 @@ class ArticlesController extends FOSRestController
 
 &lt;p&gt;and now checking for a non existing article id will correctly return you a 404&lt;/p&gt;
 
-&lt;h4 id=&#34;toc_6&#34;&gt;The simpler way (using the auto mapping of arguments)&lt;/h4&gt;
+&lt;h4 id=&#34;the-simpler-way-using-the-auto-mapping-of-arguments:886c467e0485f96e920181fb71f032f5&#34;&gt;The simpler way (using the auto mapping of arguments)&lt;/h4&gt;
 
 &lt;p&gt;As retrieving an object from the id given in parameters is a very common operation, symfony2
 already have something to makes your lifes easier, if instead of giving the parameters &lt;code&gt;$id&lt;/code&gt;
@@ -729,7 +729,7 @@ find the article with the corresponding id (and return the 404 &lt;strong&gt;BEF
 
 &lt;p&gt;much simpler uh ? and the 404 case is still handle&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_7&#34;&gt;Implementing GET /api/articles&lt;/h3&gt;
+&lt;h3 id=&#34;implementing-get-api-articles:886c467e0485f96e920181fb71f032f5&#34;&gt;Implementing GET /api/articles&lt;/h3&gt;
 
 &lt;p&gt;In order to get all articles, the standard REST way to do that is simply to remove the &lt;code&gt;{id}&lt;/code&gt; part,
 which can directly be done with symfony2 by adding this method &lt;code&gt;getArticlesAction&lt;/code&gt; (notice the S), and using the method &lt;code&gt;findAll()&lt;/code&gt; of the repository,&lt;/p&gt;
@@ -763,7 +763,7 @@ S&amp;gt;     * retrieve all articles
 ]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;toc_8&#34;&gt;Important Note concerning pagination:&lt;/h4&gt;
+&lt;h4 id=&#34;important-note-concerning-pagination:886c467e0485f96e920181fb71f032f5&#34;&gt;Important Note concerning pagination:&lt;/h4&gt;
 
 &lt;p&gt;Pagination being a little more complex topic, we will cover it in a later part
 However if you remember your reading of Part1, pagination belongs to the metadata
@@ -776,7 +776,7 @@ that which permit&lt;/p&gt;
 &lt;li&gt;permit a better flexibility and retro compatibility even if you &amp;ldquo;ooops forgot pagination&amp;rdquo; or you latter decide to remove it to simplify your API&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;toc_9&#34;&gt;Implement POST /articles (creating one new article)&lt;/h3&gt;
+&lt;h3 id=&#34;implement-post-articles-creating-one-new-article:886c467e0485f96e920181fb71f032f5&#34;&gt;Implement POST /articles (creating one new article)&lt;/h3&gt;
 
 &lt;p&gt;Note: of course never use GET to create (or edit) a resource, nor use /articles/create etc.&lt;/p&gt;
 
@@ -816,13 +816,13 @@ that which permit&lt;/p&gt;
 
 &lt;p&gt;(http is the command provided by &lt;a href=&#34;https://github.com/jakubroztocil/httpie&#34;&gt;httpie&lt;/a&gt; a MUST-HAVE for testing API&lt;/p&gt;
 
-&lt;h4 id=&#34;toc_10&#34;&gt;Important note&lt;/h4&gt;
+&lt;h4 id=&#34;important-note:886c467e0485f96e920181fb71f032f5&#34;&gt;Important note&lt;/h4&gt;
 
 &lt;p&gt;There&amp;rsquo;s actually a much simpler to do, using a technique similar to the one for GET, but
 unfortunately it&amp;rsquo;s late at the time of writing, so I will edit this blog post
 soon to include it&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_11&#34;&gt;Implement PUT /articles/{id}  (editing an existing article)&lt;/h3&gt;
+&lt;h3 id=&#34;implement-put-articles-id-editing-an-existing-article:886c467e0485f96e920181fb71f032f5&#34;&gt;Implement PUT /articles/{id}  (editing an existing article)&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;PUT&lt;/code&gt; is the standard way in HTTP to modify (or create) a resource for which you already
 know the URL, in our case to edit, we already know the url, as it is /api/articles/{id}&lt;/p&gt;
@@ -833,9 +833,9 @@ know the URL, in our case to edit, we already know the url, as it is /api/articl
 
 &lt;p&gt;we let it as an exercise to the reader (or you can directly check on github how it was implemented)&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_12&#34;&gt;Implement DELETE /articles/{id} (delete an existing article)&lt;/h3&gt;
+&lt;h3 id=&#34;implement-delete-articles-id-delete-an-existing-article:886c467e0485f96e920181fb71f032f5&#34;&gt;Implement DELETE /articles/{id} (delete an existing article)&lt;/h3&gt;
 
-&lt;h3 id=&#34;toc_13&#34;&gt;Conclusion&lt;/h3&gt;
+&lt;h3 id=&#34;conclusion:886c467e0485f96e920181fb71f032f5&#34;&gt;Conclusion&lt;/h3&gt;
 
 &lt;p&gt;Now we know how to create a Full crud which leverage as much as possible the utilities provided
 to us by symfony2 and the FOSRestBundle.&lt;/p&gt;
@@ -855,7 +855,7 @@ to us by symfony2 and the FOSRestBundle.&lt;/p&gt;
     <item>
       <title>Create a production ready rest api with symfony2 (part 1)</title>
       <link>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/</link>
-      <pubDate>Sat, 23 May 2015 23:31:15 CST</pubDate>
+      <pubDate>Sat, 23 May 2015 23:31:15 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/</guid>
       <description>
@@ -891,7 +891,7 @@ and I really mean the emphasis in &lt;strong&gt;exactly&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;An API is made to resist the test of time, so you can really afford to spend one or
 two hours to carefully read these links.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_0&#34;&gt;Example project&lt;/h3&gt;
+&lt;h3 id=&#34;example-project:a54943db4d72a4144ed4e4c7803550cc&#34;&gt;Example project&lt;/h3&gt;
 
 &lt;p&gt;All the steps described here are applied in this toy project
 &lt;a href=&#34;https://github.com/allan-simon/symfony2-rest-api-example&#34;&gt;https://github.com/allan-simon/symfony2-rest-api-example&lt;/a&gt;&lt;/p&gt;
@@ -905,7 +905,7 @@ two hours to carefully read these links.&lt;/p&gt;
 &lt;li&gt;Creation of tags to category articles&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;toc_1&#34;&gt;Creating the project&lt;/h3&gt;
+&lt;h3 id=&#34;creating-the-project:a54943db4d72a4144ed4e4c7803550cc&#34;&gt;Creating the project&lt;/h3&gt;
 
 &lt;p&gt;To create the project in a repeatable and automated way,
 regardless of your Operating system, we will use this base &lt;a href=&#34;https://github.com/we-bridge/vagrant-ansible-symfony&#34;&gt;https://github.com/we-bridge/vagrant-ansible-symfony&lt;/a&gt;
@@ -928,7 +928,7 @@ not polluating your own machine.&lt;/p&gt;
 &lt;p&gt;it takes some times, and at the end you should be able to open
 the following address &lt;a href=&#34;http://localhost:8080/app/example&#34;&gt;http://localhost:8080/app/example&lt;/a&gt; in your browser.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_2&#34;&gt;Adding the FOSRestBundle&lt;/h3&gt;
+&lt;h3 id=&#34;adding-the-fosrestbundle:a54943db4d72a4144ed4e4c7803550cc&#34;&gt;Adding the FOSRestBundle&lt;/h3&gt;
 
 &lt;p&gt;The FOSRestBundle is a bundle providing a lot of classes and method to create easily
 a REST api, especially as it&amp;rsquo;s part of the third-party bundles recommanded by Symfony
@@ -960,9 +960,9 @@ framework:
         enabled: true
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_3&#34;&gt;Creating our first API call GET /api/articles/{id}&lt;/h3&gt;
+&lt;h3 id=&#34;creating-our-first-api-call-get-api-articles-id:a54943db4d72a4144ed4e4c7803550cc&#34;&gt;Creating our first API call GET /api/articles/{id}&lt;/h3&gt;
 
-&lt;h4 id=&#34;toc_4&#34;&gt;Putting all the API calls in /api&lt;/h4&gt;
+&lt;h4 id=&#34;putting-all-the-api-calls-in-api:a54943db4d72a4144ed4e4c7803550cc&#34;&gt;Putting all the API calls in /api&lt;/h4&gt;
 
 &lt;p&gt;Create the file &lt;code&gt;src/AppBundle/Resources/config/api-routing.yml&lt;/code&gt;
 (empty for the moment)&lt;/p&gt;
@@ -975,9 +975,9 @@ framework:
     resource: &amp;quot;@AppBundle/Resources/config/api-routing.yml&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;toc_5&#34;&gt;Create the controller for all the /api/articles calls&lt;/h4&gt;
+&lt;h4 id=&#34;create-the-controller-for-all-the-api-articles-calls:a54943db4d72a4144ed4e4c7803550cc&#34;&gt;Create the controller for all the /api/articles calls&lt;/h4&gt;
 
-&lt;h4 id=&#34;toc_6&#34;&gt;Put the framework to automatically seralize as JSON the returned value of Controller&lt;/h4&gt;
+&lt;h4 id=&#34;put-the-framework-to-automatically-seralize-as-json-the-returned-value-of-controller:a54943db4d72a4144ed4e4c7803550cc&#34;&gt;Put the framework to automatically seralize as JSON the returned value of Controller&lt;/h4&gt;
 
 &lt;p&gt;Without any change, you still need to create a &lt;code&gt;Response&lt;/code&gt; object etc. you can make it even
 simpler and directly the object or array to serialize by adding this to your &lt;code&gt;app/config/config.yml&lt;/code&gt;&lt;/p&gt;
@@ -1047,7 +1047,7 @@ will make Symfony2 to automatically create the route&lt;/p&gt;
 &lt;p&gt;Note that if you return an object, it will actually serialize it also automatically, it&amp;rsquo;s not
 only because we&amp;rsquo;re returning an array.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_7&#34;&gt;Conclusion and next part&lt;/h3&gt;
+&lt;h3 id=&#34;conclusion-and-next-part:a54943db4d72a4144ed4e4c7803550cc&#34;&gt;Conclusion and next part&lt;/h3&gt;
 
 &lt;p&gt;as you can see in some simple step we now have a bundle that in two lines can implement an API
 call.&lt;/p&gt;
@@ -1065,12 +1065,12 @@ call.&lt;/p&gt;
     <item>
       <title>Things I&#39;ve learn this week</title>
       <link>http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/</link>
-      <pubDate>Tue, 12 May 2015 22:40:38 CST</pubDate>
+      <pubDate>Tue, 12 May 2015 22:40:38 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/</guid>
       <description>
 
-&lt;h3 id=&#34;toc_0&#34;&gt;How to send the unchanged Host header to proxied server with Nginx&lt;/h3&gt;
+&lt;h3 id=&#34;how-to-send-the-unchanged-host-header-to-proxied-server-with-nginx:6e2abccfc1423df5022fe0145f06b12d&#34;&gt;How to send the unchanged Host header to proxied server with Nginx&lt;/h3&gt;
 
 &lt;p&gt;Imagine you have a first nginx acting as a load balancer with this configuration&lt;/p&gt;
 
@@ -1110,7 +1110,7 @@ the proxied server unchanged by adding one line like this:&lt;/p&gt;
 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_1&#34;&gt;How to reload PHP-fpm without restarting it&lt;/h3&gt;
+&lt;h3 id=&#34;how-to-reload-php-fpm-without-restarting-it:6e2abccfc1423df5022fe0145f06b12d&#34;&gt;How to reload PHP-fpm without restarting it&lt;/h3&gt;
 
 &lt;p&gt;In production you may want to reload php-fpm without restarting it
 in order to avoid downtime.&lt;/p&gt;
@@ -1129,7 +1129,7 @@ in order to avoid downtime.&lt;/p&gt;
     <item>
       <title>vagrant with ansible provisionning docker containers for symfony2</title>
       <link>http://allan-simon.github.io/blog/posts/vagrant-with-ansible-provisionning-docker-containers-for-symfony2/</link>
-      <pubDate>Sun, 12 Apr 2015 04:14:20 CST</pubDate>
+      <pubDate>Sun, 12 Apr 2015 04:14:20 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/vagrant-with-ansible-provisionning-docker-containers-for-symfony2/</guid>
       <description>
@@ -1145,7 +1145,7 @@ in order to avoid downtime.&lt;/p&gt;
 
 &lt;p&gt;As an example will take the existing Oauth2 server I have created: &lt;a href=&#34;https://github.com/allan-simon/oauth2-symfony2-vagrant-fosuserbundle&#34;&gt;Oauth2Symfony2&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_0&#34;&gt;Introduction&lt;/h3&gt;
+&lt;h3 id=&#34;introduction:4402486289f8d094d7120258e6fa812a&#34;&gt;Introduction&lt;/h3&gt;
 
 &lt;p&gt;Recently I&amp;rsquo;ve been reading a lot about Docker, Vagrant and Ansible.
 At my company we&amp;rsquo;re already using vagrant and ansible to create our
@@ -1171,7 +1171,7 @@ my computer&lt;/li&gt;
 &lt;li&gt;To works fine with Symfony2 web applications&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;toc_1&#34;&gt;Step 1, getting the Docker containers ready&lt;/h2&gt;
+&lt;h2 id=&#34;step-1-getting-the-docker-containers-ready:4402486289f8d094d7120258e6fa812a&#34;&gt;Step 1, getting the Docker containers ready&lt;/h2&gt;
 
 &lt;p&gt;For this first try, we&amp;rsquo;re not going to push the logic to its maximun
 and we will keep things simple we&amp;rsquo;re going to have 2 Docker containers&lt;/p&gt;
@@ -1184,7 +1184,7 @@ and we will keep things simple we&amp;rsquo;re going to have 2 Docker containers
 &lt;p&gt;We will put all our dockerfiles in a directory &lt;code&gt;DockerFiles&lt;/code&gt; with
 one subdirectory by container.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_2&#34;&gt;Postgresql container&lt;/h3&gt;
+&lt;h3 id=&#34;postgresql-container:4402486289f8d094d7120258e6fa812a&#34;&gt;Postgresql container&lt;/h3&gt;
 
 &lt;p&gt;The docker repository has already a very nice &lt;a href=&#34;https://registry.hub.docker.com/_/postgres/&#34;&gt;official postgresql container&lt;/a&gt;
 it contains instructions on how to extend it, perfect&lt;/p&gt;
@@ -1198,7 +1198,7 @@ FROM library/postgres
 &lt;p&gt;Here nothing funky, we&amp;rsquo;re just saying our container&amp;rsquo;s image will use
 the official postgres image as a base. As we progress it will be completed with a script to create a database and a database user, but outside of this it currently perfectly fits our needs&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_3&#34;&gt;Nginx + PHP-fpm&lt;/h3&gt;
+&lt;h3 id=&#34;nginx-php-fpm:4402486289f8d094d7120258e6fa812a&#34;&gt;Nginx + PHP-fpm&lt;/h3&gt;
 
 &lt;p&gt;The docker repository is full of container for PHP-fpm with Nginx but I didn&amp;rsquo;t find any which met my needs:&lt;/p&gt;
 
@@ -1275,7 +1275,7 @@ RUN echo &amp;quot;\ndaemon off;&amp;quot; &amp;gt;&amp;gt; /etc/nginx/nginx.con
 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_4&#34;&gt;Building the Docker images using Ansible&lt;/h3&gt;
+&lt;h3 id=&#34;building-the-docker-images-using-ansible:4402486289f8d094d7120258e6fa812a&#34;&gt;Building the Docker images using Ansible&lt;/h3&gt;
 
 &lt;p&gt;For those who don&amp;rsquo;t know &lt;a href=&#34;http://docs.ansible.com/&#34;&gt;Ansible&lt;/a&gt;, it&amp;rsquo;s a tool made to automate all the steps you do in order to setup an environment, be it creating files, installing packages, modifying configuration, making sure a service is started and an other stopped. It works also if the environment is made of several machines scattered over the world, as long as you can SSH to them.&lt;/p&gt;
 
@@ -1319,7 +1319,7 @@ RUN echo &amp;quot;\ndaemon off;&amp;quot; &amp;gt;&amp;gt; /etc/nginx/nginx.con
 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_5&#34;&gt;Modifying our Postgres image to create a database for Symfony&lt;/h3&gt;
+&lt;h3 id=&#34;modifying-our-postgres-image-to-create-a-database-for-symfony:4402486289f8d094d7120258e6fa812a&#34;&gt;Modifying our Postgres image to create a database for Symfony&lt;/h3&gt;
 
 &lt;p&gt;Our postgres image is currently very basic, there&amp;rsquo;s postgresql installed inside but no database or user created for our application. Let&amp;rsquo;s fix that.According to the &lt;a href=&#34;https://registry.hub.docker.com/_/postgres/&#34;&gt;documentation&lt;/a&gt; you can add your custom script or SQL query to be launched at the container start by adding your script to the &lt;code&gt;/docker-entrypoint-initdb.d&lt;/code&gt; directory. Let&amp;rsquo;s do that, create a file &lt;code&gt;DockerFiles/postgres/make_db.sh&lt;/code&gt;&lt;/p&gt;
 
@@ -1352,7 +1352,7 @@ RUN chmod +x /docker-entrypoint-initdb.d/make_db.sh
 
 &lt;p&gt;&lt;strong&gt;/!\ One important remark, the file is added once, it means that if you latter modify the file, you need to rebuild the image. For that the &amp;lsquo;easy&amp;rsquo; way I found is to add a blank line in the dockerfile to force it to rebuild, but I guess there&amp;rsquo;s a better way.&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_6&#34;&gt;Start a Postgresql container based on our image from Ansible.&lt;/h3&gt;
+&lt;h3 id=&#34;start-a-postgresql-container-based-on-our-image-from-ansible:4402486289f8d094d7120258e6fa812a&#34;&gt;Start a Postgresql container based on our image from Ansible.&lt;/h3&gt;
 
 &lt;p&gt;Now that our image is ready, it&amp;rsquo;s time to start it, add at the end of your &lt;code&gt;playbook.yml&lt;/code&gt;&lt;/p&gt;
 
@@ -1404,7 +1404,7 @@ APP_DB_USER_PASSWORD: symfony_db_password
 APP_DB_NAME: symfony_db
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_7&#34;&gt;Start a Nginx+PHP-fpm container linked to the Postgresql one&lt;/h3&gt;
+&lt;h3 id=&#34;start-a-nginx-php-fpm-container-linked-to-the-postgresql-one:4402486289f8d094d7120258e6fa812a&#34;&gt;Start a Nginx+PHP-fpm container linked to the Postgresql one&lt;/h3&gt;
 
 &lt;p&gt;Now that we have our postgres container started it&amp;rsquo;s time to do the same with our container for Nginx and PHP-fpm it takes the same structure as the task for postgres, with just some little thing in more (explained in comments)&lt;/p&gt;
 
@@ -1443,7 +1443,7 @@ APP_DB_NAME: symfony_db
 
 &lt;p&gt;With that, our Symfony app will have all the information it needs to access to the database, and to be accessed from the outside&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_8&#34;&gt;Finalize the configuration of the Nginx+PHP-fpm image&lt;/h3&gt;
+&lt;h3 id=&#34;finalize-the-configuration-of-the-nginx-php-fpm-image:4402486289f8d094d7120258e6fa812a&#34;&gt;Finalize the configuration of the Nginx+PHP-fpm image&lt;/h3&gt;
 
 &lt;p&gt;Our two containers are now able to communicate but the same as we needed to create a database to make our postgres container useful, we&amp;rsquo;re going to need to tweak a little our Nginx+PHP-fpm container in order to&lt;/p&gt;
 
@@ -1481,7 +1481,7 @@ ENTRYPOINT [&amp;quot;/root/entrypoint.sh&amp;quot;]
 
 &lt;p&gt;now the configuration file themselves&lt;/p&gt;
 
-&lt;h4 id=&#34;toc_9&#34;&gt;DockerFiles/Symfony2/config/vhost.conf&lt;/h4&gt;
+&lt;h4 id=&#34;dockerfiles-symfony2-config-vhost-conf:4402486289f8d094d7120258e6fa812a&#34;&gt;DockerFiles/Symfony2/config/vhost.conf&lt;/h4&gt;
 
 &lt;p&gt;This vhost is specifically for symfony2 applications
 you maybe to adapt it if you plan to run other kind
@@ -1517,14 +1517,14 @@ server {
 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;toc_10&#34;&gt;DockerFiles/Symfony2/config/php-extra.ini&lt;/h4&gt;
+&lt;h4 id=&#34;dockerfiles-symfony2-config-php-extra-ini:4402486289f8d094d7120258e6fa812a&#34;&gt;DockerFiles/Symfony2/config/php-extra.ini&lt;/h4&gt;
 
 &lt;p&gt;nothing fancy in it&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;date.timezone = UTC
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;toc_11&#34;&gt;DockerFiles/Symfony2/entrypoint.sh&lt;/h4&gt;
+&lt;h4 id=&#34;dockerfiles-symfony2-entrypoint-sh:4402486289f8d094d7120258e6fa812a&#34;&gt;DockerFiles/Symfony2/entrypoint.sh&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code&gt;#!/bin/bash
 
@@ -1587,7 +1587,7 @@ fi
 
 &lt;p&gt;Now our environment is fully ready we&amp;rsquo;re only left with adapting our appliction&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_12&#34;&gt;Adapting our symfony application to fit in&lt;/h3&gt;
+&lt;h3 id=&#34;adapting-our-symfony-application-to-fit-in:4402486289f8d094d7120258e6fa812a&#34;&gt;Adapting our symfony application to fit in&lt;/h3&gt;
 
 &lt;p&gt;Here&amp;rsquo;s there&amp;rsquo;s nothing much to change itself in the code, we simply need to tell Symfony2 to look in priority for the environment variables. The problem is Symfony2 itself looks for variable starting with &lt;code&gt;SYMFONY__&lt;/code&gt; and the second problem is that the &lt;code&gt;parameters.yml&lt;/code&gt; has priority over the environment variables&amp;hellip;&lt;/p&gt;
 
@@ -1643,7 +1643,7 @@ fi
 
 &lt;p&gt;The two first environment variables come from the variables given by docker to the &lt;code&gt;app_webserver&lt;/code&gt; when linking with &lt;code&gt;app_database&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_13&#34;&gt;Running everything&lt;/h3&gt;
+&lt;h3 id=&#34;running-everything:4402486289f8d094d7120258e6fa812a&#34;&gt;Running everything&lt;/h3&gt;
 
 &lt;p&gt;Now that everything is done you can run your playbook using:&lt;/p&gt;
 
@@ -1652,7 +1652,7 @@ fi
 
 &lt;p&gt;it tells to run the playbook on your local machine.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_14&#34;&gt;Link it to vagrant&lt;/h3&gt;
+&lt;h3 id=&#34;link-it-to-vagrant:4402486289f8d094d7120258e6fa812a&#34;&gt;Link it to vagrant&lt;/h3&gt;
 
 &lt;p&gt;All of that works fine if you&amp;rsquo;re on a Linux machine, so for your fellow Mac or Windows colleague you can create this &lt;code&gt;Vagrantfile&lt;/code&gt;&lt;/p&gt;
 
@@ -1698,9 +1698,9 @@ end
 
 &lt;p&gt;it is not treated in this article but for Symfony2 performance reason on Vagrant, you may want to put the cache and logs folder outside of the share folder.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_15&#34;&gt;Useful commands&lt;/h3&gt;
+&lt;h3 id=&#34;useful-commands:4402486289f8d094d7120258e6fa812a&#34;&gt;Useful commands&lt;/h3&gt;
 
-&lt;h3 id=&#34;toc_16&#34;&gt;Run a command in a given container&lt;/h3&gt;
+&lt;h3 id=&#34;run-a-command-in-a-given-container:4402486289f8d094d7120258e6fa812a&#34;&gt;Run a command in a given container&lt;/h3&gt;
 
 &lt;p&gt;for example you want to run phpunit&lt;/p&gt;
 
@@ -1712,12 +1712,12 @@ end
 &lt;pre&gt;&lt;code&gt;sudo docker exec -it app_webserver bash
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_17&#34;&gt;Get the logs&lt;/h3&gt;
+&lt;h3 id=&#34;get-the-logs:4402486289f8d094d7120258e6fa812a&#34;&gt;Get the logs&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code&gt;sudo docker logs -f app_webserver   
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_18&#34;&gt;Delete an image&lt;/h3&gt;
+&lt;h3 id=&#34;delete-an-image:4402486289f8d094d7120258e6fa812a&#34;&gt;Delete an image&lt;/h3&gt;
 
 &lt;p&gt;Let&amp;rsquo;s say it&amp;rsquo;s 3AM you&amp;rsquo;re trying desperately to modify the Dockerfile of the database but nothing change, so you want to nuke everything and start fresh&lt;/p&gt;
 
@@ -1733,7 +1733,7 @@ sudo docker rm app_database2
 &lt;pre&gt;&lt;code&gt;sudo docker rmi allansimon/postgres-for-symfony
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_19&#34;&gt;Further improvements&lt;/h3&gt;
+&lt;h3 id=&#34;further-improvements:4402486289f8d094d7120258e6fa812a&#34;&gt;Further improvements&lt;/h3&gt;
 
 &lt;p&gt;With that you should have a good starters to have your application running in dockers , while still providing an easy environment to deploy for your developers, but things can be of course furthered improve (I will try to cover them in other articles)&lt;/p&gt;
 
@@ -1748,9 +1748,9 @@ sudo docker rm app_database2
 &lt;li&gt;Be able to have our containers over several physical machines&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;toc_20&#34;&gt;Articles that helped me wrote this one and further reading&lt;/h3&gt;
+&lt;h3 id=&#34;articles-that-helped-me-wrote-this-one-and-further-reading:4402486289f8d094d7120258e6fa812a&#34;&gt;Articles that helped me wrote this one and further reading&lt;/h3&gt;
 
-&lt;h4 id=&#34;toc_21&#34;&gt;About the content of this article&lt;/h4&gt;
+&lt;h4 id=&#34;about-the-content-of-this-article:4402486289f8d094d7120258e6fa812a&#34;&gt;About the content of this article&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://docs.ansible.com/docker_module.html&#34;&gt;Ansible documentation on docker&lt;/a&gt;&lt;/li&gt;
@@ -1762,7 +1762,7 @@ sudo docker rm app_database2
 &lt;li&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;toc_22&#34;&gt;Further reading&lt;/h4&gt;
+&lt;h4 id=&#34;further-reading:4402486289f8d094d7120258e6fa812a&#34;&gt;Further reading&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://devopscube.com/how-to-link-docker-containers-across-hosts-the-ambassador-pattern/&#34;&gt;How to link docker containers accross host&lt;/a&gt;&lt;/li&gt;
@@ -1779,7 +1779,7 @@ sudo docker rm app_database2
     <item>
       <title>doctrine2 order by count many to many</title>
       <link>http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/</link>
-      <pubDate>Thu, 09 Apr 2015 01:44:41 CST</pubDate>
+      <pubDate>Thu, 09 Apr 2015 01:44:41 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/</guid>
       <description>
@@ -1787,7 +1787,7 @@ sudo docker rm app_database2
 &lt;p&gt;Today I found a problem quite common but tricky enough for the solution
 to share it with you&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_0&#34;&gt;The problem&lt;/h3&gt;
+&lt;h3 id=&#34;the-problem:fcd569fc48e65a7020df74b8509a5751&#34;&gt;The problem&lt;/h3&gt;
 
 &lt;p&gt;I have 2 Entities&lt;/p&gt;
 
@@ -1807,7 +1807,7 @@ it&amp;rsquo;s an interesting exercise about &amp;lsquo;how much do you know doc
 &lt;p&gt;but let me tell you, the solution is like an Egg of Columbus, once you see
 it it becomes evident, but it was actually not that simple at first.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_1&#34;&gt;The solution&lt;/h3&gt;
+&lt;h3 id=&#34;the-solution:fcd569fc48e65a7020df74b8509a5751&#34;&gt;The solution&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code&gt;// in your repository
 $builder = $this-&amp;gt;createQueryBuilder(&#39;a&#39;);
@@ -1820,7 +1820,7 @@ $builder = $this-&amp;gt;createQueryBuilder(&#39;a&#39;);
 ;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_2&#34;&gt;Step by step&lt;/h3&gt;
+&lt;h3 id=&#34;step-by-step:fcd569fc48e65a7020df74b8509a5751&#34;&gt;Step by step&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code&gt;-&amp;gt;leftJoin(&#39;a.likedByUsers&#39;, &#39;u&#39;)
 &lt;/code&gt;&lt;/pre&gt;
@@ -1871,7 +1871,7 @@ of the JSM Serializer&lt;/p&gt;
     <item>
       <title>gitlab ci with docker runner</title>
       <link>http://allan-simon.github.io/blog/posts/gitlab-ci-with-docker-runner/</link>
-      <pubDate>Sun, 29 Mar 2015 15:05:36 CST</pubDate>
+      <pubDate>Sun, 29 Mar 2015 15:05:36 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/gitlab-ci-with-docker-runner/</guid>
       <description>
@@ -1890,7 +1890,7 @@ integration and to be able to run our tests at each Merge request.&lt;/p&gt;
 &lt;li&gt;How to make gitlab-ci run your tests in a Docker container&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;toc_0&#34;&gt;Gitlab-CI in a separate instance&lt;/h2&gt;
+&lt;h2 id=&#34;gitlab-ci-in-a-separate-instance:4d690c56257e442bb4a4350a17a1da49&#34;&gt;Gitlab-CI in a separate instance&lt;/h2&gt;
 
 &lt;p&gt;To do continous-integration you got plenty of choice, the most popular one being
 &lt;a href=&#34;http://jenkins-ci.org&#34;&gt;jenkinks&lt;/a&gt;. However it seems to be that it is a bit bloated
@@ -1905,7 +1905,7 @@ which will take care of installing everything from you&lt;/p&gt;
 
 &lt;p&gt;Then in order to have only gitlab-ci you can can follow the step &lt;a href=&#34;https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/gitlab-ci/README.md&#34;&gt;Running Gitlab on its own server&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_1&#34;&gt;Gitlab-CI behind your company&amp;rsquo;s frontal server&lt;/h2&gt;
+&lt;h2 id=&#34;gitlab-ci-behind-your-company-s-frontal-server:4d690c56257e442bb4a4350a17a1da49&#34;&gt;Gitlab-CI behind your company&amp;rsquo;s frontal server&lt;/h2&gt;
 
 &lt;p&gt;Our company as one public IP under which we host all our services.
 We have then a frontal apache2 (but it could have been a nginx) which proxify
@@ -1938,7 +1938,7 @@ ci_nginx[&#39;enable&#39;] = false
 
 &lt;p&gt;(by default gitlab-ci&amp;rsquo;s unicorn listen on port 8181)&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_2&#34;&gt;Tell Gitlab-ci to run your test into a docker container&lt;/h2&gt;
+&lt;h2 id=&#34;tell-gitlab-ci-to-run-your-test-into-a-docker-container:4d690c56257e442bb4a4350a17a1da49&#34;&gt;Tell Gitlab-ci to run your test into a docker container&lt;/h2&gt;
 
 &lt;p&gt;Gitlab-ci use what they call a &amp;ldquo;Runner&amp;rdquo; to run your test, it&amp;rsquo;s more
 or less a spare machine in which Gitlab-ci will clone your project
@@ -2003,7 +2003,7 @@ Gitlab-ci for your php/symfony project&lt;/p&gt;
     <item>
       <title>symfony create your own third party bundle part 1/4</title>
       <link>http://allan-simon.github.io/blog/posts/symfony-create-your-own-third-party-bundle/</link>
-      <pubDate>Sat, 28 Mar 2015 21:05:04 CST</pubDate>
+      <pubDate>Sat, 28 Mar 2015 21:05:04 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/symfony-create-your-own-third-party-bundle/</guid>
       <description>
@@ -2024,7 +2024,7 @@ do like adults and have your own bundle.&lt;/p&gt;
 &lt;li&gt;Make your bundle testable&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;toc_0&#34;&gt;Create the base repo and composer.json&lt;/h3&gt;
+&lt;h3 id=&#34;create-the-base-repo-and-composer-json:287aaaf28f98f244d811aded1389870a&#34;&gt;Create the base repo and composer.json&lt;/h3&gt;
 
 &lt;p&gt;Well for creating the base repo, nothing different from any new repo on github.
 I would however stressed out that you should chose since the beginning a license&lt;/p&gt;
@@ -2091,7 +2091,7 @@ post how to create a very basic service without configuration.&lt;/p&gt;
     <item>
       <title>migrate down with doctrine migrations</title>
       <link>http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/</link>
-      <pubDate>Sat, 14 Mar 2015 18:21:01 CST</pubDate>
+      <pubDate>Sat, 14 Mar 2015 18:21:01 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/</guid>
       <description>&lt;p&gt;if you&amp;rsquo;re using Doctrine in your Symfony2 project, you&amp;rsquo;re certainly using the
@@ -2118,7 +2118,7 @@ but you may have seen that documentation is not staging clearly how to migrate d
     <item>
       <title>symfony 2.6 tips #1</title>
       <link>http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/</link>
-      <pubDate>Wed, 11 Mar 2015 22:40:50 CST</pubDate>
+      <pubDate>Wed, 11 Mar 2015 22:40:50 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/</guid>
       <description>
@@ -2150,14 +2150,14 @@ in company with tight deadline, you don&amp;rsquo;t have time to adapt the tests
 
 &lt;p&gt;so that it will appear with a &lt;code&gt;S&lt;/code&gt; in the test report, so that you have a reminder that there&amp;rsquo;s something to fix.&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_0&#34;&gt;Disable form validation in test&lt;/h3&gt;
+&lt;h3 id=&#34;disable-form-validation-in-test:1621fbda3d3ab5d71d6856b76aa5af6f&#34;&gt;Disable form validation in test&lt;/h3&gt;
 
 &lt;p&gt;You&amp;rsquo;re writing functionnal test and you need to check the case of an form submitted with bogus data (to be sure your server side code is protected against hand-crafted request). By default the form you get in functionnal test will have the same checking rules than the one on server side, so in order to disable checking you can do&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;$form[&#39;country&#39;]-&amp;gt;disableValidation()-&amp;gt;select(&#39;Invalid value&#39;);
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;toc_1&#34;&gt;(Doctrine) don&amp;rsquo;t use findById() when you just mean find()&lt;/h3&gt;
+&lt;h3 id=&#34;doctrine-don-t-use-findbyid-when-you-just-mean-find:1621fbda3d3ab5d71d6856b76aa5af6f&#34;&gt;(Doctrine) don&amp;rsquo;t use findById() when you just mean find()&lt;/h3&gt;
 
 &lt;p&gt;well, the title is self-explaining&lt;/p&gt;
 </description>
@@ -2166,7 +2166,7 @@ in company with tight deadline, you don&amp;rsquo;t have time to adapt the tests
     <item>
       <title>Redmine-cli and redmine API</title>
       <link>http://allan-simon.github.io/blog/posts/redmine-cli/</link>
-      <pubDate>Wed, 25 Feb 2015 00:08:11 CST</pubDate>
+      <pubDate>Wed, 25 Feb 2015 00:08:11 +0800</pubDate>
       
       <guid>http://allan-simon.github.io/blog/posts/redmine-cli/</guid>
       <description>
@@ -2206,7 +2206,7 @@ my modification include so far:&lt;/p&gt;
 &lt;li&gt;&lt;code&gt;redmine update 123 &#39;in progress&#39;&lt;/code&gt; to update the status to &lt;code&gt;in progress&lt;/code&gt; (admitting your redmine has this status)&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;toc_0&#34;&gt;The long story behind:&lt;/h3&gt;
+&lt;h3 id=&#34;the-long-story-behind:d401f13f70d55c7805182afc8cf1c451&#34;&gt;The long story behind:&lt;/h3&gt;
 
 &lt;p&gt;As any good Linux user, I love the CLI (no, there&amp;rsquo;s no such thing
 as a &lt;strong&gt;good&lt;/strong&gt; Linux user who does not love the CLI). Starting from
@@ -2242,7 +2242,7 @@ Then you have the second technique&lt;/p&gt;
 &lt;p&gt;each of these steps impliying a page load, no need to tell you how much times
 it takes even for 5 tickets&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_1&#34;&gt;The CLI will always be there for you: redmine-cli&lt;/h3&gt;
+&lt;h3 id=&#34;the-cli-will-always-be-there-for-you-redmine-cli:d401f13f70d55c7805182afc8cf1c451&#34;&gt;The CLI will always be there for you: redmine-cli&lt;/h3&gt;
 
 &lt;p&gt;For now some month, whenever I&amp;rsquo;m looking for that little tool, the reflex is to
 search for it on github. As I knew there was a Redmine API and that we don&amp;rsquo;t have
@@ -2263,7 +2263,7 @@ so that people know if the project is dead or just &amp;lsquo;in good shape enou
 &lt;p&gt;So I found the python project, which was updated in 2014 and
 had clear installation instruction &lt;code&gt;pip install redmine-cli&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_2&#34;&gt;Missing feature: redmine API my love&lt;/h3&gt;
+&lt;h3 id=&#34;missing-feature-redmine-api-my-love:d401f13f70d55c7805182afc8cf1c451&#34;&gt;Missing feature: redmine API my love&lt;/h3&gt;
 
 &lt;p&gt;while implementing the feature I found that&lt;/p&gt;
 
