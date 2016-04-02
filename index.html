@@ -44,7 +44,142 @@
                 <div class="col-md-8">
                     
                     
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>April 3, 2016</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                I know it&rsquo;s pretty popular to use the wonderful sqlalchemy ORM for python, especially combined with alembic, but sometimes you just want to type plain SQL request. And actually it&rsquo;s pretty easy, after creating your migrations just do: &quot;&quot;&quot;your description Revision ID: 0c8ab27d3408 Revises: d58bd4ed2b03 Create Date: 2016-03-18 13:13:24.228036 &quot;&quot;&quot; # revision identifiers, used by Alembic. revision = '0c8ab27d3408' down_revision = 'd58bd4ed2b03' branch_labels = None depends_on = None from alembic
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/" role="button">Read More</a>
+                            </div>
+                        </div>
                     
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/">python alembic with environment variables</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>April 3, 2016</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                At my job we&rsquo;re currently using alembic to manage our database migrations (i.e adding a new table / index etc.) The tool is pretty mature and has been here for a while, so it covers a lot of advanced case (like handling several databases, having a tree of migrations etc.) while still being simple for simple case The only not straighforward thing I found was that it&rsquo;s not easy to integrate with 12Factor-apps, i.e my code is running in a lot of differents environments (vagrant+docker on my local machine, the QA environments, the pre-production, production etc.) And of course I don&rsquo;t want to have to maintain in the configuration file all the different combination, and even less do I want to write down my database password, so instead we&rsquo;re relying on environment variables In order to achieve this, once you&rsquo;ve done your alembic init, take your migrations folder created by alembic, and in it modify the env.py file to look like this: (the important part is the get_url methods) from __future__ import with_statement import os from alembic import context from sqlalchemy import engine_from_config, pool, create_engine from logging.config import fileConfig # this is the Alembic Config object, which provides # access to the values within the .ini file in use.
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/">how to sum all numbers in file in bash</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>March 20, 2016</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                I have a file, with one number by line, how to get the sum paste -s -d+ myfile_with_numbers | bc and if you have a csv, delimited by , and for which the number is on the 2nd field: cut -d, my_file.csv -f 2 | paste -s -d+ | bc
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/">murmur hash v3 in MySQL utf8 compatible</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>March 20, 2016</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                Murmur hash v3 in MySQL utf8 compatible These days for performance purpose, I needed to replace some autoincrement Id by a hash calculated one, in order to have a determinist way to retrieve from an object, it&rsquo;s record in database, and easily recognize duplicate. For that I have chosen the murmur hash v3 function For new records, I could use the python module (leveraging C code) mmh3 But as I needed to update million of existing record, I couldn&rsquo;t possibly imagine doing that by calling a python script.
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/">bug in Vagrant with Virtualbox sharefolder</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>August 23, 2015</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                The problem: serving static files The problem will affect you if you try to serve static files from your vagrant folder if you use the default from virtualbox For example you got your nginx or apache to serve css files and when you update them, they don&rsquo;t get updated, and sometimes they even come out with some garbage bytes at the end of it The reason, a long standing bug in virtual box after reading this bug report in vagrant repository I&rsquo;ve found that the underlying bug is from virtualbox, bug which has been reported here The solutions: deactivate send or switch of sharefolder type If you use Nginx or apache you can just followed the official workaround In Nginx: sendfile off; In Apache: EnableSendfile Off If you are like me and you&rsquo;re serving your files from go then you have no other choice than to swithc the sharefolder type, nfs for Unix-ish OS and SMB for windows A colleague of mine made this to have a transparent switch for your developers def host_box_is_unixy?
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/">create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>May 24, 2015</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                Update 23 November 2015: Corrected some typo, and updated bundles versions for Doctrine In the first part we&rsquo;ve seen how to create the base of a symfony2 project used to generate a REST Api. In this part we&rsquo;re going to see How to use the basics of JMSSerializer to serialize Entity objects How to link our API with a database How to create migration files to easily manage our datase over time and colleagues and how to generate a full CRUD (create/read/update/delete) with form checking Very important Note /!\ (can save you hours of debugging): if at any moment you got some strange 500 errors, run php app/console cache:clear php app/console cache:clear --env prod as sometimes, especially when you change the configuration files, the production environment will not update directly all the files, creating some weird errors.
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/">Create a production ready rest api with symfony2 (part 1)</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>May 23, 2015</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                What will we cover: how to transform a just-started symfony project into a REST-ready project how to configure and use the FOSRestBundle to help us in that task How to use Doctrine migrations to easily transition your database from version N to version N+1 how to add functionnal tests to automatically check your API how to configure and use the JMSSerializer to automagically serialize and unseralize your data into json (or xml) How to plug your API to a Oauth2 service mixed in between some generic advices to make your API reality proof practical examples of common &ldquo;tricky things&rdquo; (Image uploading / pagination / association between resources etc.) Here we suppose you&rsquo;re already familiar with what a REST API exactly means, and I really mean the emphasis in exactly for this I urge you to read these links: http://martinfowler.com/articles/richardsonMaturityModel.html http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http https://github.com/interagent/http-api-design www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api An API is made to resist the test of time, so you can really afford to spend one or two hours to carefully read these links.
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/">Things I&#39;ve learn this week</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>May 12, 2015</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                How to send the unchanged Host header to proxied server with Nginx Imagine you have a first nginx acting as a load balancer with this configuration upstream blue { ... } upstream green { ... } server { include /etc/nginx/backend.conf; location / { proxy_pass http://blue; proxy_connect_timeout 5; } } if you do like that, with blue and green hosting your app, your application code will see &ldquo;blue&rdquo; or &ldquo;green&rdquo; as the http Host header, which may cause problem when creating absolue URL you can override this, and force nginx to send the Host given by the client to the proxied server unchanged by adding one line like this: location / { proxy_pass http://$activeBackend; proxy_set_header Host $http_host; # &lt;= this line proxy_connect_timeout 5; } How to reload PHP-fpm without restarting it In production you may want to reload php-fpm without restarting it in order to avoid downtime.
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/vagrant-with-ansible-provisionning-docker-containers-for-symfony2/">vagrant with ansible provisionning docker containers for symfony2</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>April 12, 2015</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                In this article we&rsquo;re going to cover: How to use ansible+docker+vagrant to create a one size for all environment for Symfony2 + Nginx + Postgresql + PHP-fpm How to transition an existing application to fit in that new environment This article take the assumption that you have already heard about all the technologies above without being too familiar with them. As an example will take the existing Oauth2 server I have created: Oauth2Symfony2 Introduction Recently I&rsquo;ve been reading a lot about Docker, Vagrant and Ansible.
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/vagrant-with-ansible-provisionning-docker-containers-for-symfony2/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/">doctrine2 order by count many to many</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>April 9, 2015</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                Today I found a problem quite common but tricky enough for the solution to share it with you The problem I have 2 Entities User Article and a &ldquo;likedByUsers&rdquo; Many To Many relationship between both Now I would like to get the Articles ordered by number of &lsquo;likes&rsquo; for an API call returning a list of Articles if you feel smart you can try to find the solution by yourself it&rsquo;s an interesting exercise about &lsquo;how much do you know doctrine and SQL&rsquo; but let me tell you, the solution is like an Egg of Columbus, once you see it it becomes evident, but it was actually not that simple at first.
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-4" style="text-align: left; padding-left: 0px">
+                    
+                </div>
+                <div class="col-md-4 col-md-offset-4" style="text-align: right; padding-right: 0px">
+                    
+                        <a class="btn btn-default" href="/page/2/" role="button" style="border-radius: 0px; display: block">Older</a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
 
                 </div>
                 <div class="col-md-4">
