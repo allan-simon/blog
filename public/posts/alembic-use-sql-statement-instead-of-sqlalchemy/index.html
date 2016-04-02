@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
-  <title> how to sum all numbers in file in bash &middot; Allan&#39;s blog </title>
+  <title> alembic use sql statement instead of sqlalchemy &middot; Allan&#39;s blog </title>
 
   
   <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
@@ -47,19 +47,42 @@
 
     <div class="content container">
 <div class="post">
-  <h1>how to sum all numbers in file in bash</h1>
-  <span class="post-date">Sun, Mar 20, 2016</span>
-      
+  <h1>alembic use sql statement instead of sqlalchemy</h1>
+  <span class="post-date">Sun, Apr 3, 2016</span>
+      <p>I know it&rsquo;s pretty popular to use the wonderful <code>sqlalchemy</code> ORM
+for python, especially combined with <code>alembic</code>, but sometimes
+you just want to type plain SQL request.</p>
 
-<h3 id="toc_0">I have a file, with one number by line, how to get the sum</h3>
+<p>And actually it&rsquo;s pretty easy, after creating your migrations
+just do:</p>
 
-<pre><code class="language-bash">paste -s -d+  myfile_with_numbers | bc 
-</code></pre>
+<pre><code class="language-python">
+&quot;&quot;&quot;your description
 
-<p>and if you have a csv, delimited by <code>,</code> and for which the number is on
-the 2nd field:</p>
+Revision ID: 0c8ab27d3408
+Revises: d58bd4ed2b03
+Create Date: 2016-03-18 13:13:24.228036
 
-<pre><code>cut -d,  my_file.csv -f 2 | paste -s -d+  | bc 
+&quot;&quot;&quot;
+# revision identifiers, used by Alembic.
+revision = '0c8ab27d3408'
+down_revision = 'd58bd4ed2b03'
+branch_labels = None
+depends_on = None
+
+from alembic import op
+
+
+def upgrade():
+    conn = op.get_bind()
+    conn.execute(&quot;DROP TABLE whatever&quot;)
+
+
+def downgrade():
+
+    conn = op.get_bind()
+    conn.execute(&quot;CREATE TABLE IF NOT EXISTS whatever (id smallint)&quot;)
+
 </code></pre>
 
 </div>
