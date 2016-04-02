@@ -1,61 +1,60 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
-<head>
-  <link href="http://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-
-  <title> Form name goes into global scope in javascript &middot; Allan&#39;s blog </title>
-
-  
-  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/poole.css">
-  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/syntax.css">
-  <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/hyde.css">
-  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
-  <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
-
-  
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-
-  
-  <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+<html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.15" />
+    <title>Form name goes into global scope in javascript</title>
+    
+    
+    
+    <meta name="description" content="" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/css/phlat.css" />
 </head>
 
-<body>
-
-<div class="sidebar">
-  <div class="container sidebar-sticky">
-    <div class="sidebar-about">
-      <h1><a href="/blog">Allan&#39;s blog</a></h1>
-      <p class="lead">
-       Tips, tricks and random thoughts on Linux/Vim/rust/php/devops 
-      </p>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Allan&#39;s blog</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+            </ul>
+        </div>
     </div>
+</nav>
 
-    <ul class="sidebar-nav">
-      <li><a href="/blog/about">About</a> </li>
-      
-    </ul>
+        <div id="top" class="container">
+            <div class="row" id="content-main">
+                <div class="col-md-8">
+                    <div class="row">
+    <div class="col-md-12 content-card">
+        <h1>Form name goes into global scope in javascript</h1>
+        
+        
 
-    <p>© Creative-Common attribution</p>
-  </div>
-</div>
-
-
-    <div class="content container">
-<div class="post">
-  <h1>Form name goes into global scope in javascript</h1>
-  <span class="post-date">Mon, Feb 23, 2015</span>
-      
+        
 
 <p>An interesting problem a friend of mine discovered today</p>
 
 <p>Can you spot the problem?</p>
 
-<h3 id="toc_0">Le javascript</h3>
+<h3 id="le-javascript:fbaa6c6334b42dfe24c7e56e4931c1ff">Le javascript</h3>
 
 <pre><code>var CreateVersion = (function(){
     'use strict';
@@ -70,7 +69,7 @@
 }());
 </code></pre>
 
-<h3 id="toc_1">Le HTML</h3>
+<h3 id="le-html:fbaa6c6334b42dfe24c7e56e4931c1ff">Le HTML</h3>
 
 <pre><code>&lt;form name=&quot;CreateVersion&quot; method=&quot;post&quot; action=&quot;&quot;&gt;
     &lt;div class=&quot;form-group&quot;&gt;
@@ -115,14 +114,14 @@
 &lt;/form&gt;
 </code></pre>
 
-<h3 id="toc_2">Le erreur</h3>
+<h3 id="le-erreur:fbaa6c6334b42dfe24c7e56e4931c1ff">Le erreur</h3>
 
 <pre><code>TypeError: CreateVersion.foo is not a function
 </code></pre>
 
 <p>No, not in IE6, in last version of Firefox/Chrome</p>
 
-<h3 id="toc_3">Le solution</h3>
+<h3 id="le-solution:fbaa6c6334b42dfe24c7e56e4931c1ff">Le solution</h3>
 
 <p>This line</p>
 
@@ -147,7 +146,7 @@ mean that &ldquo;document.Foo&rdquo; collide with any javascript defined variabl
 
 <p>For more explanation see <a href="http://stackoverflow.com/questions/1415747/javascript-function-and-form-name-conflict">this stackoverflow question</a></p>
 
-<h3 id="toc_4">How to avoid that:</h3>
+<h3 id="how-to-avoid-that:fbaa6c6334b42dfe24c7e56e4931c1ff">How to avoid that:</h3>
 
 <p>Some possibilities:</p>
 
@@ -156,10 +155,139 @@ mean that &ldquo;document.Foo&rdquo; collide with any javascript defined variabl
 <li>put your modules in one big wrapping modules (like <code>MyCorp.Foo</code>)</li>
 </ul>
 
-</div>
-</div>
-<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+        
 
-  </body>
+    </div>
+</div>
+
+                    
+
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Search</h5>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form">
+            <div class="input-group">
+                <input class="form-control" type="search" name="q" />
+                <span class="input-group-btn">
+                    <button class="btn btn-custom" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+            <input type="hidden" name="q" value="site:http://allan-simon.github.io/blog/">
+        </form>
+    </div>
+</div>
+
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Recent Posts</h5>
+        <ul class="list-unstyled posts-recent">
+            
+        </ul>
+    </div>
+</div>
+
+                    
+
+                    
+    
+        <div class="row">
+            <div class="col-md-11 col-md-offset-1 card">
+                <h5>categories</h5>
+                <ul class="list-unstyled posts-recent">
+                    
+                </ul>
+            </div>
+        </div>
+    
+
+    
+
+
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Support This Site</h5>
+        <p>
+            If my blog was helpful to you, then please consider visiting my
+            <a href="http://amzn.com/w/1YU2424SGEF1B">Amazon Wishlist</a> or donating via <a href="https://paypal.me/nraboy">Paypal</a>
+            or <a href="https://cash.me/$nraboy">Square Cash</a>
+        </p>
+    </div>
+</div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-xs-6">
+    <ul class="list-inline links">
+        
+    </ul>
+</div>
+
+            <div class="col-md-4 col-xs-6">
+    <ul class="list-inline social-media">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <a href="https://github.com/nraboy/hugo-phlat-theme">Phlat Theme</a> designed and built by <a href="http://www.nraboy.com">Nic Raboy</a> in San Francisco, California.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+        <div id="back-to-top" class="hidden">
+    <a href="#top" class="well well-sm" onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+        <i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+    </a>
+</div>
+<script src="/js/jquery-2.2.1.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>
+    if(($(window).height() + 100) < $(document).height()) {
+        $('#back-to-top').removeClass('hidden').affix({
+            offset: {
+                top: 100
+            }
+        });
+    }
+</script>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+    
+    if (window.location.hostname == "localhost") {
+        $(".adsbygoogle").css("text-decoration", "none");
+        $(".adsbygoogle").text("Adsense is unavailable while serving on localhost or 127.0.0.1");
+    } else {
+        [].forEach.call(document.querySelectorAll('.adsbygoogle'), function() {
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        });
+    }
+</script>
+
+    
+
+
+
+    </body>
 </html>
