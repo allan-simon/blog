@@ -7,7 +7,51 @@
     <language>en-us</language>
     
     
-    <updated>Sun, 03 Apr 2016 03:09:40 CST</updated>
+    <updated>Sun, 03 Apr 2016 04:35:20 CST</updated>
+    
+    <item>
+      <title>alembic use sql statement instead of sqlalchemy</title>
+      <link>http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/</link>
+      <pubDate>Sun, 03 Apr 2016 04:35:20 CST</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/</guid>
+      <description>&lt;p&gt;I know it&amp;rsquo;s pretty popular to use the wonderful &lt;code&gt;sqlalchemy&lt;/code&gt; ORM
+for python, especially combined with &lt;code&gt;alembic&lt;/code&gt;, but sometimes
+you just want to type plain SQL request.&lt;/p&gt;
+
+&lt;p&gt;And actually it&amp;rsquo;s pretty easy, after creating your migrations
+just do:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;
+&amp;quot;&amp;quot;&amp;quot;your description
+
+Revision ID: 0c8ab27d3408
+Revises: d58bd4ed2b03
+Create Date: 2016-03-18 13:13:24.228036
+
+&amp;quot;&amp;quot;&amp;quot;
+# revision identifiers, used by Alembic.
+revision = &#39;0c8ab27d3408&#39;
+down_revision = &#39;d58bd4ed2b03&#39;
+branch_labels = None
+depends_on = None
+
+from alembic import op
+
+
+def upgrade():
+    conn = op.get_bind()
+    conn.execute(&amp;quot;DROP TABLE whatever&amp;quot;)
+
+
+def downgrade():
+
+    conn = op.get_bind()
+    conn.execute(&amp;quot;CREATE TABLE IF NOT EXISTS whatever (id smallint)&amp;quot;)
+
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>python alembic with environment variables</title>
@@ -129,7 +173,7 @@ you just need to update that &lt;code&gt;get_url&lt;/code&gt; method&lt;/p&gt;
       <guid>http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/</guid>
       <description>
 
-&lt;h1 id=&#34;toc_0&#34;&gt;I have a file, with one number by line, how to get the sum&lt;/h1&gt;
+&lt;h3 id=&#34;toc_0&#34;&gt;I have a file, with one number by line, how to get the sum&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;paste -s -d+  myfile_with_numbers | bc 
 &lt;/code&gt;&lt;/pre&gt;
@@ -140,15 +184,6 @@ the 2nd field:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;cut -d,  my_file.csv -f 2 | paste -s -d+  | bc 
 &lt;/code&gt;&lt;/pre&gt;
 </description>
-    </item>
-    
-    <item>
-      <title>how</title>
-      <link>http://allan-simon.github.io/blog/posts/how/</link>
-      <pubDate>Sun, 20 Mar 2016 03:42:12 CST</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/posts/how/</guid>
-      <description></description>
     </item>
     
     <item>
