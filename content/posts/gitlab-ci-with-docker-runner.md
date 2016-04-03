@@ -17,6 +17,8 @@ In this article we're going to view
   * How to put gitlab-ci behind your company frontal server
   * How to make gitlab-ci run your tests in a Docker container
 
+<!--more-->
+
 ## Gitlab-CI in a separate instance
 
 To do continous-integration you got plenty of choice, the most popular one being

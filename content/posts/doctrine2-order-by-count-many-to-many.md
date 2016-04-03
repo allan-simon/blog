@@ -28,6 +28,8 @@ it it becomes evident, but it was actually not that simple at first.
 
 ### The solution 
 
+<!--more-->
+
 ```
 // in your repository
 $builder = $this->createQueryBuilder('a');

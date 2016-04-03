@@ -25,3 +25,5 @@ php app/console doctrine:migrations:execute YYYYMMDDHHMMSS --down
 ```
 
 that's all folks !
+
+<!--more-->

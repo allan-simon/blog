@@ -12,6 +12,8 @@ you just want to type plain SQL request.
 And actually it's pretty easy, after creating your migrations
 just do:
 
+<!--more-->
+
 ```python
 
 """your description

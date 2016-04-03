@@ -15,6 +15,8 @@ This article take the assumption that you have already heard about all the techn
 
 As an example will take the existing Oauth2 server I have created: [Oauth2Symfony2](https://github.com/allan-simon/oauth2-symfony2-vagrant-fosuserbundle)
 
+<!--more-->
+
 ### Introduction
 
 Recently I've been reading a lot about Docker, Vagrant and Ansible.

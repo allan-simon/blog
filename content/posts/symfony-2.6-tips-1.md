@@ -6,6 +6,12 @@ title = "symfony 2.6 tips #1"
 
 Here a list of tips for symfony 2.6 I've gathered these days
 
+  * how to skip test in phpunit
+  * how to disable form validation in test
+  * (Doctrine) don't use findById() when you just mean find() 
+
+<!--more-->
+
 ###Skip test in phpunit
 
 Imagine you're rewriting your application to split 'big' pages into

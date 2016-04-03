@@ -44,6 +44,8 @@ It's a Blog-like services with a REST API in json at the end it will permit
   * Possibility to comments
   * Creation of tags to category articles
 
+<!--more-->
+
 ### Creating the project
 
 To create the project in a repeatable and automated way,

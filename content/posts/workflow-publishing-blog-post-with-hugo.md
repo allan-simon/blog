@@ -10,9 +10,9 @@ to write/edit/publish articles with `hugo` (just a self reminder)
 
 so that now I have 
 
-  * new_blog_post name-of-your-blog-post
-  * publish_blog
-  * edit_last_blog_post
+  * `new_blog_post name-of-your-blog-post`
+  * `publish_blog`
+  * `edit_last_blog_post`
 
 that can be run from anywhere in my terminal
 
@@ -45,3 +45,4 @@ function edit_last_blog_post {
 }
 ```
 
+<!--more-->

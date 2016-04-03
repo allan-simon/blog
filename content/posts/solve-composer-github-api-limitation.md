@@ -18,6 +18,8 @@ a token
 
 now two possibilities 
 
+<!--more-->
+
 #### 1 - Put this token in one specific project
 
 

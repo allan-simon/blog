@@ -23,3 +23,5 @@ sudo apt-get install lxc-docker
 ```
 
 And now you should be able to get docker working
+
+<!--more-->

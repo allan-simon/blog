@@ -17,6 +17,8 @@ In this part we're going to see
   * How to create migration files to easily manage our datase over time and colleagues
   * and how to generate a full [CRUD (create/read/update/delete)](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) with form checking
 
+<!--more-->
+
 
 #### Very important Note /!\ (can save you hours of debugging):
 

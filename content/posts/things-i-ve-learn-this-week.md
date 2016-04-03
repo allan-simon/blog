@@ -5,6 +5,12 @@ title = "Things I've learn this week"
 
 +++
 
+More than often I find myself trying to remember how did i solve that very one problem I thought I would have to solve only once, so I decided to start writing their solution here:
+
+    * How to reload PHP-fpm without restarting it
+    * How to send the unchanged Host header to proxied server with Nginx
+
+<!--more-->
 
 ### How to send the unchanged Host header to proxied server with Nginx
 

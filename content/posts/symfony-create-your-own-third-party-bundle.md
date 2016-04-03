@@ -18,6 +18,8 @@ we cover these steps:
   2. Adding the base Classes
   3. Permit users of your bundle to configure it
   4. Make your bundle testable
+ 
+<!--more-->
 
 ### Create the base repo and composer.json
 

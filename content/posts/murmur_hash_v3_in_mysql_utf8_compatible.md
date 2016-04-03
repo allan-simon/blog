@@ -18,6 +18,8 @@ For new records, I could use the python module (leveraging C code) [mmh3](https:
 But as I needed to update million of existing record, I couldn't possibly
 imagine doing that by calling a python script.
 
+<!--more-->
+
 ## First solution: user defined function copy/pasted from a gist
 
 Instead I found that somebody already created a user defined function for that

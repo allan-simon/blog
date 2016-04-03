@@ -36,6 +36,8 @@ my modification include so far:
   * `redmine issue 123 long` to see more detailled information about the issue
   * `redmine update 123 'in progress'` to update the status to `in progress` (admitting your redmine has this status)
 
+<!--more-->
+
 ### The long story behind:
 
 As any good Linux user, I love the CLI (no, there's no such thing 

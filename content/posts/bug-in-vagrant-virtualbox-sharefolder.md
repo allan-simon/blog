@@ -14,6 +14,7 @@ For example you got your nginx or apache to serve css files
 and when you update them, they don't get updated, and sometimes
 they even come out with some garbage bytes at the end of it
 
+<!--more-->
 
 ## The reason, a long standing bug in virtual box
 

@@ -9,6 +9,8 @@ An interesting problem a friend of mine discovered today
 
 Can you spot the problem?
 
+<!--more-->
+
 ### Le javascript 
 
 ```

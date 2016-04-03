@@ -18,3 +18,4 @@ the 2nd field:
 cut -d,  my_file.csv -f 2 | paste -s -d+  | bc 
 ```
 
+<!--more-->

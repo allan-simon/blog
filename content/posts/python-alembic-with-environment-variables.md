@@ -17,6 +17,8 @@ to integrate with 12Factor-apps, i.e my code is running in a lot
 of differents environments (vagrant+docker on my local machine,
 the QA environments,  the pre-production, production etc.)
 
+<!--more-->
+
 And of course I don't want to have to maintain in the configuration
 file all the different combination, and even less do I want to
 write down my database password, so instead we're relying on environment

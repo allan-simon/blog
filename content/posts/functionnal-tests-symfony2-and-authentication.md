@@ -21,6 +21,8 @@ who doesn't know, the HTTP standard comme with a method to authentify a
 user-agent by directly sending the username/password in the HTTP header
 (which goes along the fact that HTTP is aimed to be stateless)
 
+<!--more-->
+
 in your `config_test.yml` add this (replace `NAME_OF_YOUR_FIREWALL`)
 
 ```
