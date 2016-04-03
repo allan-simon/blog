@@ -7,7 +7,7 @@ title = "Allan's blog"
     Description = "Tips, tricks and random thoughts on Linux/Vim/rust/php/devops"
     author = "Allan SIMON"
     Copyright = "© Creative-Common attribution"
-    disqus = "allansimonblog.disqus.com"
+    disqus = "allansimonblog"
 
 [permalinks]
     post = "/:year/:month/:slug/"
