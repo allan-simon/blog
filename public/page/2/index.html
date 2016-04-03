@@ -51,7 +51,20 @@
                                     <li><i class="fa fa-calendar"></i>March 29, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                In my company we&rsquo;re using Gitlab for managing our code and doing code review. For the last months we&rsquo;ve been standardizing our stack on Symfony/Postgresql/php-fpm. Recently we&rsquo;ve started automatizing our tests using phpunit. The next step was of course to have a start of continuous integration and to be able to run our tests at each Merge request. In this article we&rsquo;re going to view How to install gitlab-ci on a separate server than your gitlab instance How to put gitlab-ci behind your company frontal server How to make gitlab-ci run your tests in a Docker container Gitlab-CI in a separate instance To do continous-integration you got plenty of choice, the most popular one being jenkinks.
+                                <p>In my company we&rsquo;re using <a href="https://gitlab.com">Gitlab</a> for managing our code
+and doing code review. For the last months we&rsquo;ve been standardizing our stack
+on Symfony/Postgresql/php-fpm. Recently we&rsquo;ve started automatizing our tests
+using phpunit. The next step was of course to have a start of continuous
+integration and to be able to run our tests at each Merge request.</p>
+
+<p>In this article we&rsquo;re going to view</p>
+
+<ul>
+<li>How to install gitlab-ci on a separate server than your gitlab instance</li>
+<li>How to put gitlab-ci behind your company frontal server</li>
+<li>How to make gitlab-ci run your tests in a Docker container</li>
+</ul>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/gitlab-ci-with-docker-runner/" role="button">Read More</a>
                             </div>
                         </div>
@@ -63,7 +76,22 @@
                                     <li><i class="fa fa-calendar"></i>March 28, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                So you&rsquo;ve reached the point where you&rsquo;re reusing the same service accross symfony application, again and again and you feel like this could even be useful for other people. You decide that it will be great if you could do like adults and have your own bundle. Here is how to create one from scratch, you can find the repo here Oauth2AccessBundle we cover these steps: Creating the base repo in github and composer.json Adding the base Classes Permit users of your bundle to configure it Make your bundle testable Create the base repo and composer.json Well for creating the base repo, nothing different from any new repo on github.
+                                <p>So you&rsquo;ve reached the point where you&rsquo;re reusing the same service accross
+symfony application, again and again and you feel like this could even
+be useful for other people. You decide that it will be great if you could
+do like adults and have your own bundle.</p>
+
+<p>Here is how to create one from scratch, you can find the repo here <a href="https://travis-ci.org/we-bridge/OAuth2AccessBundle">Oauth2AccessBundle</a></p>
+
+<p>we cover these steps:</p>
+
+<ol>
+<li>Creating the base repo in github and composer.json</li>
+<li>Adding the base Classes</li>
+<li>Permit users of your bundle to configure it</li>
+<li>Make your bundle testable</li>
+</ol>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/symfony-create-your-own-third-party-bundle/" role="button">Read More</a>
                             </div>
                         </div>
@@ -75,7 +103,25 @@
                                     <li><i class="fa fa-calendar"></i>March 14, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                if you&rsquo;re using Doctrine in your Symfony2 project, you&rsquo;re certainly using the excellent Doctrine Migration Bundle but you may have seen that documentation is not staging clearly how to migrate down for that: php app/console doctrine:migrations:status take the number in &ldquo;Current Version&rdquo; (format YYYYMMDDHHMMSS) and then run php app/console doctrine:migrations:execute YYYYMMDDHHMMSS --down that&rsquo;s all folks !
+                                <p>if you&rsquo;re using Doctrine in your Symfony2 project, you&rsquo;re certainly using the
+excellent <a href="http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html">Doctrine Migration Bundle</a>
+but you may have seen that documentation is not staging clearly how to migrate down</p>
+
+<p>for that:</p>
+
+<pre><code>php app/console doctrine:migrations:status
+
+</code></pre>
+
+<p>take the number in &ldquo;Current Version&rdquo; (format YYYYMMDDHHMMSS)</p>
+
+<p>and then run</p>
+
+<pre><code>php app/console doctrine:migrations:execute YYYYMMDDHHMMSS --down
+</code></pre>
+
+<p>that&rsquo;s all folks !</p>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/" role="button">Read More</a>
                             </div>
                         </div>
@@ -87,7 +133,14 @@
                                     <li><i class="fa fa-calendar"></i>March 11, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                Here a list of tips for symfony 2.6 I&rsquo;ve gathered these days ###Skip test in phpunit Imagine you&rsquo;re rewriting your application to split &lsquo;big&rsquo; pages into set of smaller actions. You got your test already written but they are going to fail the time you finish the rewrite, and because you&rsquo;re in company with tight deadline, you don&rsquo;t have time to adapt the tests &ldquo;right here right now&rdquo; several possibilities Leave the tests failing until you fix them master.
+                                <p>Here a list of tips for symfony 2.6 I&rsquo;ve gathered these days</p>
+
+<ul>
+<li>how to skip test in phpunit</li>
+<li>how to disable form validation in test</li>
+<li>(Doctrine) don&rsquo;t use findById() when you just mean find()</li>
+</ul>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/" role="button">Read More</a>
                             </div>
                         </div>
@@ -99,7 +152,41 @@
                                     <li><i class="fa fa-calendar"></i>February 25, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                I found a tool to manage redmine from the cli, in python: pip install redmine-cli then a config file ~/.redmine-cli [default] key=API_KEY_YOU_CAN_SEE_IN_YOUR_ACCOUNT_ON_REDMINE my_id=ID_YOU_CAN_ON_YOUR_PROFILE_PAGE root_url=HOME_PAGE_OF_REDMINE then you can do redmine open 123 to open the issue 123 in your browser redmine issues to see your issues redmine issue 123 to see information about issue 123 (it has more options I let you check the doc) original repo my fork where I have some features (like updating a ticket (hopefully my modification are in PR on the original repo and will be soon integrated) my modification include so far: redmine issue 123 long to see more detailled information about the issue redmine update 123 'in progress' to update the status to in progress (admitting your redmine has this status) The long story behind: As any good Linux user, I love the CLI (no, there&rsquo;s no such thing as a good Linux user who does not love the CLI).
+                                <p>I found a tool to manage redmine from the cli, in python:</p>
+
+<p><code>pip install redmine-cli</code></p>
+
+<p>then a config file <code>~/.redmine-cli</code></p>
+
+<pre><code>[default]
+key=API_KEY_YOU_CAN_SEE_IN_YOUR_ACCOUNT_ON_REDMINE
+my_id=ID_YOU_CAN_ON_YOUR_PROFILE_PAGE
+root_url=HOME_PAGE_OF_REDMINE
+</code></pre>
+
+<p>then you can do</p>
+
+<ol>
+<li><code>redmine open 123</code> to open the issue 123 in your browser</li>
+<li><code>redmine issues</code> to see your issues</li>
+<li><code>redmine issue 123</code> to see information about issue 123</li>
+</ol>
+
+<p>(it has more options I let you check the doc)</p>
+
+<ul>
+<li><a href="https://github.com/yanjost/redmine-cli">original repo</a></li>
+<li><a href="https://github.com/allan-simon/redmine-cli">my fork where I have some features (like updating a ticket</a></li>
+</ul>
+
+<p>(hopefully my modification are in PR on the original repo and will be soon integrated)
+my modification include so far:</p>
+
+<ul>
+<li><code>redmine issue 123 long</code> to see more detailled information about the issue</li>
+<li><code>redmine update 123 'in progress'</code> to update the status to <code>in progress</code> (admitting your redmine has this status)</li>
+</ul>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/redmine-cli/" role="button">Read More</a>
                             </div>
                         </div>
@@ -111,7 +198,10 @@
                                     <li><i class="fa fa-calendar"></i>February 23, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                An interesting problem a friend of mine discovered today Can you spot the problem? Le javascript var CreateVersion = (function(){ 'use strict'; var foo = function(text) { console.log(text); }; return { foo : foo }; }()); Le HTML &lt;form name=&quot;CreateVersion&quot; method=&quot;post&quot; action=&quot;&quot;&gt; &lt;div class=&quot;form-group&quot;&gt; &lt;label&gt; &lt;span&gt;something&lt;/span&gt; &lt;!-- onClick on a span is a bad pratice and will be the object of an other post --&gt; &lt;span onclick=&quot;CreateVersion.foo('plop')&quot;&gt;plop/span&gt; &lt;span onclick=&quot;CreateVersion.foo('prout')&quot;&gt;prout&lt;/span&gt; &lt;/label&gt; &lt;input id=&quot;CreateVersion_name&quot; name=&quot;CreateVersion[name]&quot; class=&quot;form-control version_name&quot; type=&quot;text&quot; /&gt; &lt;/div&gt; &lt;div class=&quot;form-group&quot;&gt; &lt;label&gt; &lt;span&gt;something something&lt;/span&gt;: &lt;span class=&quot;text_length&quot;&gt;0&lt;/span&gt; &lt;/label&gt; &lt;input id=&quot;CreateVersion_articleNotes&quot; name=&quot;CreateVersion[articleNotes]&quot; class=&quot;form-control&quot; type=&quot;text&quot; /&gt; &lt;/div&gt; &lt;hr/&gt; &lt;div&gt; &lt;button type=&quot;submit&quot; id=&quot;CreateVersion_submit&quot; name=&quot;CreateVersion[submit]&quot; &gt; submit &lt;/button&gt; &lt;/div&gt; &lt;/form&gt; Le erreur TypeError: CreateVersion.foo is not a function No, not in IE6, in last version of Firefox/Chrome Le solution This line &lt;form name=&quot;CreateVersion&quot; method=&quot;post&quot; action=&quot;&quot;&gt; declare a Form with a name CreateVersion which is exactly the same name as our Javascript module, and guess what ?
+                                <p>An interesting problem a friend of mine discovered today</p>
+
+<p>Can you spot the problem?</p>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/form-name-goes-into-global-scope-javascript/" role="button">Read More</a>
                             </div>
                         </div>
@@ -123,7 +213,47 @@
                                     <li><i class="fa fa-calendar"></i>February 20, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                I&rsquo;ve added some functions in my shell to make it even more convenient to write/edit/publish articles with hugo (just a self reminder) so that now I have new_blog_post name-of-your-blog-post publish_blog edit_last_blog_post that can be run from anywhere in my terminal export BLOG_ROOT=~/git/perso/blog export BLOG_THEME=hyde export GITHUB=git@github.com:allan-simon/blog.git function new_blog_post { cd $BLOG_ROOT LAST_BLOG_POST=$(hugo new posts/$1.md | cut -d &quot; &quot; -f 1) ; export LAST_BLOG_POST ; $EDITOR $LAST_BLOG_POST cd - }
+                                <p>I&rsquo;ve added some functions in my shell to make it even more convenient
+to write/edit/publish articles with <code>hugo</code> (just a self reminder)</p>
+
+<p>so that now I have</p>
+
+<ul>
+<li><code>new_blog_post name-of-your-blog-post</code></li>
+<li><code>publish_blog</code></li>
+<li><code>edit_last_blog_post</code></li>
+</ul>
+
+<p>that can be run from anywhere in my terminal</p>
+
+<pre><code>export BLOG_ROOT=~/git/perso/blog
+export BLOG_THEME=hyde
+export GITHUB=git@github.com:allan-simon/blog.git
+
+function new_blog_post {
+    cd $BLOG_ROOT
+    LAST_BLOG_POST=$(hugo new posts/$1.md | cut -d &quot; &quot; -f 1) ;
+    export LAST_BLOG_POST ;
+    $EDITOR $LAST_BLOG_POST
+    cd -
+}
+
+function publish_blog {
+    cd $BLOG_ROOT;
+    hugo --theme=&quot;$BLOG_THEME&quot; --buildDrafts &amp;&amp; \
+    git add -A &amp;&amp;  \
+    git commit -m &quot;Updating site&quot; &amp;&amp; \
+    git push origin master &amp;&amp; \
+    git subtree push --prefix=public $GITHUB gh-pages --squash  &amp;&amp; \
+    echo &quot;published&quot;
+    cd $BLOG_ROOT
+}
+
+function edit_last_blog_post {
+    $EDITOR $LAST_BLOG_POST
+}
+</code></pre>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/workflow-publishing-blog-post-with-hugo/" role="button">Read More</a>
                             </div>
                         </div>
@@ -135,7 +265,22 @@
                                     <li><i class="fa fa-calendar"></i>February 20, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                Let&rsquo;s say you have your symfony2 website, all setup correctly with its set of functionnal tests using phpunit, and now you start to have pages that only authenticated users can access to. My first solution was to create a client, make it load the login form, submit some valid credentials and then load the actual page to test. It was working fine as the client has a storage for cookie, it is acting like an actual browser in that case.
+                                <p>Let&rsquo;s say you have your symfony2 website, all setup correctly with its
+set of functionnal tests using phpunit, and now you start to have
+pages that only authenticated users can access to. My first solution was to
+create a client, make it load the login form, submit some valid credentials
+and then load the actual page to test. It was working fine as the client
+has a storage for cookie, it is acting like an actual browser in that case.</p>
+
+<p>The problem was that the time to execute the test was much longer, which
+started to become a problem has the test suite was growing.</p>
+
+<p>The first trick is to follow them method adviced by symfony, which is for the
+test environnement to enable the HTTP Basic Authentication method. For those
+who doesn&rsquo;t know, the HTTP standard comme with a method to authentify a
+user-agent by directly sending the username/password in the HTTP header
+(which goes along the fact that HTTP is aimed to be stateless)</p>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/functionnal-tests-symfony2-and-authentication/" role="button">Read More</a>
                             </div>
                         </div>
@@ -147,7 +292,20 @@
                                     <li><i class="fa fa-calendar"></i>February 10, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                Could not fetch X enter your GitHub credentials to go over the API rate limit The problem is that composer is retrieving nearly all the packages from github using the anonymous access github API. In order to solve it you need to generate a token you need a github account (or ask a friend) go on your setting page here click on Generate new token now two possibilities 1 - Put this token in one specific project for this simply run composer config -g github-oauth.github.com YOUR_TOKEN or php composer.phar config -g github-oauth.github.com YOUR_TOKEN (depending on how you installed composer) it will add that to your project&rsquo;s composer.json file 2 - Put this token in your global composer configuration If your project is an open-source or company project you may not want to commit your token on the git of your project/company for this edit the file ~/.composer/config.json and put in it: { &quot;config&quot;: { &quot;github-oauth&quot;: { &quot;github.com&quot;: &quot;YOUR_TOKEN&quot; } } } that&rsquo;s all folks!
+                                <h3 id="could-not-fetch-x-enter-your-github-credentials-to-go-over-the-api-rate-limit:399398062355d59df0e087ae76892bab">Could not fetch X enter your GitHub credentials to go over the API rate limit</h3>
+
+<p>The problem is that composer is retrieving nearly all the packages from github
+using the anonymous access github API. In order to solve it you need to generate
+a token</p>
+
+<ol>
+<li>you need a github account (or ask a friend)</li>
+<li>go on your setting page <a href="https://github.com/settings/applications">here</a></li>
+<li>click on <code>Generate new token</code></li>
+</ol>
+
+<p>now two possibilities</p>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/" role="button">Read More</a>
                             </div>
                         </div>
@@ -159,7 +317,26 @@
                                     <li><i class="fa fa-calendar"></i>February 10, 2015</li>
                                     <li><i class="fa fa-user"></i></li>
                                 </ul>
-                                This article is a shameless summary from http://compositecode.com the steps are: Updating your kernel to 3.8+ (requires a reboot) Add the docker repository Installing the package sudo apt-get install linux-image-generic-lts-raring linux-headers-generic-lts-raring sudo reboot sudo sh -c &quot;wget -qO- https://get.docker.io/gpg | apt-key add -&quot; sudo sh -c &quot;echo deb http://get.docker.io/ubuntu docker main &gt; /etc/apt/sources.list.d/docker.list&quot; sudo apt-get update sudo apt-get install lxc-docker And now you should be able to get docker working
+                                <p>This article is a shameless summary from <a href="http://compositecode.com/2013/11/11/getting-docker-installed-on-ubuntu-12-04-lts/">http://compositecode.com</a></p>
+
+<p>the steps are:</p>
+
+<ul>
+<li>Updating your kernel to 3.8+ (requires a reboot)</li>
+<li>Add the docker repository</li>
+<li>Installing the package</li>
+</ul>
+
+<pre><code>sudo apt-get install linux-image-generic-lts-raring linux-headers-generic-lts-raring
+sudo reboot
+sudo sh -c &quot;wget -qO- https://get.docker.io/gpg | apt-key add -&quot;
+sudo sh -c &quot;echo deb http://get.docker.io/ubuntu docker main &gt; /etc/apt/sources.list.d/docker.list&quot;
+sudo apt-get update
+sudo apt-get install lxc-docker
+</code></pre>
+
+<p>And now you should be able to get docker working</p>
+
                                 <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/install-docker-on-ubuntu-12.04/" role="button">Read More</a>
                             </div>
                         </div>

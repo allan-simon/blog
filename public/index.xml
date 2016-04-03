@@ -1070,6 +1070,12 @@ call.&lt;/p&gt;
       <guid>http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/</guid>
       <description>
 
+&lt;p&gt;More than often I find myself trying to remember how did i solve that very one problem I thought I would have to solve only once, so I decided to start writing their solution here:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;* How to reload PHP-fpm without restarting it
+* How to send the unchanged Host header to proxied server with Nginx
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;h3 id=&#34;how-to-send-the-unchanged-host-header-to-proxied-server-with-nginx:6e2abccfc1423df5022fe0145f06b12d&#34;&gt;How to send the unchanged Host header to proxied server with Nginx&lt;/h3&gt;
 
 &lt;p&gt;Imagine you have a first nginx acting as a load balancer with this configuration&lt;/p&gt;
@@ -2124,6 +2130,12 @@ but you may have seen that documentation is not staging clearly how to migrate d
       <description>
 
 &lt;p&gt;Here a list of tips for symfony 2.6 I&amp;rsquo;ve gathered these days&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;how to skip test in phpunit&lt;/li&gt;
+&lt;li&gt;how to disable form validation in test&lt;/li&gt;
+&lt;li&gt;(Doctrine) don&amp;rsquo;t use findById() when you just mean find()&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;###Skip test in phpunit&lt;/p&gt;
 
