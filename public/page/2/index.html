@@ -46,6 +46,42 @@
                     
                         <div class="row">
                             <div class="col-md-12 content-card">
+                                <h1><a href="http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/">doctrine2 order by count many to many</a></h1>
+                                <ul class="list-inline">
+                                    <li><i class="fa fa-calendar"></i>April 9, 2015</li>
+                                    <li><i class="fa fa-user"></i></li>
+                                </ul>
+                                <p>Today I found a problem quite common but tricky enough for the solution
+to share it with you</p>
+
+<h3 id="the-problem:fcd569fc48e65a7020df74b8509a5751">The problem</h3>
+
+<p>I have 2 Entities</p>
+
+<ul>
+<li>User</li>
+<li>Article</li>
+</ul>
+
+<p>and a &ldquo;likedByUsers&rdquo; Many To Many relationship between both</p>
+
+<p>Now I would like to get the Articles ordered by number of &lsquo;likes&rsquo;
+for an API call returning a list of Articles</p>
+
+<p>if you feel smart you can try to find the solution by yourself
+it&rsquo;s an interesting exercise about &lsquo;how much do you know doctrine and SQL&rsquo;</p>
+
+<p>but let me tell you, the solution is like an Egg of Columbus, once you see
+it it becomes evident, but it was actually not that simple at first.</p>
+
+<h3 id="the-solution:fcd569fc48e65a7020df74b8509a5751">The solution</h3>
+
+                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/" role="button">Read More</a>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-md-12 content-card">
                                 <h1><a href="http://allan-simon.github.io/blog/posts/gitlab-ci-with-docker-runner/">gitlab ci with docker runner</a></h1>
                                 <ul class="list-inline">
                                     <li><i class="fa fa-calendar"></i>March 29, 2015</li>
@@ -310,37 +346,6 @@ a token</p>
                             </div>
                         </div>
                     
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/install-docker-on-ubuntu-12.04/">Install docker on ubuntu 12.04</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>February 10, 2015</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                <p>This article is a shameless summary from <a href="http://compositecode.com/2013/11/11/getting-docker-installed-on-ubuntu-12-04-lts/">http://compositecode.com</a></p>
-
-<p>the steps are:</p>
-
-<ul>
-<li>Updating your kernel to 3.8+ (requires a reboot)</li>
-<li>Add the docker repository</li>
-<li>Installing the package</li>
-</ul>
-
-<pre><code>sudo apt-get install linux-image-generic-lts-raring linux-headers-generic-lts-raring
-sudo reboot
-sudo sh -c &quot;wget -qO- https://get.docker.io/gpg | apt-key add -&quot;
-sudo sh -c &quot;echo deb http://get.docker.io/ubuntu docker main &gt; /etc/apt/sources.list.d/docker.list&quot;
-sudo apt-get update
-sudo apt-get install lxc-docker
-</code></pre>
-
-<p>And now you should be able to get docker working</p>
-
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/install-docker-on-ubuntu-12.04/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
                     
     <div class="row">
         <div class="col-md-12">
@@ -382,6 +387,8 @@ sudo apt-get install lxc-docker
         <h5>Recent Posts</h5>
         <ul class="list-unstyled posts-recent">
             
+                <li><a href="http://allan-simon.github.io/blog/posts/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></li>
+            
                 <li><a href="http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></li>
             
                 <li><a href="http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/">python alembic with environment variables</a></li>
@@ -389,8 +396,6 @@ sudo apt-get install lxc-docker
                 <li><a href="http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/">how to sum all numbers in file in bash</a></li>
             
                 <li><a href="http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/">murmur hash v3 in MySQL utf8 compatible</a></li>
-            
-                <li><a href="http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/">bug in Vagrant with Virtualbox sharefolder</a></li>
             
         </ul>
     </div>
