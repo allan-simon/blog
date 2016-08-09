@@ -6,8 +6,46 @@
     <description>Recent content on Allan&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 29 Jul 2016 15:44:25 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 10 Aug 2016 05:48:30 +0800</lastBuildDate>
     <atom:link href="http://allan-simon.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>check start time before end time in postgresql</title>
+      <link>http://allan-simon.github.io/blog/posts/check-start-time-before-end-time-in-postgresql/</link>
+      <pubDate>Wed, 10 Aug 2016 05:48:30 +0800</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/check-start-time-before-end-time-in-postgresql/</guid>
+      <description>&lt;p&gt;Something that a lot of people coming from MySQL does not know
+about real SQL database is the possibility to have &amp;lsquo;advanced&amp;rsquo; constraints&lt;/p&gt;
+
+&lt;p&gt;A very simple one here, but quite common&lt;/p&gt;
+
+&lt;p&gt;I have my table &lt;code&gt;Event&lt;/code&gt; with a &lt;code&gt;start_time&lt;/code&gt; and &lt;code&gt;end_time&lt;/code&gt; and of course
+I want to be sure that it can&amp;rsquo;t be possible to have a &lt;code&gt;start_time&lt;/code&gt;
+that happens after its &lt;code&gt;end_time&lt;/code&gt;. in MySQL outside of creating triggers
+you will most of the time have no other way than to do this check in your
+application code, and of course either it will not be put directly.
+Or because of mass import of whatsoever you will always one time were this
+check will not occur, and are now with a database that have inconsistent
+data. And now all part of code starts to need checking that weird case.&lt;/p&gt;
+
+&lt;p&gt;But in PostgreSQL you can simply do this by adding a &lt;code&gt;CHECK&lt;/code&gt; clause in your
+create table&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;    CREATE TABLE event (
+        id UUID NOT NULL,
+        start_time TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+        end_time TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+        PRIMARY KEY(id),
+        -- the important is here
+        CHECK (start_time &amp;lt; end_time)
+    );
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Of course you can do much more than that, I invite you to check all
+the constraint you can add in reading the &lt;a href=&#34;https://www.postgresql.org/docs/current/static/ddl-constraints.html&#34;&gt;documentation about them&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>get http status code in bash script wit curl</title>
@@ -2154,33 +2192,6 @@ accessed&lt;/p&gt;
 
 &lt;p&gt;Now that we have the very base of our repository, we will see in next
 post how to create a very basic service without configuration.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>migrate down with doctrine migrations</title>
-      <link>http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/</link>
-      <pubDate>Sat, 14 Mar 2015 18:21:01 +0800</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/</guid>
-      <description>&lt;p&gt;if you&amp;rsquo;re using Doctrine in your Symfony2 project, you&amp;rsquo;re certainly using the
-excellent &lt;a href=&#34;http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html&#34;&gt;Doctrine Migration Bundle&lt;/a&gt;
-but you may have seen that documentation is not staging clearly how to migrate down&lt;/p&gt;
-
-&lt;p&gt;for that:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;php app/console doctrine:migrations:status
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;take the number in &amp;ldquo;Current Version&amp;rdquo; (format YYYYMMDDHHMMSS)&lt;/p&gt;
-
-&lt;p&gt;and then run&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;php app/console doctrine:migrations:execute YYYYMMDDHHMMSS --down
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;that&amp;rsquo;s all folks !&lt;/p&gt;
 </description>
     </item>
     
