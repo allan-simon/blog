@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.15" />
-    <title>postgresql display one column per line</title>
+    <title>check start time before end time in postgresql</title>
     
     
     
@@ -44,62 +44,39 @@
                 <div class="col-md-8">
                     <div class="row">
     <div class="col-md-12 content-card">
-        <h1>postgresql display one column per line</h1>
+        <h1>check start time before end time in postgresql</h1>
         
         
 
-        
+        <p>Something that a lot of people coming from MySQL does not know
+about real SQL database is the possibility to have &lsquo;advanced&rsquo; constraints</p>
 
-<h3 id="problem-displaying-a-table-with-a-lot-of-columns:3d087ea0c927fb7141fc306f11f0a8e3">Problem : displaying a table with a lot of columns</h3>
+<p>A very simple one here, but quite common</p>
 
-<p>You always got that table with a dozens of columns of type text and for which
-the normal tabular output does not work nicely and you end up with something
-like</p>
+<p>I have my table <code>Event</code> with a <code>start_time</code> and <code>end_time</code> and of course
+I want to be sure that it can&rsquo;t be possible to have a <code>start_time</code>
+that happens after its <code>end_time</code>. in MySQL outside of creating triggers
+you will most of the time have no other way than to do this check in your
+application code, and of course either it will not be put directly.
+Or because of mass import of whatsoever you will always one time were this
+check will not occur, and are now with a database that have inconsistent
+data. And now all part of code starts to need checking that weird case.</p>
 
-<pre><code> articleid | plop | pouet | prout | tagada |  id   | newsid  | newstype |                                                          title                                                          | something | something | something | something | something | something | something | something |      something       |      something       | something | something | something | something |          something          |    something    |                                                                                                                                                                                                                                                                                                                 something                                                                                                                                                                                                                                                                                                                 |            something            
------------+-------+-------+-------+-------+-------+---------+----------+-----------------------------------------------------------------------------------------------------------------------------+------------+-------------+-----------+------------+-----------------+---------+--------------+---------+---------------------+---------------------+---------------+-------------+-----------+------------+---------------------------+-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+------------+--------------------------------+--------------+----------------------+------------------------------------------------------------------------------------+--------------+-----------+----------+----------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------+-----------+-------+------------
-   1000163 |     0 |     0 |     0 |     0 |   141 | 1000147 |       10 | blablabla                                                                                           |          3 |           4 |        22 |    1000163 |               0 | 1000163 |          184 |   10028 | 2014-06-30 23:36:00 | 2014-06-30 23:36:00 |             0 |           0 |         0 |          0 |                           |           |          
+<p>But in PostgreSQL you can simply do this by adding a <code>CHECK</code> clause in your
+create table</p>
+
+<pre><code class="language-sql">    CREATE TABLE event (
+        id UUID NOT NULL,
+        start_time TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+        end_time TIMESTAMP(0) WITH TIME ZONE NOT NULL,
+        PRIMARY KEY(id),
+        -- the important is here
+        CHECK (start_time &lt; end_time)
+    );
 </code></pre>
 
-<h3 id="in-mysql:3d087ea0c927fb7141fc306f11f0a8e3">In MySQL</h3>
-
-<p>with MySQL you can replace <code>;</code> by <code>\G</code> at the end of your SQL statement, i.e turning</p>
-
-<pre><code>SELECT * FROM example ;
-</code></pre>
-
-<p>into</p>
-
-<pre><code>SELECT * FROM example \G
-</code></pre>
-
-<h3 id="in-postgresql:3d087ea0c927fb7141fc306f11f0a8e3">In PostgreSQL</h3>
-
-<p>you need first to use <code>\x</code> and it will activate the &lsquo;one column by line&rsquo; display
-(use <code>\x</code> again to switch back to normal mode)</p>
-
-<pre><code>\x
-SELECT * FROM example;
-\x
-</code></pre>
-
-<p>and you will something like that</p>
-
-<pre><code>-[ RECORD 1 ]------
-articleid | 1000000
-something     | 0
-something     | 0
-something     | 0
-something     | 0
-id        | 1
--[ RECORD 2 ]------
-articleid | 1000002
-something     | 0
-something     | 0
-something     | 0
-something     | 0
-something     | 2
-</code></pre>
+<p>Of course you can do much more than that, I invite you to check all
+the constraint you can add in reading the <a href="https://www.postgresql.org/docs/current/static/ddl-constraints.html">documentation about them</a></p>
 
         
 
