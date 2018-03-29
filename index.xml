@@ -10,11 +10,11 @@
     <atom:link href="http://allan-simon.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>better null display psql.md</title>
-      <link>http://allan-simon.github.io/blog/posts/better-null-display-psql.md/</link>
+      <title>Better null display psql</title>
+      <link>http://allan-simon.github.io/blog/posts/better-null-display-psql/</link>
       <pubDate>Thu, 29 Mar 2018 23:36:00 +0200</pubDate>
       
-      <guid>http://allan-simon.github.io/blog/posts/better-null-display-psql.md/</guid>
+      <guid>http://allan-simon.github.io/blog/posts/better-null-display-psql/</guid>
       <description>&lt;p&gt;I&amp;rsquo;ve been frustating recently to differenciate &lt;code&gt;NULL&lt;/code&gt; and empty strings
 in postgresql when requeting manually with &lt;code&gt;psql&lt;/code&gt;&lt;/p&gt;
 
