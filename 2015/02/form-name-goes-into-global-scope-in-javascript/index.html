@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>Form name goes into global scope in javascript</title>
+    
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Allan&#39;s blog</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+        <div id="top" class="container">
+            <div class="row" id="content-main">
+                <div class="col-md-8">
+                    <div class="row">
+    <div class="col-md-12 content-card">
+        <h1>Form name goes into global scope in javascript</h1>
+        
+            <ul class="list-inline meta">
+                <li><i class="fa fa-calendar"></i>February 23, 2015</li>
+                <li><i class="fa fa-user"></i></li>
+                
+            </ul>
+        
+        
+    <ul class="list-inline share" style="margin-top: 15px; margin-left: 0px">
+        <li class="facebook-share"><a target="_blank" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fform-name-goes-into-global-scope-in-javascript%2f"><i class="fa fa-facebook fa-lg"></i>Facebook</a></li>
+        <li class="googleplus-share"><a target="_blank" href="https://plus.google.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fform-name-goes-into-global-scope-in-javascript%2f"><i class="fa fa-google-plus fa-lg"></i>Google+</a></li>
+        <li class="twitter-share"><a target="_blank" href="https://twitter.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fform-name-goes-into-global-scope-in-javascript%2f&amp;text=Form%20name%20goes%20into%20global%20scope%20in%20javascript"><i class="fa fa-twitter fa-lg"></i>Twitter</a></li>
+        <li class="reddit-share"><a target="_blank" href="http://reddit.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fform-name-goes-into-global-scope-in-javascript%2f&amp;title=Form%20name%20goes%20into%20global%20scope%20in%20javascript"><i class="fa fa-reddit fa-lg"></i>Reddit</a></li>
+        <li class="linkedin-share"><a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fform-name-goes-into-global-scope-in-javascript%2f"><i class="fa fa-linkedin fa-lg"></i>LinkedIn</a></li>
+        <li class="stumbleupon-share"><a target="_blank" href="http://www.stumbleupon.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fform-name-goes-into-global-scope-in-javascript%2f&amp;title=Form%20name%20goes%20into%20global%20scope%20in%20javascript"><i class="fa fa-stumbleupon fa-lg"></i>StumbleUpon</a></li>
+    </ul>
+
+
+        <p>An interesting problem a friend of mine discovered today</p>
+
+<p>Can you spot the problem?</p>
+
+<p></p>
+
+<h3 id="le-javascript">Le javascript</h3>
+
+<pre><code>var CreateVersion = (function(){
+    'use strict';
+
+    var foo = function(text) {
+        console.log(text);
+    };
+
+    return {
+        foo : foo 
+    };
+}());
+</code></pre>
+
+<h3 id="le-html">Le HTML</h3>
+
+<pre><code>&lt;form name=&quot;CreateVersion&quot; method=&quot;post&quot; action=&quot;&quot;&gt;
+    &lt;div class=&quot;form-group&quot;&gt;
+        &lt;label&gt;
+            &lt;span&gt;something&lt;/span&gt;
+            &lt;!--
+                onClick on a span is a bad pratice and will be
+                the object of an other post
+            --&gt;
+            &lt;span onclick=&quot;CreateVersion.foo('plop')&quot;&gt;plop/span&gt;
+            &lt;span onclick=&quot;CreateVersion.foo('prout')&quot;&gt;prout&lt;/span&gt;
+        &lt;/label&gt;
+        &lt;input
+            id=&quot;CreateVersion_name&quot;
+            name=&quot;CreateVersion[name]&quot;
+            class=&quot;form-control version_name&quot;
+            type=&quot;text&quot;
+        /&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;form-group&quot;&gt;
+        &lt;label&gt;
+            &lt;span&gt;something something&lt;/span&gt;:
+            &lt;span class=&quot;text_length&quot;&gt;0&lt;/span&gt;
+        &lt;/label&gt;
+        &lt;input
+            id=&quot;CreateVersion_articleNotes&quot;
+            name=&quot;CreateVersion[articleNotes]&quot;
+            class=&quot;form-control&quot;
+            type=&quot;text&quot;
+        /&gt;
+    &lt;/div&gt;
+    &lt;hr/&gt;
+    &lt;div&gt;
+        &lt;button
+            type=&quot;submit&quot;
+            id=&quot;CreateVersion_submit&quot;
+            name=&quot;CreateVersion[submit]&quot;
+        &gt;
+            submit
+        &lt;/button&gt;
+    &lt;/div&gt;
+&lt;/form&gt;
+</code></pre>
+
+<h3 id="le-erreur">Le erreur</h3>
+
+<pre><code>TypeError: CreateVersion.foo is not a function
+</code></pre>
+
+<p>No, not in IE6, in last version of Firefox/Chrome</p>
+
+<h3 id="le-solution">Le solution</h3>
+
+<p>This line</p>
+
+<pre><code>    &lt;form name=&quot;CreateVersion&quot; method=&quot;post&quot; action=&quot;&quot;&gt;
+</code></pre>
+
+<p>declare a Form with a name <code>CreateVersion</code> which is exactly the same name as our
+Javascript module, and guess what ?</p>
+
+<p>The name is exported in the DOM, which that when you do that</p>
+
+<pre><code>&lt;form name=&quot;Foo&quot;&gt;
+</code></pre>
+
+<p>Then you can do</p>
+
+<pre><code>document.Foo
+</code></pre>
+
+<p>to access to the DOM node, and in the HTML itself, the &ldquo;document&rdquo; is implicit which
+mean that &ldquo;document.Foo&rdquo; collide with any javascript defined variable &ldquo;Foo&rdquo;</p>
+
+<p>For more explanation see <a href="http://stackoverflow.com/questions/1415747/javascript-function-and-form-name-conflict">this stackoverflow question</a></p>
+
+<h3 id="how-to-avoid-that">How to avoid that:</h3>
+
+<p>Some possibilities:</p>
+
+<ul>
+<li>Make it a coding style policy that module name start contains something &ldquo;javascript only&rdquo; like <code>FooModule</code> or <code>FooJS</code></li>
+<li>put your modules in one big wrapping modules (like <code>MyCorp.Foo</code>)</li>
+</ul>
+        
+    <ul class="list-inline tags" style="margin-top: 15px; margin-left: 0px">
+        
+    </ul>
+
+
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+                    (function() {
+                        if (window.location.hostname == "localhost") {
+                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
+                            return;
+                        }
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        var disqus_shortname = 'allansimonblog';
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+    
+
+
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Search</h5>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form">
+            <div class="input-group">
+                <input class="form-control" type="search" name="q" />
+                <span class="input-group-btn">
+                    <button class="btn btn-custom" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+            <input type="hidden" name="q" value="site:http://allan-simon.github.io/blog/">
+        </form>
+    </div>
+</div>
+
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Recent Posts</h5>
+        <ul class="list-unstyled posts-recent">
+            
+                <li><a href="http://allan-simon.github.io/blog/2018/03/better-null-display-psql/">Better null display psql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/08/check-start-time-before-end-time-in-postgresql/">check start time before end time in postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/07/get-http-status-code-in-bash-script-wit-curl/">get http status code in bash script wit curl</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></li>
+            
+        </ul>
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-11 col-md-offset-1 card">
+                <h5>categories</h5>
+                <ul class="list-unstyled posts-recent">
+                    
+                </ul>
+            </div>
+        </div>
+    
+
+    
+
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-xs-6">
+    <ul class="list-inline links">
+        
+    </ul>
+</div>
+
+            <div class="col-md-4 col-xs-6">
+    <ul class="list-inline social-media">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <a href="https://github.com/nraboy/hugo-phlat-theme">Phlat Theme</a> designed and built by <a href="http://www.nraboy.com">Nic Raboy</a> in San Francisco, California.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+        <div id="back-to-top" class="hidden">
+    <a href="#top" class="well well-sm" onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+        <i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+    </a>
+</div>
+<script src="http://allan-simon.github.io/blog/js/jquery-2.2.1.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/bootstrap.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>
+    if(($(window).height() + 100) < $(document).height()) {
+        $('#back-to-top').removeClass('hidden').affix({
+            offset: {
+                top: 100
+            }
+        });
+    }
+</script>
+
+    
+
+
+
+    </body>
+</html>

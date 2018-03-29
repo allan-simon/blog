@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>doctrine2 order by count many to many</title>
+    
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Allan&#39;s blog</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+        <div id="top" class="container">
+            <div class="row" id="content-main">
+                <div class="col-md-8">
+                    <div class="row">
+    <div class="col-md-12 content-card">
+        <h1>doctrine2 order by count many to many</h1>
+        
+            <ul class="list-inline meta">
+                <li><i class="fa fa-calendar"></i>April 9, 2015</li>
+                <li><i class="fa fa-user"></i></li>
+                
+            </ul>
+        
+        
+    <ul class="list-inline share" style="margin-top: 15px; margin-left: 0px">
+        <li class="facebook-share"><a target="_blank" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f04%2fdoctrine2-order-by-count-many-to-many%2f"><i class="fa fa-facebook fa-lg"></i>Facebook</a></li>
+        <li class="googleplus-share"><a target="_blank" href="https://plus.google.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f04%2fdoctrine2-order-by-count-many-to-many%2f"><i class="fa fa-google-plus fa-lg"></i>Google+</a></li>
+        <li class="twitter-share"><a target="_blank" href="https://twitter.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f04%2fdoctrine2-order-by-count-many-to-many%2f&amp;text=doctrine2%20order%20by%20count%20many%20to%20many"><i class="fa fa-twitter fa-lg"></i>Twitter</a></li>
+        <li class="reddit-share"><a target="_blank" href="http://reddit.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f04%2fdoctrine2-order-by-count-many-to-many%2f&amp;title=doctrine2%20order%20by%20count%20many%20to%20many"><i class="fa fa-reddit fa-lg"></i>Reddit</a></li>
+        <li class="linkedin-share"><a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f04%2fdoctrine2-order-by-count-many-to-many%2f"><i class="fa fa-linkedin fa-lg"></i>LinkedIn</a></li>
+        <li class="stumbleupon-share"><a target="_blank" href="http://www.stumbleupon.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f04%2fdoctrine2-order-by-count-many-to-many%2f&amp;title=doctrine2%20order%20by%20count%20many%20to%20many"><i class="fa fa-stumbleupon fa-lg"></i>StumbleUpon</a></li>
+    </ul>
+
+
+        <p>Today I found a problem quite common but tricky enough for the solution
+to share it with you</p>
+
+<h3 id="the-problem">The problem</h3>
+
+<p>I have 2 Entities</p>
+
+<ul>
+<li>User</li>
+<li>Article</li>
+</ul>
+
+<p>and a &ldquo;likedByUsers&rdquo; Many To Many relationship between both</p>
+
+<p>Now I would like to get the Articles ordered by number of &lsquo;likes&rsquo;
+for an API call returning a list of Articles</p>
+
+<p>if you feel smart you can try to find the solution by yourself
+it&rsquo;s an interesting exercise about &lsquo;how much do you know doctrine and SQL&rsquo;</p>
+
+<p>but let me tell you, the solution is like an Egg of Columbus, once you see
+it it becomes evident, but it was actually not that simple at first.</p>
+
+<h3 id="the-solution">The solution</h3>
+
+<p></p>
+
+<pre><code>// in your repository
+$builder = $this-&gt;createQueryBuilder('a');
+    -&gt;select('COUNT(u) AS HIDDEN nbrLikes', 'a')
+    -&gt;leftJoin('a.likedByUsers', 'u') 
+    -&gt;orderBy('nbrLikes', 'DESC')
+    -&gt;groupBy('a')
+    -&gt;getQuery()
+    -&gt;getResult()
+;
+</code></pre>
+
+<h3 id="step-by-step">Step by step</h3>
+
+<pre><code>-&gt;leftJoin('a.likedByUsers', 'u')
+</code></pre>
+
+<p>as it&rsquo;s a many to many relationship, and as doctrine lazy-load by default
+we need to explicitly tell him we will need the join, and the referenced
+entity (users) will be refered as <code>u</code> in the other part of the query</p>
+
+<p>now the interesting point here is the <code>leftJoin</code>, most PHP developers
+are not familiar with the different type of Join</p>
+
+<ul>
+<li><code>inner join</code> would have taken only the articles and users who have <strong>At least</strong> one relationship
+which mean that using this, you will not get back the articles with 0 likes</li>
+<li><code>left join</code> take ALL the row on the left side (so here articles) and the entity on the right will
+be null if there&rsquo;s no relationship, so here that&rsquo;s what we want, as then the <code>COUNT()</code> will consider norelationship as <code>0</code></li>
+</ul>
+
+<pre><code>    -&gt;groupBy('a')
+</code></pre>
+
+<p>here it&rsquo;s really important to group by the FULL entity and not just <code>a.id</code>, otherwise SQL
+will complain that your other fields are not inside the GROUP BY (here nothing specific as doctrine,
+it&rsquo;s pure SQL, just that Doctrine makes your life easier by permitting you not to precise
+every single field one by one</p>
+
+<pre><code>    -&gt;select('COUNT(u) AS HIDDEN nbrLikes', 'a')
+</code></pre>
+
+<p>Here we have the actual interesting part
+we select a <code>COUNT</code> in order to be able to use it in the <code>ORDER BY</code> and also the
+entity article itself, however if we were just doing <code>'COUNT(u) AS nbrLikes' , a</code>
+then for each result, we would not directly the entity, but an array of two values
+the count and then the entity (which would need additional treatment in my case
+as I&rsquo;m just returning an array of Article to be serialized by the REST bundle).</p>
+
+<p>That&rsquo;s why we have <code>HIDDEN</code>, it will tell doctrine to use it for the generated query
+but not to use when creating the result array, so that it returns only the entity</p>
+
+<p>For those wondering if I only get the entity how to have my API call returning also
+a <code>number_of_likes</code> in the JSON, I will later make an article about virtual property
+of the JSM Serializer</p>
+
+<p>Hope you learn something in the process,</p>
+        
+    <ul class="list-inline tags" style="margin-top: 15px; margin-left: 0px">
+        
+    </ul>
+
+
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+                    (function() {
+                        if (window.location.hostname == "localhost") {
+                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
+                            return;
+                        }
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        var disqus_shortname = 'allansimonblog';
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+    
+
+
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Search</h5>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form">
+            <div class="input-group">
+                <input class="form-control" type="search" name="q" />
+                <span class="input-group-btn">
+                    <button class="btn btn-custom" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+            <input type="hidden" name="q" value="site:http://allan-simon.github.io/blog/">
+        </form>
+    </div>
+</div>
+
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Recent Posts</h5>
+        <ul class="list-unstyled posts-recent">
+            
+                <li><a href="http://allan-simon.github.io/blog/2018/03/better-null-display-psql/">Better null display psql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/08/check-start-time-before-end-time-in-postgresql/">check start time before end time in postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/07/get-http-status-code-in-bash-script-wit-curl/">get http status code in bash script wit curl</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></li>
+            
+        </ul>
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-11 col-md-offset-1 card">
+                <h5>categories</h5>
+                <ul class="list-unstyled posts-recent">
+                    
+                </ul>
+            </div>
+        </div>
+    
+
+    
+
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-xs-6">
+    <ul class="list-inline links">
+        
+    </ul>
+</div>
+
+            <div class="col-md-4 col-xs-6">
+    <ul class="list-inline social-media">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <a href="https://github.com/nraboy/hugo-phlat-theme">Phlat Theme</a> designed and built by <a href="http://www.nraboy.com">Nic Raboy</a> in San Francisco, California.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+        <div id="back-to-top" class="hidden">
+    <a href="#top" class="well well-sm" onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+        <i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+    </a>
+</div>
+<script src="http://allan-simon.github.io/blog/js/jquery-2.2.1.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/bootstrap.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>
+    if(($(window).height() + 100) < $(document).height()) {
+        $('#back-to-top').removeClass('hidden').affix({
+            offset: {
+                top: 100
+            }
+        });
+    }
+</script>
+
+    
+
+
+
+    </body>
+</html>

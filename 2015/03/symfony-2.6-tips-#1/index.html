@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.37.1" />
-    <title>about</title>
+    <title>symfony 2.6 tips #1</title>
     
     
     
@@ -47,27 +47,101 @@
                 <div class="col-md-8">
                     <div class="row">
     <div class="col-md-12 content-card">
-        <h1>about</h1>
+        <h1>symfony 2.6 tips #1</h1>
+        
+            <ul class="list-inline meta">
+                <li><i class="fa fa-calendar"></i>March 11, 2015</li>
+                <li><i class="fa fa-user"></i></li>
+                
+            </ul>
         
         
+    <ul class="list-inline share" style="margin-top: 15px; margin-left: 0px">
+        <li class="facebook-share"><a target="_blank" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-2.6-tips-%231%2f"><i class="fa fa-facebook fa-lg"></i>Facebook</a></li>
+        <li class="googleplus-share"><a target="_blank" href="https://plus.google.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-2.6-tips-%231%2f"><i class="fa fa-google-plus fa-lg"></i>Google+</a></li>
+        <li class="twitter-share"><a target="_blank" href="https://twitter.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-2.6-tips-%231%2f&amp;text=symfony%202.6%20tips%20%231"><i class="fa fa-twitter fa-lg"></i>Twitter</a></li>
+        <li class="reddit-share"><a target="_blank" href="http://reddit.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-2.6-tips-%231%2f&amp;title=symfony%202.6%20tips%20%231"><i class="fa fa-reddit fa-lg"></i>Reddit</a></li>
+        <li class="linkedin-share"><a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-2.6-tips-%231%2f"><i class="fa fa-linkedin fa-lg"></i>LinkedIn</a></li>
+        <li class="stumbleupon-share"><a target="_blank" href="http://www.stumbleupon.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-2.6-tips-%231%2f&amp;title=symfony%202.6%20tips%20%231"><i class="fa fa-stumbleupon fa-lg"></i>StumbleUpon</a></li>
+    </ul>
 
-        
 
-<h2 id="what-will-you-find-on-this-blog">What will you find on this blog</h2>
+        <p>Here a list of tips for symfony 2.6 I&rsquo;ve gathered these days</p>
 
 <ul>
-<li>My daily discoveries and tips, mostly web/linux/devops/c++/c/rust related.</li>
-<li>Some tips and tricks on how to survive in the Chinese internet as a devops</li>
-<li>Some news concerning my personnal projects</li>
-<li>Random thoughts as I progress in my professional and personnal career.</li>
+<li>how to skip test in phpunit</li>
+<li>how to disable form validation in test</li>
+<li>(Doctrine) don&rsquo;t use findById() when you just mean find()</li>
 </ul>
 
+<p></p>
+
+<p>###Skip test in phpunit</p>
+
+<p>Imagine you&rsquo;re rewriting your application to split &lsquo;big&rsquo; pages into
+set of smaller actions. You got your test already written but they
+are going to fail the time you finish the rewrite, and because you&rsquo;re
+in company with tight deadline, you don&rsquo;t have time to adapt the tests
+&ldquo;right here right now&rdquo; several possibilities</p>
+
+<ul>
+<li>Leave the tests failing until you fix them <code>master</code>.</li>
+<li>Delete the test.</li>
+<li>Put between comments the failing tests.</li>
+</ul>
+
+<p>All these solutions are suboptimals, instead you can add this line at the beginning of your test method</p>
+
+<pre><code>public function testMyTestWhichYouWantToSkip()
+{
+    $this-&gt;markTestSkipped(&quot;message explaining why it's skipped&quot;);
+    // your test code, unmodified
+}
+</code></pre>
+
+<p>so that it will appear with a <code>S</code> in the test report, so that you have a reminder that there&rsquo;s something to fix.</p>
+
+<h3 id="disable-form-validation-in-test">Disable form validation in test</h3>
+
+<p>You&rsquo;re writing functionnal test and you need to check the case of an form submitted with bogus data (to be sure your server side code is protected against hand-crafted request). By default the form you get in functionnal test will have the same checking rules than the one on server side, so in order to disable checking you can do</p>
+
+<pre><code>$form['country']-&gt;disableValidation()-&gt;select('Invalid value');
+</code></pre>
+
+<h3 id="doctrine-don-t-use-findbyid-when-you-just-mean-find">(Doctrine) don&rsquo;t use findById() when you just mean find()</h3>
+
+<p>well, the title is self-explaining</p>
         
+    <ul class="list-inline tags" style="margin-top: 15px; margin-left: 0px">
+        
+    </ul>
+
 
     </div>
 </div>
 
                     
+    
+        <div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+                    (function() {
+                        if (window.location.hostname == "localhost") {
+                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
+                            return;
+                        }
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        var disqus_shortname = 'allansimonblog';
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+    
+
 
                 </div>
                 <div class="col-md-4">

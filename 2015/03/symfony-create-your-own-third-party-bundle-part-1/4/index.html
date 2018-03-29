@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>symfony create your own third party bundle part 1/4</title>
+    
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Allan&#39;s blog</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+        <div id="top" class="container">
+            <div class="row" id="content-main">
+                <div class="col-md-8">
+                    <div class="row">
+    <div class="col-md-12 content-card">
+        <h1>symfony create your own third party bundle part 1/4</h1>
+        
+            <ul class="list-inline meta">
+                <li><i class="fa fa-calendar"></i>March 28, 2015</li>
+                <li><i class="fa fa-user"></i></li>
+                
+            </ul>
+        
+        
+    <ul class="list-inline share" style="margin-top: 15px; margin-left: 0px">
+        <li class="facebook-share"><a target="_blank" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-create-your-own-third-party-bundle-part-1%2f4%2f"><i class="fa fa-facebook fa-lg"></i>Facebook</a></li>
+        <li class="googleplus-share"><a target="_blank" href="https://plus.google.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-create-your-own-third-party-bundle-part-1%2f4%2f"><i class="fa fa-google-plus fa-lg"></i>Google+</a></li>
+        <li class="twitter-share"><a target="_blank" href="https://twitter.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-create-your-own-third-party-bundle-part-1%2f4%2f&amp;text=symfony%20create%20your%20own%20third%20party%20bundle%20part%201%2f4"><i class="fa fa-twitter fa-lg"></i>Twitter</a></li>
+        <li class="reddit-share"><a target="_blank" href="http://reddit.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-create-your-own-third-party-bundle-part-1%2f4%2f&amp;title=symfony%20create%20your%20own%20third%20party%20bundle%20part%201%2f4"><i class="fa fa-reddit fa-lg"></i>Reddit</a></li>
+        <li class="linkedin-share"><a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-create-your-own-third-party-bundle-part-1%2f4%2f"><i class="fa fa-linkedin fa-lg"></i>LinkedIn</a></li>
+        <li class="stumbleupon-share"><a target="_blank" href="http://www.stumbleupon.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fsymfony-create-your-own-third-party-bundle-part-1%2f4%2f&amp;title=symfony%20create%20your%20own%20third%20party%20bundle%20part%201%2f4"><i class="fa fa-stumbleupon fa-lg"></i>StumbleUpon</a></li>
+    </ul>
+
+
+        <p>So you&rsquo;ve reached the point where you&rsquo;re reusing the same service accross
+symfony application, again and again and you feel like this could even
+be useful for other people. You decide that it will be great if you could
+do like adults and have your own bundle.</p>
+
+<p>Here is how to create one from scratch, you can find the repo here <a href="https://travis-ci.org/we-bridge/OAuth2AccessBundle">Oauth2AccessBundle</a></p>
+
+<p>we cover these steps:</p>
+
+<ol>
+<li>Creating the base repo in github and composer.json</li>
+<li>Adding the base Classes</li>
+<li>Permit users of your bundle to configure it</li>
+<li>Make your bundle testable</li>
+</ol>
+
+<p></p>
+
+<h3 id="create-the-base-repo-and-composer-json">Create the base repo and composer.json</h3>
+
+<p>Well for creating the base repo, nothing different from any new repo on github.
+I would however stressed out that you should chose since the beginning a license</p>
+
+<p>I would recommend either</p>
+
+<ul>
+<li>The MIT license, the one I personnaly chose, it permits your bundle to be
+used without overthinking even by Companies with lawyer</li>
+<li>The AGPL license, no the A is not a typo, like the GPL license it does
+oblige people which integrate your bundle into application to make the full
+application also in a GPL-compatible license and to redistribute the modified
+source code with the application itself. HOWEVER, at the difference of the GPL
+it cover also the case of websites/webservices/REST API (for the GPL, it only
+works if the company which has made modification sells the website itself
+to other customers)</li>
+</ul>
+
+<p>You can of course chose the license your want, but be sure of what they implies.
+(As said for example the GPL will not force people who use and modify your
+bundle in their own website to give you back patches etc.)</p>
+
+<p>Then add a <code>composer.json</code> file with that skeleton content</p>
+
+<pre><code>{
+    &quot;name&quot; : &quot;webridge/oauth2-access-bundle&quot;,
+    &quot;type&quot; : &quot;symfony-bundle&quot;,
+    &quot;description&quot; : &quot;Symfony Oauth2 consumer bundle&quot;,
+    &quot;keywords&quot; : [&quot;Symfony&quot;, &quot;Oauth2&quot;],
+    &quot;homepage&quot; : &quot;https://github.com/we-bridge/OAuth2AccessBundle&quot;,
+    &quot;license&quot; : &quot;MIT&quot;,
+    &quot;authors&quot; :
+    [
+        {
+            &quot;name&quot; : &quot;Allan SIMON&quot;,
+            &quot;email&quot; : &quot;allan.simon@supinfo.com&quot;,
+            &quot;homepage&quot; : &quot;http://allan-simon.github.io/blog&quot;,
+            &quot;role&quot; : &quot;Developer&quot;
+        }
+    ],
+    &quot;minimum-stability&quot; : &quot;beta&quot;,
+    &quot;require&quot;: {
+        &quot;php&quot;: &quot;&gt;=5.3.2&quot;
+    },
+    &quot;autoload&quot;: {
+        &quot;psr-0&quot;: { &quot;Webridge\\Oauth2AccessBundle&quot;: &quot;&quot; }
+    },
+    &quot;target-dir&quot; : &quot;Webridge/Oauth2AccessBundle&quot;
+}
+</code></pre>
+
+<p>The <code>name</code> part is totally up to you but it needs to be unique accross
+composer packages so most of the time <code>your-name-or-company/your-bundle-name</code>
+is safe.</p>
+
+<p>The <code>autload</code> part precise in which namespace your bundle classes will be
+accessed</p>
+
+<p>Now that we have the very base of our repository, we will see in next
+post how to create a very basic service without configuration.</p>
+        
+    <ul class="list-inline tags" style="margin-top: 15px; margin-left: 0px">
+        
+    </ul>
+
+
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+                    (function() {
+                        if (window.location.hostname == "localhost") {
+                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
+                            return;
+                        }
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        var disqus_shortname = 'allansimonblog';
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+    
+
+
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Search</h5>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form">
+            <div class="input-group">
+                <input class="form-control" type="search" name="q" />
+                <span class="input-group-btn">
+                    <button class="btn btn-custom" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+            <input type="hidden" name="q" value="site:http://allan-simon.github.io/blog/">
+        </form>
+    </div>
+</div>
+
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Recent Posts</h5>
+        <ul class="list-unstyled posts-recent">
+            
+                <li><a href="http://allan-simon.github.io/blog/2018/03/better-null-display-psql/">Better null display psql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/08/check-start-time-before-end-time-in-postgresql/">check start time before end time in postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/07/get-http-status-code-in-bash-script-wit-curl/">get http status code in bash script wit curl</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></li>
+            
+        </ul>
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-11 col-md-offset-1 card">
+                <h5>categories</h5>
+                <ul class="list-unstyled posts-recent">
+                    
+                </ul>
+            </div>
+        </div>
+    
+
+    
+
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-xs-6">
+    <ul class="list-inline links">
+        
+    </ul>
+</div>
+
+            <div class="col-md-4 col-xs-6">
+    <ul class="list-inline social-media">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <a href="https://github.com/nraboy/hugo-phlat-theme">Phlat Theme</a> designed and built by <a href="http://www.nraboy.com">Nic Raboy</a> in San Francisco, California.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+        <div id="back-to-top" class="hidden">
+    <a href="#top" class="well well-sm" onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+        <i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+    </a>
+</div>
+<script src="http://allan-simon.github.io/blog/js/jquery-2.2.1.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/bootstrap.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>
+    if(($(window).height() + 100) < $(document).height()) {
+        $('#back-to-top').removeClass('hidden').affix({
+            offset: {
+                top: 100
+            }
+        });
+    }
+</script>
+
+    
+
+
+
+    </body>
+</html>

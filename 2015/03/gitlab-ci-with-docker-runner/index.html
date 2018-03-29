@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>gitlab ci with docker runner</title>
+    
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Allan&#39;s blog</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+        <div id="top" class="container">
+            <div class="row" id="content-main">
+                <div class="col-md-8">
+                    <div class="row">
+    <div class="col-md-12 content-card">
+        <h1>gitlab ci with docker runner</h1>
+        
+            <ul class="list-inline meta">
+                <li><i class="fa fa-calendar"></i>March 29, 2015</li>
+                <li><i class="fa fa-user"></i></li>
+                
+            </ul>
+        
+        
+    <ul class="list-inline share" style="margin-top: 15px; margin-left: 0px">
+        <li class="facebook-share"><a target="_blank" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fgitlab-ci-with-docker-runner%2f"><i class="fa fa-facebook fa-lg"></i>Facebook</a></li>
+        <li class="googleplus-share"><a target="_blank" href="https://plus.google.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fgitlab-ci-with-docker-runner%2f"><i class="fa fa-google-plus fa-lg"></i>Google+</a></li>
+        <li class="twitter-share"><a target="_blank" href="https://twitter.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fgitlab-ci-with-docker-runner%2f&amp;text=gitlab%20ci%20with%20docker%20runner"><i class="fa fa-twitter fa-lg"></i>Twitter</a></li>
+        <li class="reddit-share"><a target="_blank" href="http://reddit.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fgitlab-ci-with-docker-runner%2f&amp;title=gitlab%20ci%20with%20docker%20runner"><i class="fa fa-reddit fa-lg"></i>Reddit</a></li>
+        <li class="linkedin-share"><a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fgitlab-ci-with-docker-runner%2f"><i class="fa fa-linkedin fa-lg"></i>LinkedIn</a></li>
+        <li class="stumbleupon-share"><a target="_blank" href="http://www.stumbleupon.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f03%2fgitlab-ci-with-docker-runner%2f&amp;title=gitlab%20ci%20with%20docker%20runner"><i class="fa fa-stumbleupon fa-lg"></i>StumbleUpon</a></li>
+    </ul>
+
+
+        <p>In my company we&rsquo;re using <a href="https://gitlab.com">Gitlab</a> for managing our code
+and doing code review. For the last months we&rsquo;ve been standardizing our stack
+on Symfony/Postgresql/php-fpm. Recently we&rsquo;ve started automatizing our tests
+using phpunit. The next step was of course to have a start of continuous
+integration and to be able to run our tests at each Merge request.</p>
+
+<p>In this article we&rsquo;re going to view</p>
+
+<ul>
+<li>How to install gitlab-ci on a separate server than your gitlab instance</li>
+<li>How to put gitlab-ci behind your company frontal server</li>
+<li>How to make gitlab-ci run your tests in a Docker container</li>
+</ul>
+
+<p></p>
+
+<h2 id="gitlab-ci-in-a-separate-instance">Gitlab-CI in a separate instance</h2>
+
+<p>To do continous-integration you got plenty of choice, the most popular one being
+<a href="http://jenkins-ci.org">jenkinks</a>. However it seems to be that it is a bit bloated
+and has too much feature that we don&rsquo;t need for the moment.</p>
+
+<p>On the other side gitlab comes with its own CI system (named Gitlab-ci) that has
+the advantage to be damn simple for the moment and of course pretty much integrated
+to gitlab (no need to create new accounts, build status directly in gitlab etc.)</p>
+
+<p>In order to install it you can use the <a href="https://about.gitlab.com/downloads/">ommibus package</a>
+which will take care of installing everything from you</p>
+
+<p>Then in order to have only gitlab-ci you can can follow the step <a href="https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/gitlab-ci/README.md">Running Gitlab on its own server</a></p>
+
+<h2 id="gitlab-ci-behind-your-company-s-frontal-server">Gitlab-CI behind your company&rsquo;s frontal server</h2>
+
+<p>Our company as one public IP under which we host all our services.
+We have then a frontal apache2 (but it could have been a nginx) which proxify
+then the request depending of the hostname. In that case it does not make
+sense for us to still have the Nginx that is installed with the omnibus package</p>
+
+<p>So in order to deactivate it, in your <code>/etc/gitlab/gitlab.rb</code> in the Nginx section
+you can add</p>
+
+<pre><code>nginx['enable'] = false
+ci_nginx['enable'] = false
+</code></pre>
+
+<p>and then</p>
+
+<pre><code>sudo gitlab-ctl reconfigure 
+</code></pre>
+
+<p>then in your frontal you can put a vhost</p>
+
+<pre><code>&lt;VirtualHost  *:80&gt;
+    ServerName gitlab-ci.example.com
+
+    ProxyRequests off
+    ProxyPreserveHost on
+    ProxyPass / http://LAN_IP_OF_YOUR_GITLAB_CI:8181/
+    ProxyPassReverse / http://LAN_IP_OF_YOUR_GITLAB_CI:8181/
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p>(by default gitlab-ci&rsquo;s unicorn listen on port 8181)</p>
+
+<h2 id="tell-gitlab-ci-to-run-your-test-into-a-docker-container">Tell Gitlab-ci to run your test into a docker container</h2>
+
+<p>Gitlab-ci use what they call a &ldquo;Runner&rdquo; to run your test, it&rsquo;s more
+or less a spare machine in which Gitlab-ci will clone your project
+and run a bash script you&rsquo;ve provided in the Gitlab-ci admin panel</p>
+
+<p>The goal of this article is not to do a deep introduction to <a href="https://www.docker.com/">Docker</a>
+but basically it&rsquo;s a powerful technology that permits you to run &ldquo;containers&rdquo;.
+You can consider a container as a virtual machine without the virtual part, and restricted
+to Linux. (more or less)</p>
+
+<p>The container will brings their full advatanges with gitlab-ci as</p>
+
+<ul>
+<li>they don&rsquo;t take extra memory when not being runned</li>
+<li>you can create a new container from a base image in a blink of eyes</li>
+</ul>
+
+<p>Fortunately for us a Docker image already exists with all the base
+things to have a Gitlab-ci Runner in a container. <a href="https://github.com/sameersbn/docker-gitlab-ci-runner">The repository</a></p>
+
+<p>If you have already docker installed you can pull the image doing</p>
+
+<pre><code>docker pull sameersbn/gitlab-ci-runner:latest
+</code></pre>
+
+<p>Then you need to register your runner to gitlab-ci you can do that with</p>
+
+<pre><code>mkdir -p /opt/your-project-runner
+docker run --name your-project-runner -it --rm \
+    -v /opt/your-project-runner:/home/gitlab_ci_runner/data \
+  sameersbn/gitlab-ci-runner:latest app:setup
+</code></pre>
+
+<p>it will ask you some information given to you by your instance of gitlab-ci</p>
+
+<p>you can then pop a runner by doing</p>
+
+<pre><code>docker run --name your-project-runner -it -d \
+    -v /opt/your-project-runner:/home/gitlab_ci_runner/data \
+  sameersbn/gitlab-ci-runner:latest app:setup
+</code></pre>
+
+<p>you will certainly to customize some stuff on your container
+you can do so by connecting as root to it using</p>
+
+<pre><code>docker exec -it your-project-runner bash
+</code></pre>
+
+<p>of course something to keep in mind is that container are meant to be stateless
+which mean that outside of the directories you map with <code>-v</code> option
+the other information will be deleted when you restart the container</p>
+
+<p>So if you need to always create the same kind of container, you can create
+your own Runner container by extending this one to fit your needs, like
+it has been done in the <a href="https://github.com/sameersbn/docker-runner-gitlab">docker image to run test for gitlab&rsquo;s own source code</a></p>
+
+<p>In a next article we will see in details how to create step by step your own
+Gitlab-ci for your php/symfony project</p>
+        
+    <ul class="list-inline tags" style="margin-top: 15px; margin-left: 0px">
+        
+    </ul>
+
+
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+                    (function() {
+                        if (window.location.hostname == "localhost") {
+                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
+                            return;
+                        }
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        var disqus_shortname = 'allansimonblog';
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+    
+
+
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Search</h5>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form">
+            <div class="input-group">
+                <input class="form-control" type="search" name="q" />
+                <span class="input-group-btn">
+                    <button class="btn btn-custom" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+            <input type="hidden" name="q" value="site:http://allan-simon.github.io/blog/">
+        </form>
+    </div>
+</div>
+
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Recent Posts</h5>
+        <ul class="list-unstyled posts-recent">
+            
+                <li><a href="http://allan-simon.github.io/blog/2018/03/better-null-display-psql/">Better null display psql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/08/check-start-time-before-end-time-in-postgresql/">check start time before end time in postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/07/get-http-status-code-in-bash-script-wit-curl/">get http status code in bash script wit curl</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></li>
+            
+        </ul>
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-11 col-md-offset-1 card">
+                <h5>categories</h5>
+                <ul class="list-unstyled posts-recent">
+                    
+                </ul>
+            </div>
+        </div>
+    
+
+    
+
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-xs-6">
+    <ul class="list-inline links">
+        
+    </ul>
+</div>
+
+            <div class="col-md-4 col-xs-6">
+    <ul class="list-inline social-media">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <a href="https://github.com/nraboy/hugo-phlat-theme">Phlat Theme</a> designed and built by <a href="http://www.nraboy.com">Nic Raboy</a> in San Francisco, California.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+        <div id="back-to-top" class="hidden">
+    <a href="#top" class="well well-sm" onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+        <i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+    </a>
+</div>
+<script src="http://allan-simon.github.io/blog/js/jquery-2.2.1.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/bootstrap.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>
+    if(($(window).height() + 100) < $(document).height()) {
+        $('#back-to-top').removeClass('hidden').affix({
+            offset: {
+                top: 100
+            }
+        });
+    }
+</script>
+
+    
+
+
+
+    </body>
+</html>

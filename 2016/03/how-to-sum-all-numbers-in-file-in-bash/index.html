@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.37.1" />
-    <title>about</title>
+    <title>how to sum all numbers in file in bash</title>
     
     
     
@@ -47,27 +47,68 @@
                 <div class="col-md-8">
                     <div class="row">
     <div class="col-md-12 content-card">
-        <h1>about</h1>
+        <h1>how to sum all numbers in file in bash</h1>
+        
+            <ul class="list-inline meta">
+                <li><i class="fa fa-calendar"></i>March 20, 2016</li>
+                <li><i class="fa fa-user"></i></li>
+                
+            </ul>
         
         
+    <ul class="list-inline share" style="margin-top: 15px; margin-left: 0px">
+        <li class="facebook-share"><a target="_blank" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f03%2fhow-to-sum-all-numbers-in-file-in-bash%2f"><i class="fa fa-facebook fa-lg"></i>Facebook</a></li>
+        <li class="googleplus-share"><a target="_blank" href="https://plus.google.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f03%2fhow-to-sum-all-numbers-in-file-in-bash%2f"><i class="fa fa-google-plus fa-lg"></i>Google+</a></li>
+        <li class="twitter-share"><a target="_blank" href="https://twitter.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f03%2fhow-to-sum-all-numbers-in-file-in-bash%2f&amp;text=how%20to%20sum%20all%20numbers%20in%20file%20in%20bash"><i class="fa fa-twitter fa-lg"></i>Twitter</a></li>
+        <li class="reddit-share"><a target="_blank" href="http://reddit.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f03%2fhow-to-sum-all-numbers-in-file-in-bash%2f&amp;title=how%20to%20sum%20all%20numbers%20in%20file%20in%20bash"><i class="fa fa-reddit fa-lg"></i>Reddit</a></li>
+        <li class="linkedin-share"><a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f03%2fhow-to-sum-all-numbers-in-file-in-bash%2f"><i class="fa fa-linkedin fa-lg"></i>LinkedIn</a></li>
+        <li class="stumbleupon-share"><a target="_blank" href="http://www.stumbleupon.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f03%2fhow-to-sum-all-numbers-in-file-in-bash%2f&amp;title=how%20to%20sum%20all%20numbers%20in%20file%20in%20bash"><i class="fa fa-stumbleupon fa-lg"></i>StumbleUpon</a></li>
+    </ul>
 
+
+        <h3 id="i-have-a-file-with-one-number-by-line-how-to-get-the-sum">I have a file, with one number by line, how to get the sum</h3>
+
+<pre><code class="language-bash">paste -s -d+  myfile_with_numbers | bc 
+</code></pre>
+
+<p>and if you have a csv, delimited by <code>,</code> and for which the number is on
+the 2nd field:</p>
+
+<pre><code>cut -d,  my_file.csv -f 2 | paste -s -d+  | bc 
+</code></pre>
+
+<p></p>
         
-
-<h2 id="what-will-you-find-on-this-blog">What will you find on this blog</h2>
-
-<ul>
-<li>My daily discoveries and tips, mostly web/linux/devops/c++/c/rust related.</li>
-<li>Some tips and tricks on how to survive in the Chinese internet as a devops</li>
-<li>Some news concerning my personnal projects</li>
-<li>Random thoughts as I progress in my professional and personnal career.</li>
-</ul>
-
+    <ul class="list-inline tags" style="margin-top: 15px; margin-left: 0px">
         
+    </ul>
+
 
     </div>
 </div>
 
                     
+    
+        <div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+                    (function() {
+                        if (window.location.hostname == "localhost") {
+                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
+                            return;
+                        }
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        var disqus_shortname = 'allansimonblog';
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+    
+
 
                 </div>
                 <div class="col-md-4">

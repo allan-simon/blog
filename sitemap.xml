@@ -3,132 +3,132 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/better-null-display-psql/</loc>
+    <loc>http://allan-simon.github.io/blog/2018/03/better-null-display-psql/</loc>
     <lastmod>2018-03-29T23:36:00+02:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/check-start-time-before-end-time-in-postgresql/</loc>
+    <loc>http://allan-simon.github.io/blog/2016/08/check-start-time-before-end-time-in-postgresql/</loc>
     <lastmod>2016-08-10T05:48:30+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/get-http-status-code-in-bash-script-wit-curl/</loc>
+    <loc>http://allan-simon.github.io/blog/2016/07/get-http-status-code-in-bash-script-wit-curl/</loc>
     <lastmod>2016-07-29T15:44:25+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/some-reading-for-better-understanding-of-postgresql/</loc>
+    <loc>http://allan-simon.github.io/blog/2016/04/some-reading-for-better-understanding-of-postgresql/</loc>
     <lastmod>2016-04-16T16:48:57+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/</loc>
+    <loc>http://allan-simon.github.io/blog/2016/04/alembic-use-sql-statement-instead-of-sqlalchemy/</loc>
     <lastmod>2016-04-03T04:35:20+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/</loc>
+    <loc>http://allan-simon.github.io/blog/2016/04/python-alembic-with-environment-variables/</loc>
     <lastmod>2016-04-03T03:09:40+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/</loc>
+    <loc>http://allan-simon.github.io/blog/2016/03/how-to-sum-all-numbers-in-file-in-bash/</loc>
     <lastmod>2016-03-20T03:42:37+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/</loc>
+    <loc>http://allan-simon.github.io/blog/2016/03/murmur-hash-v3-in-mysql-utf8-compatible/</loc>
     <lastmod>2016-03-20T02:51:21+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/08/bug-in-vagrant-with-virtualbox-sharefolder/</loc>
     <lastmod>2015-08-23T03:43:56+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/05/create-a-rest-api-with-symfony2-part-2-entity--db-migration-crud/</loc>
     <lastmod>2015-05-24T18:26:09+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/05/create-a-production-ready-rest-api-with-symfony2-part-1/</loc>
     <lastmod>2015-05-23T23:31:15+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/things-i-ve-learn-this-week/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/05/things-ive-learn-this-week/</loc>
     <lastmod>2015-05-12T22:40:38+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/vagrant-with-ansible-provisionning-docker-containers-for-symfony2/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/04/vagrant-with-ansible-provisionning-docker-containers-for-symfony2/</loc>
     <lastmod>2015-04-12T04:14:20+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/doctrine2-order-by-count-many-to-many/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/04/doctrine2-order-by-count-many-to-many/</loc>
     <lastmod>2015-04-09T01:44:41+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/gitlab-ci-with-docker-runner/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/03/gitlab-ci-with-docker-runner/</loc>
     <lastmod>2015-03-29T15:05:36+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/symfony-create-your-own-third-party-bundle/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/03/symfony-create-your-own-third-party-bundle-part-1/4/</loc>
     <lastmod>2015-03-28T21:05:04+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/migrate-down-with-doctrine-migrations/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/03/migrate-down-with-doctrine-migrations/</loc>
     <lastmod>2015-03-14T18:21:01+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/symfony-2.6-tips-1/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/03/symfony-2.6-tips-#1/</loc>
     <lastmod>2015-03-11T22:40:50+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/redmine-cli/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/02/redmine-cli-and-redmine-api/</loc>
     <lastmod>2015-02-25T00:08:11+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/form-name-goes-into-global-scope-javascript/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/02/form-name-goes-into-global-scope-in-javascript/</loc>
     <lastmod>2015-02-23T17:11:21+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/workflow-publishing-blog-post-with-hugo/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/02/workflow-publishing-blog-post-with-hugo/</loc>
     <lastmod>2015-02-20T15:03:36+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/functionnal-tests-symfony2-and-authentication/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/02/functionnal-tests-in-symfony2-with-authentication/</loc>
     <lastmod>2015-02-20T14:28:13+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/solve-composer-github-api-limitation/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/02/solve-composer-github-api-limitation/</loc>
     <lastmod>2015-02-10T18:19:22+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/install-docker-on-ubuntu-12.04/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/02/install-docker-on-ubuntu-12.04/</loc>
     <lastmod>2015-02-10T14:14:49+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/postgresql-display-one-column-per-line/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/02/postgresql-display-one-column-per-line/</loc>
     <lastmod>2015-02-10T11:48:21+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/first/</loc>
+    <loc>http://allan-simon.github.io/blog/2015/02/a-new-blog-this-time-on-github-and-statically-generated/</loc>
     <lastmod>2015-02-09T23:24:39+08:00</lastmod>
   </url>
   
@@ -149,7 +149,7 @@
   </url>
   
   <url>
-    <loc>http://allan-simon.github.io/blog/posts/</loc>
+    <loc>http://allan-simon.github.io/blog/post/</loc>
     <lastmod>2018-03-29T23:36:00+02:00</lastmod>
     <priority>0</priority>
   </url>
