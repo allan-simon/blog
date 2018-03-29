@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>Functionnal tests in symfony2 with authentication</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -45,6 +66,8 @@ test environnement to enable the HTTP Basic Authentication method. For those
 who doesn&rsquo;t know, the HTTP standard comme with a method to authentify a
 user-agent by directly sending the username/password in the HTTP header
 (which goes along the fact that HTTP is aimed to be stateless)</p>
+
+<p></p>
 
 <p>in your <code>config_test.yml</code> add this (replace <code>NAME_OF_YOUR_FIREWALL</code>)</p>
 
@@ -93,7 +116,6 @@ class YourTest extends WebTestCase
     }
 }
 </code></pre>
-
         
 
     </div>

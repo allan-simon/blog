@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>Solve composer github api limitation</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,9 +51,7 @@
         
         
 
-        
-
-<h3 id="could-not-fetch-x-enter-your-github-credentials-to-go-over-the-api-rate-limit:399398062355d59df0e087ae76892bab">Could not fetch X enter your GitHub credentials to go over the API rate limit</h3>
+        <h3 id="could-not-fetch-x-enter-your-github-credentials-to-go-over-the-api-rate-limit">Could not fetch X enter your GitHub credentials to go over the API rate limit</h3>
 
 <p>The problem is that composer is retrieving nearly all the packages from github
 using the anonymous access github API. In order to solve it you need to generate
@@ -46,7 +65,9 @@ a token</p>
 
 <p>now two possibilities</p>
 
-<h4 id="1-put-this-token-in-one-specific-project:399398062355d59df0e087ae76892bab">1 - Put this token in one specific project</h4>
+<p></p>
+
+<h4 id="1-put-this-token-in-one-specific-project">1 - Put this token in one specific project</h4>
 
 <p>for this simply run</p>
 
@@ -62,7 +83,7 @@ a token</p>
 
 <p>it will add that to your project&rsquo;s composer.json file</p>
 
-<h4 id="2-put-this-token-in-your-global-composer-configuration:399398062355d59df0e087ae76892bab">2 -  Put this token in your global composer configuration</h4>
+<h4 id="2-put-this-token-in-your-global-composer-configuration">2 -  Put this token in your global composer configuration</h4>
 
 <p>If your project is an open-source or company project you may not want
 to commit your token on the git of your project/company</p>
@@ -85,7 +106,6 @@ to commit your token on the git of your project/company</p>
 <li><a href="https://github.com/composer/composer/issues/3542">composer&rsquo;s github</a></li>
 <li><a href="https://github.com/blog/1509-personal-api-tokens">github&rsquo;s blog</a> More details about Github token</li>
 </ul>
-
         
 
     </div>

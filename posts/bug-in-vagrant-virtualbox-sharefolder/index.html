@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>bug in Vagrant with Virtualbox sharefolder</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,9 +51,7 @@
         
         
 
-        
-
-<h2 id="the-problem-serving-static-files:841a2f7d6b52b26d6728896000405247">The problem: serving static files</h2>
+        <h2 id="the-problem-serving-static-files">The problem: serving static files</h2>
 
 <p>The problem will affect you if you try to serve static files
 from your vagrant folder if you use the default from virtualbox</p>
@@ -41,13 +60,15 @@ from your vagrant folder if you use the default from virtualbox</p>
 and when you update them, they don&rsquo;t get updated, and sometimes
 they even come out with some garbage bytes at the end of it</p>
 
-<h2 id="the-reason-a-long-standing-bug-in-virtual-box:841a2f7d6b52b26d6728896000405247">The reason, a long standing bug in virtual box</h2>
+<p></p>
+
+<h2 id="the-reason-a-long-standing-bug-in-virtual-box">The reason, a long standing bug in virtual box</h2>
 
 <p>after reading <a href="https://github.com/mitchellh/vagrant/issues/351">this bug report</a> in vagrant repository</p>
 
 <p>I&rsquo;ve found that the underlying bug is from virtualbox, bug which has been reported <a href="https://www.virtualbox.org/ticket/12597">here</a></p>
 
-<h2 id="the-solutions-deactivate-send-or-switch-of-sharefolder-type:841a2f7d6b52b26d6728896000405247">The solutions: deactivate send or switch of sharefolder type</h2>
+<h2 id="the-solutions-deactivate-send-or-switch-of-sharefolder-type">The solutions: deactivate send or switch of sharefolder type</h2>
 
 <p>If you use Nginx or apache you can just followed the <a href="https://docs.vagrantup.com/v2/synced-folders/virtualbox.html">official workaround</a></p>
 
@@ -85,7 +106,6 @@ Vagrant.configure(2) do |config|
 </code></pre>
 
 <p>NFS and SMB sharefolder don&rsquo;t have this bug so you should be fine with that</p>
-
         
 
     </div>

@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>symfony 2.6 tips #1</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,15 +51,15 @@
         
         
 
-        
-
-<p>Here a list of tips for symfony 2.6 I&rsquo;ve gathered these days</p>
+        <p>Here a list of tips for symfony 2.6 I&rsquo;ve gathered these days</p>
 
 <ul>
 <li>how to skip test in phpunit</li>
 <li>how to disable form validation in test</li>
 <li>(Doctrine) don&rsquo;t use findById() when you just mean find()</li>
 </ul>
+
+<p></p>
 
 <p>###Skip test in phpunit</p>
 
@@ -65,17 +86,16 @@ in company with tight deadline, you don&rsquo;t have time to adapt the tests
 
 <p>so that it will appear with a <code>S</code> in the test report, so that you have a reminder that there&rsquo;s something to fix.</p>
 
-<h3 id="disable-form-validation-in-test:1621fbda3d3ab5d71d6856b76aa5af6f">Disable form validation in test</h3>
+<h3 id="disable-form-validation-in-test">Disable form validation in test</h3>
 
 <p>You&rsquo;re writing functionnal test and you need to check the case of an form submitted with bogus data (to be sure your server side code is protected against hand-crafted request). By default the form you get in functionnal test will have the same checking rules than the one on server side, so in order to disable checking you can do</p>
 
 <pre><code>$form['country']-&gt;disableValidation()-&gt;select('Invalid value');
 </code></pre>
 
-<h3 id="doctrine-don-t-use-findbyid-when-you-just-mean-find:1621fbda3d3ab5d71d6856b76aa5af6f">(Doctrine) don&rsquo;t use findById() when you just mean find()</h3>
+<h3 id="doctrine-don-t-use-findbyid-when-you-just-mean-find">(Doctrine) don&rsquo;t use findById() when you just mean find()</h3>
 
 <p>well, the title is self-explaining</p>
-
         
 
     </div>

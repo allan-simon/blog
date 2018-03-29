@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>vagrant with ansible provisionning docker containers for symfony2</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,9 +51,7 @@
         
         
 
-        
-
-<p>In this article we&rsquo;re going to cover:</p>
+        <p>In this article we&rsquo;re going to cover:</p>
 
 <ul>
 <li>How to use ansible+docker+vagrant to create a one size for all environment for Symfony2 + Nginx + Postgresql + PHP-fpm</li>
@@ -43,7 +62,9 @@
 
 <p>As an example will take the existing Oauth2 server I have created: <a href="https://github.com/allan-simon/oauth2-symfony2-vagrant-fosuserbundle">Oauth2Symfony2</a></p>
 
-<h3 id="introduction:4402486289f8d094d7120258e6fa812a">Introduction</h3>
+<p></p>
+
+<h3 id="introduction">Introduction</h3>
 
 <p>Recently I&rsquo;ve been reading a lot about Docker, Vagrant and Ansible.
 At my company we&rsquo;re already using vagrant and ansible to create our
@@ -69,7 +90,7 @@ my computer</li>
 <li>To works fine with Symfony2 web applications</li>
 </ul>
 
-<h2 id="step-1-getting-the-docker-containers-ready:4402486289f8d094d7120258e6fa812a">Step 1, getting the Docker containers ready</h2>
+<h2 id="step-1-getting-the-docker-containers-ready">Step 1, getting the Docker containers ready</h2>
 
 <p>For this first try, we&rsquo;re not going to push the logic to its maximun
 and we will keep things simple we&rsquo;re going to have 2 Docker containers</p>
@@ -82,7 +103,7 @@ and we will keep things simple we&rsquo;re going to have 2 Docker containers</p>
 <p>We will put all our dockerfiles in a directory <code>DockerFiles</code> with
 one subdirectory by container.</p>
 
-<h3 id="postgresql-container:4402486289f8d094d7120258e6fa812a">Postgresql container</h3>
+<h3 id="postgresql-container">Postgresql container</h3>
 
 <p>The docker repository has already a very nice <a href="https://registry.hub.docker.com/_/postgres/">official postgresql container</a>
 it contains instructions on how to extend it, perfect</p>
@@ -96,7 +117,7 @@ FROM library/postgres
 <p>Here nothing funky, we&rsquo;re just saying our container&rsquo;s image will use
 the official postgres image as a base. As we progress it will be completed with a script to create a database and a database user, but outside of this it currently perfectly fits our needs</p>
 
-<h3 id="nginx-php-fpm:4402486289f8d094d7120258e6fa812a">Nginx + PHP-fpm</h3>
+<h3 id="nginx-php-fpm">Nginx + PHP-fpm</h3>
 
 <p>The docker repository is full of container for PHP-fpm with Nginx but I didn&rsquo;t find any which met my needs:</p>
 
@@ -173,7 +194,7 @@ RUN echo &quot;\ndaemon off;&quot; &gt;&gt; /etc/nginx/nginx.conf
 
 </code></pre>
 
-<h3 id="building-the-docker-images-using-ansible:4402486289f8d094d7120258e6fa812a">Building the Docker images using Ansible</h3>
+<h3 id="building-the-docker-images-using-ansible">Building the Docker images using Ansible</h3>
 
 <p>For those who don&rsquo;t know <a href="http://docs.ansible.com/">Ansible</a>, it&rsquo;s a tool made to automate all the steps you do in order to setup an environment, be it creating files, installing packages, modifying configuration, making sure a service is started and an other stopped. It works also if the environment is made of several machines scattered over the world, as long as you can SSH to them.</p>
 
@@ -217,7 +238,7 @@ RUN echo &quot;\ndaemon off;&quot; &gt;&gt; /etc/nginx/nginx.conf
 
 </code></pre>
 
-<h3 id="modifying-our-postgres-image-to-create-a-database-for-symfony:4402486289f8d094d7120258e6fa812a">Modifying our Postgres image to create a database for Symfony</h3>
+<h3 id="modifying-our-postgres-image-to-create-a-database-for-symfony">Modifying our Postgres image to create a database for Symfony</h3>
 
 <p>Our postgres image is currently very basic, there&rsquo;s postgresql installed inside but no database or user created for our application. Let&rsquo;s fix that.According to the <a href="https://registry.hub.docker.com/_/postgres/">documentation</a> you can add your custom script or SQL query to be launched at the container start by adding your script to the <code>/docker-entrypoint-initdb.d</code> directory. Let&rsquo;s do that, create a file <code>DockerFiles/postgres/make_db.sh</code></p>
 
@@ -250,7 +271,7 @@ RUN chmod +x /docker-entrypoint-initdb.d/make_db.sh
 
 <p><strong>/!\ One important remark, the file is added once, it means that if you latter modify the file, you need to rebuild the image. For that the &lsquo;easy&rsquo; way I found is to add a blank line in the dockerfile to force it to rebuild, but I guess there&rsquo;s a better way.</strong></p>
 
-<h3 id="start-a-postgresql-container-based-on-our-image-from-ansible:4402486289f8d094d7120258e6fa812a">Start a Postgresql container based on our image from Ansible.</h3>
+<h3 id="start-a-postgresql-container-based-on-our-image-from-ansible">Start a Postgresql container based on our image from Ansible.</h3>
 
 <p>Now that our image is ready, it&rsquo;s time to start it, add at the end of your <code>playbook.yml</code></p>
 
@@ -302,7 +323,7 @@ APP_DB_USER_PASSWORD: symfony_db_password
 APP_DB_NAME: symfony_db
 </code></pre>
 
-<h3 id="start-a-nginx-php-fpm-container-linked-to-the-postgresql-one:4402486289f8d094d7120258e6fa812a">Start a Nginx+PHP-fpm container linked to the Postgresql one</h3>
+<h3 id="start-a-nginx-php-fpm-container-linked-to-the-postgresql-one">Start a Nginx+PHP-fpm container linked to the Postgresql one</h3>
 
 <p>Now that we have our postgres container started it&rsquo;s time to do the same with our container for Nginx and PHP-fpm it takes the same structure as the task for postgres, with just some little thing in more (explained in comments)</p>
 
@@ -341,7 +362,7 @@ APP_DB_NAME: symfony_db
 
 <p>With that, our Symfony app will have all the information it needs to access to the database, and to be accessed from the outside</p>
 
-<h3 id="finalize-the-configuration-of-the-nginx-php-fpm-image:4402486289f8d094d7120258e6fa812a">Finalize the configuration of the Nginx+PHP-fpm image</h3>
+<h3 id="finalize-the-configuration-of-the-nginx-php-fpm-image">Finalize the configuration of the Nginx+PHP-fpm image</h3>
 
 <p>Our two containers are now able to communicate but the same as we needed to create a database to make our postgres container useful, we&rsquo;re going to need to tweak a little our Nginx+PHP-fpm container in order to</p>
 
@@ -379,7 +400,7 @@ ENTRYPOINT [&quot;/root/entrypoint.sh&quot;]
 
 <p>now the configuration file themselves</p>
 
-<h4 id="dockerfiles-symfony2-config-vhost-conf:4402486289f8d094d7120258e6fa812a">DockerFiles/Symfony2/config/vhost.conf</h4>
+<h4 id="dockerfiles-symfony2-config-vhost-conf">DockerFiles/Symfony2/config/vhost.conf</h4>
 
 <p>This vhost is specifically for symfony2 applications
 you maybe to adapt it if you plan to run other kind
@@ -415,14 +436,14 @@ server {
 
 </code></pre>
 
-<h4 id="dockerfiles-symfony2-config-php-extra-ini:4402486289f8d094d7120258e6fa812a">DockerFiles/Symfony2/config/php-extra.ini</h4>
+<h4 id="dockerfiles-symfony2-config-php-extra-ini">DockerFiles/Symfony2/config/php-extra.ini</h4>
 
 <p>nothing fancy in it</p>
 
 <pre><code>date.timezone = UTC
 </code></pre>
 
-<h4 id="dockerfiles-symfony2-entrypoint-sh:4402486289f8d094d7120258e6fa812a">DockerFiles/Symfony2/entrypoint.sh</h4>
+<h4 id="dockerfiles-symfony2-entrypoint-sh">DockerFiles/Symfony2/entrypoint.sh</h4>
 
 <pre><code>#!/bin/bash
 
@@ -485,7 +506,7 @@ fi
 
 <p>Now our environment is fully ready we&rsquo;re only left with adapting our appliction</p>
 
-<h3 id="adapting-our-symfony-application-to-fit-in:4402486289f8d094d7120258e6fa812a">Adapting our symfony application to fit in</h3>
+<h3 id="adapting-our-symfony-application-to-fit-in">Adapting our symfony application to fit in</h3>
 
 <p>Here&rsquo;s there&rsquo;s nothing much to change itself in the code, we simply need to tell Symfony2 to look in priority for the environment variables. The problem is Symfony2 itself looks for variable starting with <code>SYMFONY__</code> and the second problem is that the <code>parameters.yml</code> has priority over the environment variables&hellip;</p>
 
@@ -541,7 +562,7 @@ fi
 
 <p>The two first environment variables come from the variables given by docker to the <code>app_webserver</code> when linking with <code>app_database</code></p>
 
-<h3 id="running-everything:4402486289f8d094d7120258e6fa812a">Running everything</h3>
+<h3 id="running-everything">Running everything</h3>
 
 <p>Now that everything is done you can run your playbook using:</p>
 
@@ -550,7 +571,7 @@ fi
 
 <p>it tells to run the playbook on your local machine.</p>
 
-<h3 id="link-it-to-vagrant:4402486289f8d094d7120258e6fa812a">Link it to vagrant</h3>
+<h3 id="link-it-to-vagrant">Link it to vagrant</h3>
 
 <p>All of that works fine if you&rsquo;re on a Linux machine, so for your fellow Mac or Windows colleague you can create this <code>Vagrantfile</code></p>
 
@@ -596,9 +617,9 @@ end
 
 <p>it is not treated in this article but for Symfony2 performance reason on Vagrant, you may want to put the cache and logs folder outside of the share folder.</p>
 
-<h3 id="useful-commands:4402486289f8d094d7120258e6fa812a">Useful commands</h3>
+<h3 id="useful-commands">Useful commands</h3>
 
-<h3 id="run-a-command-in-a-given-container:4402486289f8d094d7120258e6fa812a">Run a command in a given container</h3>
+<h3 id="run-a-command-in-a-given-container">Run a command in a given container</h3>
 
 <p>for example you want to run phpunit</p>
 
@@ -610,12 +631,12 @@ end
 <pre><code>sudo docker exec -it app_webserver bash
 </code></pre>
 
-<h3 id="get-the-logs:4402486289f8d094d7120258e6fa812a">Get the logs</h3>
+<h3 id="get-the-logs">Get the logs</h3>
 
 <pre><code>sudo docker logs -f app_webserver   
 </code></pre>
 
-<h3 id="delete-an-image:4402486289f8d094d7120258e6fa812a">Delete an image</h3>
+<h3 id="delete-an-image">Delete an image</h3>
 
 <p>Let&rsquo;s say it&rsquo;s 3AM you&rsquo;re trying desperately to modify the Dockerfile of the database but nothing change, so you want to nuke everything and start fresh</p>
 
@@ -631,7 +652,7 @@ sudo docker rm app_database2
 <pre><code>sudo docker rmi allansimon/postgres-for-symfony
 </code></pre>
 
-<h3 id="further-improvements:4402486289f8d094d7120258e6fa812a">Further improvements</h3>
+<h3 id="further-improvements">Further improvements</h3>
 
 <p>With that you should have a good starters to have your application running in dockers , while still providing an easy environment to deploy for your developers, but things can be of course furthered improve (I will try to cover them in other articles)</p>
 
@@ -646,9 +667,9 @@ sudo docker rm app_database2
 <li>Be able to have our containers over several physical machines</li>
 </ul>
 
-<h3 id="articles-that-helped-me-wrote-this-one-and-further-reading:4402486289f8d094d7120258e6fa812a">Articles that helped me wrote this one and further reading</h3>
+<h3 id="articles-that-helped-me-wrote-this-one-and-further-reading">Articles that helped me wrote this one and further reading</h3>
 
-<h4 id="about-the-content-of-this-article:4402486289f8d094d7120258e6fa812a">About the content of this article</h4>
+<h4 id="about-the-content-of-this-article">About the content of this article</h4>
 
 <ul>
 <li><a href="http://docs.ansible.com/docker_module.html">Ansible documentation on docker</a></li>
@@ -660,7 +681,7 @@ sudo docker rm app_database2
 <li></li>
 </ul>
 
-<h4 id="further-reading:4402486289f8d094d7120258e6fa812a">Further reading</h4>
+<h4 id="further-reading">Further reading</h4>
 
 <ul>
 <li><a href="http://devopscube.com/how-to-link-docker-containers-across-hosts-the-ambassador-pattern/">How to link docker containers accross host</a></li>
@@ -671,7 +692,6 @@ sudo docker rm app_database2
 <li><a href="https://www.digitalocean.com/community/tutorials/how-to-horizontally-scale-a-laravel-4-app-with-a-postgresql-database">How to scale a Laravel application with postgresql</a></li>
 <li><a href="http://www.slideshare.net/pgodel/symfony-live-nyc-2014-rock-solid-deployment-of-symfony-apps">Rock solide deployement of Symfony application</a></li>
 </ul>
-
         
 
     </div>

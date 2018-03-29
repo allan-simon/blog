@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>python alembic with environment variables</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -41,6 +62,8 @@ of migrations etc.) while still being simple for simple case</p>
 to integrate with 12Factor-apps, i.e my code is running in a lot
 of differents environments (vagrant+docker on my local machine,
 the QA environments,  the pre-production, production etc.)</p>
+
+<p></p>
 
 <p>And of course I don&rsquo;t want to have to maintain in the configuration
 file all the different combination, and even less do I want to
@@ -133,7 +156,6 @@ else:
 
 <p>Of course you can adapt it to your need/database/driver, normally
 you just need to update that <code>get_url</code> method</p>
-
         
 
     </div>
