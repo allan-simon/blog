@@ -6,8 +6,42 @@
     <description>Recent content on Allan&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 10 Aug 2016 05:48:30 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 29 Mar 2018 23:36:00 +0200</lastBuildDate>
     <atom:link href="http://allan-simon.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>better null display psql.md</title>
+      <link>http://allan-simon.github.io/blog/posts/better-null-display-psql.md/</link>
+      <pubDate>Thu, 29 Mar 2018 23:36:00 +0200</pubDate>
+      
+      <guid>http://allan-simon.github.io/blog/posts/better-null-display-psql.md/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;ve been frustating recently to differenciate &lt;code&gt;NULL&lt;/code&gt; and empty strings
+in postgresql when requeting manually with &lt;code&gt;psql&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Turns out there&amp;rsquo;s an easy way to change that.&lt;/p&gt;
+
+&lt;p&gt;Just use&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;\pset null &#39;Ø&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and now&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; id |          email          |  first  | last
+----+-------------------------+---------+-------
+  1 | your-email@example.com  | Foo     | Bar
+  2 | first-is-null@foo.com   |         |
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;will be&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; id |          email          |  first  | last
+----+-------------------------+---------+-------
+  1 | your-email@example.com  | Foo     | Bar
+  2 | first-is-null@foo.com   | Ø       |
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>check start time before end time in postgresql</title>
@@ -2104,94 +2138,6 @@ it has been done in the &lt;a href=&#34;https://github.com/sameersbn/docker-runn
 
 &lt;p&gt;In a next article we will see in details how to create step by step your own
 Gitlab-ci for your php/symfony project&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>symfony create your own third party bundle part 1/4</title>
-      <link>http://allan-simon.github.io/blog/posts/symfony-create-your-own-third-party-bundle/</link>
-      <pubDate>Sat, 28 Mar 2015 21:05:04 +0800</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/posts/symfony-create-your-own-third-party-bundle/</guid>
-      <description>
-
-&lt;p&gt;So you&amp;rsquo;ve reached the point where you&amp;rsquo;re reusing the same service accross
-symfony application, again and again and you feel like this could even
-be useful for other people. You decide that it will be great if you could
-do like adults and have your own bundle.&lt;/p&gt;
-
-&lt;p&gt;Here is how to create one from scratch, you can find the repo here &lt;a href=&#34;https://travis-ci.org/we-bridge/OAuth2AccessBundle&#34;&gt;Oauth2AccessBundle&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;we cover these steps:&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Creating the base repo in github and composer.json&lt;/li&gt;
-&lt;li&gt;Adding the base Classes&lt;/li&gt;
-&lt;li&gt;Permit users of your bundle to configure it&lt;/li&gt;
-&lt;li&gt;Make your bundle testable&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&#34;create-the-base-repo-and-composer-json:287aaaf28f98f244d811aded1389870a&#34;&gt;Create the base repo and composer.json&lt;/h3&gt;
-
-&lt;p&gt;Well for creating the base repo, nothing different from any new repo on github.
-I would however stressed out that you should chose since the beginning a license&lt;/p&gt;
-
-&lt;p&gt;I would recommend either&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;The MIT license, the one I personnaly chose, it permits your bundle to be
-used without overthinking even by Companies with lawyer&lt;/li&gt;
-&lt;li&gt;The AGPL license, no the A is not a typo, like the GPL license it does
-oblige people which integrate your bundle into application to make the full
-application also in a GPL-compatible license and to redistribute the modified
-source code with the application itself. HOWEVER, at the difference of the GPL
-it cover also the case of websites/webservices/REST API (for the GPL, it only
-works if the company which has made modification sells the website itself
-to other customers)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;You can of course chose the license your want, but be sure of what they implies.
-(As said for example the GPL will not force people who use and modify your
-bundle in their own website to give you back patches etc.)&lt;/p&gt;
-
-&lt;p&gt;Then add a &lt;code&gt;composer.json&lt;/code&gt; file with that skeleton content&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-    &amp;quot;name&amp;quot; : &amp;quot;webridge/oauth2-access-bundle&amp;quot;,
-    &amp;quot;type&amp;quot; : &amp;quot;symfony-bundle&amp;quot;,
-    &amp;quot;description&amp;quot; : &amp;quot;Symfony Oauth2 consumer bundle&amp;quot;,
-    &amp;quot;keywords&amp;quot; : [&amp;quot;Symfony&amp;quot;, &amp;quot;Oauth2&amp;quot;],
-    &amp;quot;homepage&amp;quot; : &amp;quot;https://github.com/we-bridge/OAuth2AccessBundle&amp;quot;,
-    &amp;quot;license&amp;quot; : &amp;quot;MIT&amp;quot;,
-    &amp;quot;authors&amp;quot; :
-    [
-        {
-            &amp;quot;name&amp;quot; : &amp;quot;Allan SIMON&amp;quot;,
-            &amp;quot;email&amp;quot; : &amp;quot;allan.simon@supinfo.com&amp;quot;,
-            &amp;quot;homepage&amp;quot; : &amp;quot;http://allan-simon.github.io/blog&amp;quot;,
-            &amp;quot;role&amp;quot; : &amp;quot;Developer&amp;quot;
-        }
-    ],
-    &amp;quot;minimum-stability&amp;quot; : &amp;quot;beta&amp;quot;,
-    &amp;quot;require&amp;quot;: {
-        &amp;quot;php&amp;quot;: &amp;quot;&amp;gt;=5.3.2&amp;quot;
-    },
-    &amp;quot;autoload&amp;quot;: {
-        &amp;quot;psr-0&amp;quot;: { &amp;quot;Webridge\\Oauth2AccessBundle&amp;quot;: &amp;quot;&amp;quot; }
-    },
-    &amp;quot;target-dir&amp;quot; : &amp;quot;Webridge/Oauth2AccessBundle&amp;quot;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;name&lt;/code&gt; part is totally up to you but it needs to be unique accross
-composer packages so most of the time &lt;code&gt;your-name-or-company/your-bundle-name&lt;/code&gt;
-is safe.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;autload&lt;/code&gt; part precise in which namespace your bundle classes will be
-accessed&lt;/p&gt;
-
-&lt;p&gt;Now that we have the very base of our repository, we will see in next
-post how to create a very basic service without configuration.&lt;/p&gt;
 </description>
     </item>
     
