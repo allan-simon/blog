@@ -1,24 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-    <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="Hugo 0.15" />
-    <title>Allan&#39;s blog</title>
     
-    
-    
-    <meta name="description" content="" />
-    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
-    
-    
-    <link href="http://allan-simon.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
-    <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/bootstrap.min.css" />
-    <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/highlightjs-themes/androidstudio.css" />
-    <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/font-awesome.min.css" />
-    <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/phlat.css" />
-</head>
-
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -29,7 +11,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="http://allan-simon.github.io/blog/">Allan&#39;s blog</a>
+            <a class="navbar-brand" href="/">Allan&#39;s blog</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -44,205 +26,7 @@
                 <div class="col-md-8">
                     
                     
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/better-null-display-psql/">Better null display psql</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>March 29, 2018</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                I&rsquo;ve been frustating recently to differenciate NULL and empty strings in postgresql when requeting manually with psql Turns out there&rsquo;s an easy way to change that. Just use \pset null 'Ø' and now id | email | first | last ----+-------------------------+---------+------- 1 | your-email@example.com | Foo | Bar 2 | first-is-null@foo.com | | will be id | email | first | last ----+-------------------------+---------+------- 1 | your-email@example.com | Foo | Bar
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/better-null-display-psql/" role="button">Read More</a>
-                            </div>
-                        </div>
                     
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/check-start-time-before-end-time-in-postgresql/">check start time before end time in postgresql</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>August 10, 2016</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                Something that a lot of people coming from MySQL does not know about real SQL database is the possibility to have &lsquo;advanced&rsquo; constraints A very simple one here, but quite common I have my table Event with a start_time and end_time and of course I want to be sure that it can&rsquo;t be possible to have a start_time that happens after its end_time. in MySQL outside of creating triggers you will most of the time have no other way than to do this check in your application code, and of course either it will not be put directly.
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/check-start-time-before-end-time-in-postgresql/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/get-http-status-code-in-bash-script-wit-curl/">get http status code in bash script wit curl</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>July 29, 2016</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                A simple piece of bash to know if your service is up or not response=$( curl YOUR_URL \ --write-out %{http_code} \ --silent \ --output /dev/null \ ) test &quot;$response&quot; -ge 200 &amp;&amp; test &quot;$response&quot; -le 299 You can replace the test by whatever suits you of course
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/get-http-status-code-in-bash-script-wit-curl/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>April 16, 2016</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                <p>Today nothing big, just that I have a couple of links open
-on my firefox, that I plan to read when I have sometimes
-to learn more about postgresql, So here we are:</p>
-
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/some-reading-for-better-understanding-of-postgresql/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>April 3, 2016</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                <p>I know it&rsquo;s pretty popular to use the wonderful <code>sqlalchemy</code> ORM
-for python, especially combined with <code>alembic</code>, but sometimes
-you just want to type plain SQL request.</p>
-
-<p>And actually it&rsquo;s pretty easy, after creating your migrations
-just do:</p>
-
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/">python alembic with environment variables</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>April 3, 2016</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                <p>At my job we&rsquo;re currently using <a href="http://alembic.readthedocs.org/">alembic</a>
-to manage our database migrations (i.e adding a new table / index etc.)</p>
-
-<p>The tool is pretty mature and has been here for a while, so it covers
-a lot of advanced case (like handling several databases, having a tree
-of migrations etc.) while still being simple for simple case</p>
-
-<p>The only not straighforward thing I found was that it&rsquo;s not easy
-to integrate with 12Factor-apps, i.e my code is running in a lot
-of differents environments (vagrant+docker on my local machine,
-the QA environments,  the pre-production, production etc.)</p>
-
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/python-alembic-with-environment-variables/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/">how to sum all numbers in file in bash</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>March 20, 2016</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                <h3 id="i-have-a-file-with-one-number-by-line-how-to-get-the-sum:764e3c47ee291b9ff48d57d25ed103c7">I have a file, with one number by line, how to get the sum</h3>
-
-<pre><code class="language-bash">paste -s -d+  myfile_with_numbers | bc 
-</code></pre>
-
-<p>and if you have a csv, delimited by <code>,</code> and for which the number is on
-the 2nd field:</p>
-
-<pre><code>cut -d,  my_file.csv -f 2 | paste -s -d+  | bc 
-</code></pre>
-
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/how-to-sum-all-numbers-in-file-in-bash/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/">murmur hash v3 in MySQL utf8 compatible</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>March 20, 2016</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                <h1 id="murmur-hash-v3-in-mysql-utf8-compatible:905a344dd7cee3e2417a03c311b84a02">Murmur hash v3 in MySQL utf8 compatible</h1>
-
-<p>These days for performance purpose, I needed to replace some <code>autoincrement</code> Id
-by a hash calculated one, in order to have a determinist way to retrieve from
-an object, it&rsquo;s record in database, and easily recognize duplicate.</p>
-
-<p>For that I have chosen the <a href="https://en.wikipedia.org/wiki/MurmurHash">murmur hash v3 function</a></p>
-
-<p>For new records, I could use the python module (leveraging C code) <a href="https://pypi.python.org/pypi/mmh3/2.3.1">mmh3</a></p>
-
-<p>But as I needed to update million of existing record, I couldn&rsquo;t possibly
-imagine doing that by calling a python script.</p>
-
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/murmur_hash_v3_in_mysql_utf8_compatible/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/">bug in Vagrant with Virtualbox sharefolder</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>August 23, 2015</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                <h2 id="the-problem-serving-static-files:841a2f7d6b52b26d6728896000405247">The problem: serving static files</h2>
-
-<p>The problem will affect you if you try to serve static files
-from your vagrant folder if you use the default from virtualbox</p>
-
-<p>For example you got your nginx or apache to serve css files
-and when you update them, they don&rsquo;t get updated, and sometimes
-they even come out with some garbage bytes at the end of it</p>
-
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/bug-in-vagrant-virtualbox-sharefolder/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
-                        <div class="row">
-                            <div class="col-md-12 content-card">
-                                <h1><a href="http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/">create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD</a></h1>
-                                <ul class="list-inline">
-                                    <li><i class="fa fa-calendar"></i>May 24, 2015</li>
-                                    <li><i class="fa fa-user"></i></li>
-                                </ul>
-                                <p><strong>Update 23 November 2015</strong>: Corrected some typo, and updated bundles versions for Doctrine</p>
-
-<p>In the <a href="http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2/">first part</a> we&rsquo;ve seen how to
-create the base of a symfony2 project used to generate a REST Api.</p>
-
-<p>In this part we&rsquo;re going to see</p>
-
-<ul>
-<li>How to use the basics of JMSSerializer to serialize Entity objects</li>
-<li>How to link our API with a database</li>
-<li>How to create migration files to easily manage our datase over time and colleagues</li>
-<li>and how to generate a full <a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD (create/read/update/delete)</a> with form checking</li>
-</ul>
-
-                                <a class="btn btn-custom" href="http://allan-simon.github.io/blog/posts/create-a-rest-api-with-symfony2-part2-entity-migration/" role="button">Read More</a>
-                            </div>
-                        </div>
-                    
-                    
-    <div class="row">
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-4" style="text-align: left; padding-left: 0px">
-                    
-                </div>
-                <div class="col-md-4 col-md-offset-4" style="text-align: right; padding-right: 0px">
-                    
-                        <a class="btn btn-default" href="/blog/page/2/" role="button" style="border-radius: 0px; display: block">Older</a>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-
 
                 </div>
                 <div class="col-md-4">
@@ -266,19 +50,13 @@ create the base of a symfony2 project used to generate a REST Api.</p>
         <h5>Recent Posts</h5>
         <ul class="list-unstyled posts-recent">
             
-                <li><a href="http://allan-simon.github.io/blog/posts/better-null-display-psql/">Better null display psql</a></li>
-            
-                <li><a href="http://allan-simon.github.io/blog/posts/check-start-time-before-end-time-in-postgresql/">check start time before end time in postgresql</a></li>
-            
-                <li><a href="http://allan-simon.github.io/blog/posts/get-http-status-code-in-bash-script-wit-curl/">get http status code in bash script wit curl</a></li>
-            
-                <li><a href="http://allan-simon.github.io/blog/posts/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></li>
-            
-                <li><a href="http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></li>
-            
         </ul>
     </div>
 </div>
+
+                    
+    
+
 
                     
     
@@ -295,6 +73,17 @@ create the base of a symfony2 project used to generate a REST Api.</p>
     
 
 
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Support This Site</h5>
+        <p>
+            If my blog was helpful to you, then please consider visiting my
+            <a href="http://amzn.com/w/1YU2424SGEF1B">Amazon Wishlist</a> or donating via <a href="https://paypal.me/nraboy">Paypal</a>
+            or <a href="https://cash.me/$nraboy">Square Cash</a>
+        </p>
+    </div>
+</div>
+
                 </div>
             </div>
         </div>
@@ -309,6 +98,7 @@ create the base of a symfony2 project used to generate a REST Api.</p>
 
             <div class="col-md-4 col-xs-6">
     <ul class="list-inline social-media">
+        
         
         
         
@@ -338,9 +128,9 @@ create the base of a symfony2 project used to generate a REST Api.</p>
         <i class="glyphicon glyphicon-chevron-up"></i> Back to Top
     </a>
 </div>
-<script src="http://allan-simon.github.io/blog//js/jquery-2.2.1.min.js"></script>
-<script src="http://allan-simon.github.io/blog//js/bootstrap.min.js"></script>
-<script src="http://allan-simon.github.io/blog//js/highlight.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/jquery-2.2.1.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/bootstrap.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 <script>
     if(($(window).height() + 100) < $(document).height()) {

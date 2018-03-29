@@ -294,3 +294,7 @@ pre {
     border: none;
     background-color: #282b2e;
 }
+
+pre code {
+    white-space: pre;
+}

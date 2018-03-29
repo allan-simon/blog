@@ -1,24 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-    <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="Hugo 0.15" />
-    <title>create a rest api with symfony2 Part 2: Entity,  DB Migration, CRUD</title>
     
-    
-    
-    <meta name="description" content="" />
-    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
-    
-    
-    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
-    <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/bootstrap.min.css" />
-    <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/highlightjs-themes/androidstudio.css" />
-    <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/font-awesome.min.css" />
-    <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/phlat.css" />
-</head>
-
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -29,7 +11,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="http://allan-simon.github.io/blog/">Allan&#39;s blog</a>
+            <a class="navbar-brand" href="/">Allan&#39;s blog</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
@@ -526,27 +508,6 @@ to us by symfony2 and the FOSRestBundle.</p>
 </div>
 
                     
-    
-        <div class="row">
-            <div class="col-md-12 content-card">
-                <div id="disqus_thread"></div>
-                <script>
-                    (function() {
-                        if (window.location.hostname == "localhost") {
-                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
-                            return;
-                        }
-                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                        var disqus_shortname = 'allansimonblog';
-                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-                    })();
-                </script>
-                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
-            </div>
-        </div>
-    
-
 
                 </div>
                 <div class="col-md-4">
@@ -570,19 +531,13 @@ to us by symfony2 and the FOSRestBundle.</p>
         <h5>Recent Posts</h5>
         <ul class="list-unstyled posts-recent">
             
-                <li><a href="http://allan-simon.github.io/blog/posts/better-null-display-psql/">Better null display psql</a></li>
-            
-                <li><a href="http://allan-simon.github.io/blog/posts/check-start-time-before-end-time-in-postgresql/">check start time before end time in postgresql</a></li>
-            
-                <li><a href="http://allan-simon.github.io/blog/posts/get-http-status-code-in-bash-script-wit-curl/">get http status code in bash script wit curl</a></li>
-            
-                <li><a href="http://allan-simon.github.io/blog/posts/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></li>
-            
-                <li><a href="http://allan-simon.github.io/blog/posts/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></li>
-            
         </ul>
     </div>
 </div>
+
+                    
+    
+
 
                     
     
@@ -599,6 +554,17 @@ to us by symfony2 and the FOSRestBundle.</p>
     
 
 
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Support This Site</h5>
+        <p>
+            If my blog was helpful to you, then please consider visiting my
+            <a href="http://amzn.com/w/1YU2424SGEF1B">Amazon Wishlist</a> or donating via <a href="https://paypal.me/nraboy">Paypal</a>
+            or <a href="https://cash.me/$nraboy">Square Cash</a>
+        </p>
+    </div>
+</div>
+
                 </div>
             </div>
         </div>
@@ -613,6 +579,7 @@ to us by symfony2 and the FOSRestBundle.</p>
 
             <div class="col-md-4 col-xs-6">
     <ul class="list-inline social-media">
+        
         
         
         
@@ -642,9 +609,9 @@ to us by symfony2 and the FOSRestBundle.</p>
         <i class="glyphicon glyphicon-chevron-up"></i> Back to Top
     </a>
 </div>
-<script src="http://allan-simon.github.io/blog//js/jquery-2.2.1.min.js"></script>
-<script src="http://allan-simon.github.io/blog//js/bootstrap.min.js"></script>
-<script src="http://allan-simon.github.io/blog//js/highlight.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/jquery-2.2.1.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/bootstrap.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 <script>
     if(($(window).height() + 100) < $(document).height()) {
