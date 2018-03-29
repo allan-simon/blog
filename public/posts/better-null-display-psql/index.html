@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.15" />
-    <title>Posts</title>
+    <title>Better null display psql</title>
     
     
     
@@ -12,7 +12,7 @@
     <meta name="keywords" content='linux,architect,python,rust,php,rest' />
     
     
-    <link href="http://allan-simon.github.io/blog/posts/index.xml" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
     <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/bootstrap.min.css" />
     <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/highlightjs-themes/androidstudio.css" />
     <link rel="stylesheet" href="http://allan-simon.github.io/blog//css/font-awesome.min.css" />
@@ -42,22 +42,64 @@
         <div id="top" class="container">
             <div class="row" id="content-main">
                 <div class="col-md-8">
+                    <div class="row">
+    <div class="col-md-12 content-card">
+        <h1>Better null display psql</h1>
+        
+        
+
+        <p>I&rsquo;ve been frustating recently to differenciate <code>NULL</code> and empty strings
+in postgresql when requeting manually with <code>psql</code></p>
+
+<p>Turns out there&rsquo;s an easy way to change that.</p>
+
+<p>Just use</p>
+
+<pre><code class="language-bash">\pset null 'Ø'
+</code></pre>
+
+<p>and now</p>
+
+<pre><code> id |          email          |  first  | last
+----+-------------------------+---------+-------
+  1 | your-email@example.com  | Foo     | Bar
+  2 | first-is-null@foo.com   |         |
+</code></pre>
+
+<p>will be</p>
+
+<pre><code> id |          email          |  first  | last
+----+-------------------------+---------+-------
+  1 | your-email@example.com  | Foo     | Bar
+  2 | first-is-null@foo.com   | Ø       |
+</code></pre>
+
+        
+
+    </div>
+</div>
+
                     
-                    
-    <div class="row">
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-4" style="text-align: left; padding-left: 0px">
-                    
-                </div>
-                <div class="col-md-4 col-md-offset-4" style="text-align: right; padding-right: 0px">
-                    
-                        <a class="btn btn-default" href="/blog/posts/page/2/" role="button" style="border-radius: 0px; display: block">Older</a>
-                    
-                </div>
+    
+        <div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+                    (function() {
+                        if (window.location.hostname == "localhost") {
+                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
+                            return;
+                        }
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        var disqus_shortname = 'allansimonblog';
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
             </div>
         </div>
-    </div>
+    
 
 
                 </div>
@@ -97,8 +139,6 @@
 </div>
 
                     
-
-                    
     
         <div class="row">
             <div class="col-md-11 col-md-offset-1 card">
@@ -112,17 +152,6 @@
 
     
 
-
-                    <div class="row">
-    <div class="col-md-11 col-md-offset-1 card">
-        <h5>Support This Site</h5>
-        <p>
-            If my blog was helpful to you, then please consider visiting my
-            <a href="http://amzn.com/w/1YU2424SGEF1B">Amazon Wishlist</a> or donating via <a href="https://paypal.me/nraboy">Paypal</a>
-            or <a href="https://cash.me/$nraboy">Square Cash</a>
-        </p>
-    </div>
-</div>
 
                 </div>
             </div>

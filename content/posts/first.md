@@ -21,4 +21,3 @@ advantages I see to it
   * it's text files and git (which solve the backup problem)
 
 
-

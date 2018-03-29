@@ -1,7 +1,7 @@
 +++
 date = "2018-03-29T23:36:00+02:00"
 draft = true
-title = "better null display psql.md"
+title = "Better null display psql"
 
 +++
 
@@ -15,8 +15,6 @@ Just use
 ```bash
 \pset null 'Ø'
 ```
-
-<!--more-->
 
 and now 
 
