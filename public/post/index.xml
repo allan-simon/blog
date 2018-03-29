@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Allan&#39;s blog</title>
-    <link>http://allan-simon.github.io/blog/</link>
-    <description>Recent content on Allan&#39;s blog</description>
+    <title>Posts on Allan&#39;s blog</title>
+    <link>http://allan-simon.github.io/blog/post/</link>
+    <description>Recent content in Posts on Allan&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 29 Mar 2018 23:36:00 +0200</lastBuildDate>
     
-	<atom:link href="http://allan-simon.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://allan-simon.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -628,15 +628,6 @@ like&lt;/p&gt;
       <guid>http://allan-simon.github.io/blog/2015/02/a-new-blog-this-time-on-github-and-statically-generated/</guid>
       <description>It has been a long time since I last did a blog the biggest reason behind were:
  it&amp;rsquo;s hard to maintain a server and a blog platform most common web plateforms are blocked in China the other plateforms does not fit my geeky needs non-self hosted platform make it hard to have easy backup of your data  So here we are, after reading comments on HackerNews I&amp;rsquo;ve found the project Hugo which permits you to create a static blog the advantages I see to it</description>
-    </item>
-    
-    <item>
-      <title>about</title>
-      <link>http://allan-simon.github.io/blog/about/</link>
-      <pubDate>Mon, 09 Feb 2015 23:20:55 +0800</pubDate>
-      
-      <guid>http://allan-simon.github.io/blog/about/</guid>
-      <description> What will you find on this blog  My daily discoveries and tips, mostly web/linux/devops/c++/c/rust related. Some tips and tricks on how to survive in the Chinese internet as a devops Some news concerning my personnal projects Random thoughts as I progress in my professional and personnal career.  </description>
     </item>
     
   </channel>

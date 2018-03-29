@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>postgresql display one column per line</title>
+    
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Allan&#39;s blog</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+        <div id="top" class="container">
+            <div class="row" id="content-main">
+                <div class="col-md-8">
+                    <div class="row">
+    <div class="col-md-12 content-card">
+        <h1>postgresql display one column per line</h1>
+        
+            <ul class="list-inline meta">
+                <li><i class="fa fa-calendar"></i>February 10, 2015</li>
+                <li><i class="fa fa-user"></i></li>
+                
+            </ul>
+        
+        
+    <ul class="list-inline share" style="margin-top: 15px; margin-left: 0px">
+        <li class="facebook-share"><a target="_blank" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fpostgresql-display-one-column-per-line%2f"><i class="fa fa-facebook fa-lg"></i>Facebook</a></li>
+        <li class="googleplus-share"><a target="_blank" href="https://plus.google.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fpostgresql-display-one-column-per-line%2f"><i class="fa fa-google-plus fa-lg"></i>Google+</a></li>
+        <li class="twitter-share"><a target="_blank" href="https://twitter.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fpostgresql-display-one-column-per-line%2f&amp;text=postgresql%20display%20one%20column%20per%20line"><i class="fa fa-twitter fa-lg"></i>Twitter</a></li>
+        <li class="reddit-share"><a target="_blank" href="http://reddit.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fpostgresql-display-one-column-per-line%2f&amp;title=postgresql%20display%20one%20column%20per%20line"><i class="fa fa-reddit fa-lg"></i>Reddit</a></li>
+        <li class="linkedin-share"><a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fpostgresql-display-one-column-per-line%2f"><i class="fa fa-linkedin fa-lg"></i>LinkedIn</a></li>
+        <li class="stumbleupon-share"><a target="_blank" href="http://www.stumbleupon.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2015%2f02%2fpostgresql-display-one-column-per-line%2f&amp;title=postgresql%20display%20one%20column%20per%20line"><i class="fa fa-stumbleupon fa-lg"></i>StumbleUpon</a></li>
+    </ul>
+
+
+        <h3 id="problem-displaying-a-table-with-a-lot-of-columns">Problem : displaying a table with a lot of columns</h3>
+
+<p>You always got that table with a dozens of columns of type text and for which
+the normal tabular output does not work nicely and you end up with something
+like</p>
+
+<pre><code> articleid | plop | pouet | prout | tagada |  id   | newsid  | newstype |                                                          title                                                          | something | something | something | something | something | something | something | something |      something       |      something       | something | something | something | something |          something          |    something    |                                                                                                                                                                                                                                                                                                                 something                                                                                                                                                                                                                                                                                                                 |            something            
+-----------+-------+-------+-------+-------+-------+---------+----------+-----------------------------------------------------------------------------------------------------------------------------+------------+-------------+-----------+------------+-----------------+---------+--------------+---------+---------------------+---------------------+---------------+-------------+-----------+------------+---------------------------+-----------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------+------------+--------------------------------+--------------+----------------------+------------------------------------------------------------------------------------+--------------+-----------+----------+----------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------+-----------+-------+------------
+   1000163 |     0 |     0 |     0 |     0 |   141 | 1000147 |       10 | blablabla                                                                                           |          3 |           4 |        22 |    1000163 |               0 | 1000163 |          184 |   10028 | 2014-06-30 23:36:00 | 2014-06-30 23:36:00 |             0 |           0 |         0 |          0 |                           |           |          
+</code></pre>
+
+<p></p>
+
+<h3 id="in-mysql">In MySQL</h3>
+
+<p>with MySQL you can replace <code>;</code> by <code>\G</code> at the end of your SQL statement, i.e turning</p>
+
+<pre><code>SELECT * FROM example ;
+</code></pre>
+
+<p>into</p>
+
+<pre><code>SELECT * FROM example \G
+</code></pre>
+
+<h3 id="in-postgresql">In PostgreSQL</h3>
+
+<p>you need first to use <code>\x</code> and it will activate the &lsquo;one column by line&rsquo; display
+(use <code>\x</code> again to switch back to normal mode)</p>
+
+<pre><code>\x
+SELECT * FROM example;
+\x
+</code></pre>
+
+<p>and you will something like that</p>
+
+<pre><code>-[ RECORD 1 ]------
+articleid | 1000000
+something     | 0
+something     | 0
+something     | 0
+something     | 0
+id        | 1
+-[ RECORD 2 ]------
+articleid | 1000002
+something     | 0
+something     | 0
+something     | 0
+something     | 0
+something     | 2
+</code></pre>
+        
+    <ul class="list-inline tags" style="margin-top: 15px; margin-left: 0px">
+        
+    </ul>
+
+
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+                    (function() {
+                        if (window.location.hostname == "localhost") {
+                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
+                            return;
+                        }
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        var disqus_shortname = 'allansimonblog';
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+    
+
+
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Search</h5>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form">
+            <div class="input-group">
+                <input class="form-control" type="search" name="q" />
+                <span class="input-group-btn">
+                    <button class="btn btn-custom" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+            <input type="hidden" name="q" value="site:http://allan-simon.github.io/blog/">
+        </form>
+    </div>
+</div>
+
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Recent Posts</h5>
+        <ul class="list-unstyled posts-recent">
+            
+                <li><a href="http://allan-simon.github.io/blog/2018/03/better-null-display-psql/">Better null display psql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/08/check-start-time-before-end-time-in-postgresql/">check start time before end time in postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/07/get-http-status-code-in-bash-script-wit-curl/">get http status code in bash script wit curl</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></li>
+            
+        </ul>
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-11 col-md-offset-1 card">
+                <h5>categories</h5>
+                <ul class="list-unstyled posts-recent">
+                    
+                </ul>
+            </div>
+        </div>
+    
+
+    
+
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-xs-6">
+    <ul class="list-inline links">
+        
+    </ul>
+</div>
+
+            <div class="col-md-4 col-xs-6">
+    <ul class="list-inline social-media">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <a href="https://github.com/nraboy/hugo-phlat-theme">Phlat Theme</a> designed and built by <a href="http://www.nraboy.com">Nic Raboy</a> in San Francisco, California.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+        <div id="back-to-top" class="hidden">
+    <a href="#top" class="well well-sm" onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+        <i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+    </a>
+</div>
+<script src="http://allan-simon.github.io/blog/js/jquery-2.2.1.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/bootstrap.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>
+    if(($(window).height() + 100) < $(document).height()) {
+        $('#back-to-top').removeClass('hidden').affix({
+            offset: {
+                top: 100
+            }
+        });
+    }
+</script>
+
+    
+
+
+
+    </body>
+</html>

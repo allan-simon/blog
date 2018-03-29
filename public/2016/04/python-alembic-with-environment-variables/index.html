@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>python alembic with environment variables</title>
+    
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Allan&#39;s blog</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+        <div id="top" class="container">
+            <div class="row" id="content-main">
+                <div class="col-md-8">
+                    <div class="row">
+    <div class="col-md-12 content-card">
+        <h1>python alembic with environment variables</h1>
+        
+            <ul class="list-inline meta">
+                <li><i class="fa fa-calendar"></i>April 3, 2016</li>
+                <li><i class="fa fa-user"></i></li>
+                
+            </ul>
+        
+        
+    <ul class="list-inline share" style="margin-top: 15px; margin-left: 0px">
+        <li class="facebook-share"><a target="_blank" href="http://www.facebook.com/sharer.php?u=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f04%2fpython-alembic-with-environment-variables%2f"><i class="fa fa-facebook fa-lg"></i>Facebook</a></li>
+        <li class="googleplus-share"><a target="_blank" href="https://plus.google.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f04%2fpython-alembic-with-environment-variables%2f"><i class="fa fa-google-plus fa-lg"></i>Google+</a></li>
+        <li class="twitter-share"><a target="_blank" href="https://twitter.com/share?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f04%2fpython-alembic-with-environment-variables%2f&amp;text=python%20alembic%20with%20environment%20variables"><i class="fa fa-twitter fa-lg"></i>Twitter</a></li>
+        <li class="reddit-share"><a target="_blank" href="http://reddit.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f04%2fpython-alembic-with-environment-variables%2f&amp;title=python%20alembic%20with%20environment%20variables"><i class="fa fa-reddit fa-lg"></i>Reddit</a></li>
+        <li class="linkedin-share"><a target="_blank" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f04%2fpython-alembic-with-environment-variables%2f"><i class="fa fa-linkedin fa-lg"></i>LinkedIn</a></li>
+        <li class="stumbleupon-share"><a target="_blank" href="http://www.stumbleupon.com/submit?url=http%3a%2f%2fallan-simon.github.io%2fblog%2f2016%2f04%2fpython-alembic-with-environment-variables%2f&amp;title=python%20alembic%20with%20environment%20variables"><i class="fa fa-stumbleupon fa-lg"></i>StumbleUpon</a></li>
+    </ul>
+
+
+        <p>At my job we&rsquo;re currently using <a href="http://alembic.readthedocs.org/">alembic</a>
+to manage our database migrations (i.e adding a new table / index etc.)</p>
+
+<p>The tool is pretty mature and has been here for a while, so it covers
+a lot of advanced case (like handling several databases, having a tree
+of migrations etc.) while still being simple for simple case</p>
+
+<p>The only not straighforward thing I found was that it&rsquo;s not easy
+to integrate with 12Factor-apps, i.e my code is running in a lot
+of differents environments (vagrant+docker on my local machine,
+the QA environments,  the pre-production, production etc.)</p>
+
+<p></p>
+
+<p>And of course I don&rsquo;t want to have to maintain in the configuration
+file all the different combination, and even less do I want to
+write down my database password, so instead we&rsquo;re relying on environment
+variables</p>
+
+<p>In order to achieve this, once you&rsquo;ve done your <code>alembic init</code>, take
+your <code>migrations</code> folder created by alembic, and in it modify the
+<code>env.py</code> file to look like this: (the important part is the <code>get_url</code>
+methods)</p>
+
+<pre><code class="language-python">
+from __future__ import with_statement
+import os
+from alembic import context
+from sqlalchemy import engine_from_config, pool, create_engine
+from logging.config import fileConfig
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
+fileConfig(config.config_file_name)
+
+# add your model's MetaData object here
+# for 'autogenerate' support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
+target_metadata = None
+
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option(&quot;my_important_option&quot;)
+# ... etc.
+
+def get_url():
+    return &quot;mysql+pymysql://%s:%s@%s/%s&quot; % (
+        os.getenv(&quot;DB_USER&quot;, &quot;vagrant&quot;),
+        os.getenv(&quot;DB_PASSWORD&quot;, &quot;vagrant&quot;),
+        os.getenv(&quot;DB_HOST&quot;, &quot;db&quot;),
+        os.getenv(&quot;DB_NAME&quot;, &quot;vagrant&quot;),
+    )
+
+def run_migrations_offline():
+    &quot;&quot;&quot;Run migrations in 'offline' mode.
+
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
+    &quot;&quot;&quot;
+    url = get_url()
+    context.configure(
+        url=url, target_metadata=target_metadata, literal_binds=True)
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online():
+    &quot;&quot;&quot;Run migrations in 'online' mode.
+
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
+
+    &quot;&quot;&quot;
+    connectable = create_engine(get_url())
+
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
+
+</code></pre>
+
+<p>Of course you can adapt it to your need/database/driver, normally
+you just need to update that <code>get_url</code> method</p>
+        
+    <ul class="list-inline tags" style="margin-top: 15px; margin-left: 0px">
+        
+    </ul>
+
+
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-12 content-card">
+                <div id="disqus_thread"></div>
+                <script>
+                    (function() {
+                        if (window.location.hostname == "localhost") {
+                            document.write("Disqus comments are unavailable while serving on localhost or 127.0.0.1");
+                            return;
+                        }
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        var disqus_shortname = 'allansimonblog';
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+            </div>
+        </div>
+    
+
+
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Search</h5>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form">
+            <div class="input-group">
+                <input class="form-control" type="search" name="q" />
+                <span class="input-group-btn">
+                    <button class="btn btn-custom" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+            <input type="hidden" name="q" value="site:http://allan-simon.github.io/blog/">
+        </form>
+    </div>
+</div>
+
+                    <div class="row">
+    <div class="col-md-11 col-md-offset-1 card">
+        <h5>Recent Posts</h5>
+        <ul class="list-unstyled posts-recent">
+            
+                <li><a href="http://allan-simon.github.io/blog/2018/03/better-null-display-psql/">Better null display psql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/08/check-start-time-before-end-time-in-postgresql/">check start time before end time in postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/07/get-http-status-code-in-bash-script-wit-curl/">get http status code in bash script wit curl</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/some-reading-for-better-understanding-of-postgresql/">some reading for better understanding of postgresql</a></li>
+            
+                <li><a href="http://allan-simon.github.io/blog/2016/04/alembic-use-sql-statement-instead-of-sqlalchemy/">alembic use sql statement instead of sqlalchemy</a></li>
+            
+        </ul>
+    </div>
+</div>
+
+                    
+    
+        <div class="row">
+            <div class="col-md-11 col-md-offset-1 card">
+                <h5>categories</h5>
+                <ul class="list-unstyled posts-recent">
+                    
+                </ul>
+            </div>
+        </div>
+    
+
+    
+
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-xs-6">
+    <ul class="list-inline links">
+        
+    </ul>
+</div>
+
+            <div class="col-md-4 col-xs-6">
+    <ul class="list-inline social-media">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <a href="https://github.com/nraboy/hugo-phlat-theme">Phlat Theme</a> designed and built by <a href="http://www.nraboy.com">Nic Raboy</a> in San Francisco, California.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+        <div id="back-to-top" class="hidden">
+    <a href="#top" class="well well-sm" onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+        <i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+    </a>
+</div>
+<script src="http://allan-simon.github.io/blog/js/jquery-2.2.1.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/bootstrap.min.js"></script>
+<script src="http://allan-simon.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>
+    if(($(window).height() + 100) < $(document).height()) {
+        $('#back-to-top').removeClass('hidden').affix({
+            offset: {
+                top: 100
+            }
+        });
+    }
+</script>
+
+    
+
+
+
+    </body>
+</html>
