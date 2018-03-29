@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>doctrine2 order by count many to many</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,12 +51,10 @@
         
         
 
-        
-
-<p>Today I found a problem quite common but tricky enough for the solution
+        <p>Today I found a problem quite common but tricky enough for the solution
 to share it with you</p>
 
-<h3 id="the-problem:fcd569fc48e65a7020df74b8509a5751">The problem</h3>
+<h3 id="the-problem">The problem</h3>
 
 <p>I have 2 Entities</p>
 
@@ -55,7 +74,9 @@ it&rsquo;s an interesting exercise about &lsquo;how much do you know doctrine an
 <p>but let me tell you, the solution is like an Egg of Columbus, once you see
 it it becomes evident, but it was actually not that simple at first.</p>
 
-<h3 id="the-solution:fcd569fc48e65a7020df74b8509a5751">The solution</h3>
+<h3 id="the-solution">The solution</h3>
+
+<p></p>
 
 <pre><code>// in your repository
 $builder = $this-&gt;createQueryBuilder('a');
@@ -68,7 +89,7 @@ $builder = $this-&gt;createQueryBuilder('a');
 ;
 </code></pre>
 
-<h3 id="step-by-step:fcd569fc48e65a7020df74b8509a5751">Step by step</h3>
+<h3 id="step-by-step">Step by step</h3>
 
 <pre><code>-&gt;leftJoin('a.likedByUsers', 'u')
 </code></pre>
@@ -113,7 +134,6 @@ a <code>number_of_likes</code> in the JSON, I will later make an article about v
 of the JSM Serializer</p>
 
 <p>Hope you learn something in the process,</p>
-
         
 
     </div>

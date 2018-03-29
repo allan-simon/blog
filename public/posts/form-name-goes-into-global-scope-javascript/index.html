@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>Form name goes into global scope in javascript</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,13 +51,13 @@
         
         
 
-        
-
-<p>An interesting problem a friend of mine discovered today</p>
+        <p>An interesting problem a friend of mine discovered today</p>
 
 <p>Can you spot the problem?</p>
 
-<h3 id="le-javascript:fbaa6c6334b42dfe24c7e56e4931c1ff">Le javascript</h3>
+<p></p>
+
+<h3 id="le-javascript">Le javascript</h3>
 
 <pre><code>var CreateVersion = (function(){
     'use strict';
@@ -51,7 +72,7 @@
 }());
 </code></pre>
 
-<h3 id="le-html:fbaa6c6334b42dfe24c7e56e4931c1ff">Le HTML</h3>
+<h3 id="le-html">Le HTML</h3>
 
 <pre><code>&lt;form name=&quot;CreateVersion&quot; method=&quot;post&quot; action=&quot;&quot;&gt;
     &lt;div class=&quot;form-group&quot;&gt;
@@ -96,14 +117,14 @@
 &lt;/form&gt;
 </code></pre>
 
-<h3 id="le-erreur:fbaa6c6334b42dfe24c7e56e4931c1ff">Le erreur</h3>
+<h3 id="le-erreur">Le erreur</h3>
 
 <pre><code>TypeError: CreateVersion.foo is not a function
 </code></pre>
 
 <p>No, not in IE6, in last version of Firefox/Chrome</p>
 
-<h3 id="le-solution:fbaa6c6334b42dfe24c7e56e4931c1ff">Le solution</h3>
+<h3 id="le-solution">Le solution</h3>
 
 <p>This line</p>
 
@@ -128,7 +149,7 @@ mean that &ldquo;document.Foo&rdquo; collide with any javascript defined variabl
 
 <p>For more explanation see <a href="http://stackoverflow.com/questions/1415747/javascript-function-and-form-name-conflict">this stackoverflow question</a></p>
 
-<h3 id="how-to-avoid-that:fbaa6c6334b42dfe24c7e56e4931c1ff">How to avoid that:</h3>
+<h3 id="how-to-avoid-that">How to avoid that:</h3>
 
 <p>Some possibilities:</p>
 
@@ -136,7 +157,6 @@ mean that &ldquo;document.Foo&rdquo; collide with any javascript defined variabl
 <li>Make it a coding style policy that module name start contains something &ldquo;javascript only&rdquo; like <code>FooModule</code> or <code>FooJS</code></li>
 <li>put your modules in one big wrapping modules (like <code>MyCorp.Foo</code>)</li>
 </ul>
-
         
 
     </div>

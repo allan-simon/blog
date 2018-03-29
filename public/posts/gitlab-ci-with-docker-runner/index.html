@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>gitlab ci with docker runner</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,9 +51,7 @@
         
         
 
-        
-
-<p>In my company we&rsquo;re using <a href="https://gitlab.com">Gitlab</a> for managing our code
+        <p>In my company we&rsquo;re using <a href="https://gitlab.com">Gitlab</a> for managing our code
 and doing code review. For the last months we&rsquo;ve been standardizing our stack
 on Symfony/Postgresql/php-fpm. Recently we&rsquo;ve started automatizing our tests
 using phpunit. The next step was of course to have a start of continuous
@@ -46,7 +65,9 @@ integration and to be able to run our tests at each Merge request.</p>
 <li>How to make gitlab-ci run your tests in a Docker container</li>
 </ul>
 
-<h2 id="gitlab-ci-in-a-separate-instance:4d690c56257e442bb4a4350a17a1da49">Gitlab-CI in a separate instance</h2>
+<p></p>
+
+<h2 id="gitlab-ci-in-a-separate-instance">Gitlab-CI in a separate instance</h2>
 
 <p>To do continous-integration you got plenty of choice, the most popular one being
 <a href="http://jenkins-ci.org">jenkinks</a>. However it seems to be that it is a bit bloated
@@ -61,7 +82,7 @@ which will take care of installing everything from you</p>
 
 <p>Then in order to have only gitlab-ci you can can follow the step <a href="https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/gitlab-ci/README.md">Running Gitlab on its own server</a></p>
 
-<h2 id="gitlab-ci-behind-your-company-s-frontal-server:4d690c56257e442bb4a4350a17a1da49">Gitlab-CI behind your company&rsquo;s frontal server</h2>
+<h2 id="gitlab-ci-behind-your-company-s-frontal-server">Gitlab-CI behind your company&rsquo;s frontal server</h2>
 
 <p>Our company as one public IP under which we host all our services.
 We have then a frontal apache2 (but it could have been a nginx) which proxify
@@ -94,7 +115,7 @@ ci_nginx['enable'] = false
 
 <p>(by default gitlab-ci&rsquo;s unicorn listen on port 8181)</p>
 
-<h2 id="tell-gitlab-ci-to-run-your-test-into-a-docker-container:4d690c56257e442bb4a4350a17a1da49">Tell Gitlab-ci to run your test into a docker container</h2>
+<h2 id="tell-gitlab-ci-to-run-your-test-into-a-docker-container">Tell Gitlab-ci to run your test into a docker container</h2>
 
 <p>Gitlab-ci use what they call a &ldquo;Runner&rdquo; to run your test, it&rsquo;s more
 or less a spare machine in which Gitlab-ci will clone your project
@@ -153,7 +174,6 @@ it has been done in the <a href="https://github.com/sameersbn/docker-runner-gitl
 
 <p>In a next article we will see in details how to create step by step your own
 Gitlab-ci for your php/symfony project</p>
-
         
 
     </div>

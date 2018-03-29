@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>postgresql display one column per line</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,9 +51,7 @@
         
         
 
-        
-
-<h3 id="problem-displaying-a-table-with-a-lot-of-columns:3d087ea0c927fb7141fc306f11f0a8e3">Problem : displaying a table with a lot of columns</h3>
+        <h3 id="problem-displaying-a-table-with-a-lot-of-columns">Problem : displaying a table with a lot of columns</h3>
 
 <p>You always got that table with a dozens of columns of type text and for which
 the normal tabular output does not work nicely and you end up with something
@@ -43,7 +62,9 @@ like</p>
    1000163 |     0 |     0 |     0 |     0 |   141 | 1000147 |       10 | blablabla                                                                                           |          3 |           4 |        22 |    1000163 |               0 | 1000163 |          184 |   10028 | 2014-06-30 23:36:00 | 2014-06-30 23:36:00 |             0 |           0 |         0 |          0 |                           |           |          
 </code></pre>
 
-<h3 id="in-mysql:3d087ea0c927fb7141fc306f11f0a8e3">In MySQL</h3>
+<p></p>
+
+<h3 id="in-mysql">In MySQL</h3>
 
 <p>with MySQL you can replace <code>;</code> by <code>\G</code> at the end of your SQL statement, i.e turning</p>
 
@@ -55,7 +76,7 @@ like</p>
 <pre><code>SELECT * FROM example \G
 </code></pre>
 
-<h3 id="in-postgresql:3d087ea0c927fb7141fc306f11f0a8e3">In PostgreSQL</h3>
+<h3 id="in-postgresql">In PostgreSQL</h3>
 
 <p>you need first to use <code>\x</code> and it will activate the &lsquo;one column by line&rsquo; display
 (use <code>\x</code> again to switch back to normal mode)</p>
@@ -82,7 +103,6 @@ something     | 0
 something     | 0
 something     | 2
 </code></pre>
-
         
 
     </div>

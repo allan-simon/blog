@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>murmur hash v3 in MySQL utf8 compatible</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,9 +51,7 @@
         
         
 
-        
-
-<h1 id="murmur-hash-v3-in-mysql-utf8-compatible:905a344dd7cee3e2417a03c311b84a02">Murmur hash v3 in MySQL utf8 compatible</h1>
+        <h1 id="murmur-hash-v3-in-mysql-utf8-compatible">Murmur hash v3 in MySQL utf8 compatible</h1>
 
 <p>These days for performance purpose, I needed to replace some <code>autoincrement</code> Id
 by a hash calculated one, in order to have a determinist way to retrieve from
@@ -45,7 +64,9 @@ an object, it&rsquo;s record in database, and easily recognize duplicate.</p>
 <p>But as I needed to update million of existing record, I couldn&rsquo;t possibly
 imagine doing that by calling a python script.</p>
 
-<h2 id="first-solution-user-defined-function-copy-pasted-from-a-gist:905a344dd7cee3e2417a03c311b84a02">First solution: user defined function copy/pasted from a gist</h2>
+<p></p>
+
+<h2 id="first-solution-user-defined-function-copy-pasted-from-a-gist">First solution: user defined function copy/pasted from a gist</h2>
 
 <p>Instead I found that somebody already created a user defined function for that
 and posted it on a <a href="https://gist.github.com/ghafran/8883678">gist here</a></p>
@@ -62,12 +83,12 @@ SET hashed_field = murmur_hash_v3(
 <p>and update in a minute my records which would have normally taken
 a good hour with a python script iterating on the records</p>
 
-<h2 id="problem-it-does-not-handle-utf-8-strings:905a344dd7cee3e2417a03c311b84a02">Problem: it does not handle utf-8 strings</h2>
+<h2 id="problem-it-does-not-handle-utf-8-strings">Problem: it does not handle utf-8 strings</h2>
 
 <p>But we soon run onto a problem with utf-8 records, the hash were different between
 python and mysql version of the hash</p>
 
-<h2 id="solutions-plitting-by-bytes-instead-of-character:905a344dd7cee3e2417a03c311b84a02">Solutions, plitting by bytes instead of character</h2>
+<h2 id="solutions-plitting-by-bytes-instead-of-character">Solutions, plitting by bytes instead of character</h2>
 
 <p>The problem is that <code>ascii()</code> methods in MySQL is not made to handle non-ascii characters, and that the methods is iterating on each <strong>character</strong></p>
 
@@ -78,7 +99,7 @@ python and mysql version of the hash</p>
 
 <p>That way, the split was now done on bytes instead of characters</p>
 
-<h2 id="the-function-now:905a344dd7cee3e2417a03c311b84a02">The function now:</h2>
+<h2 id="the-function-now">The function now:</h2>
 
 <p>Now you can copy paste this version :)</p>
 
@@ -143,7 +164,6 @@ python and mysql version of the hash</p>
     //
     DELIMITER ;
 </code></pre>
-
         
 
     </div>

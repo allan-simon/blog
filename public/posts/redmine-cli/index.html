@@ -1,6 +1,27 @@
 <!DOCTYPE html>
 <html lang="en-us">
+    <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1" />
+    <title>Redmine-cli and redmine API</title>
     
+    
+    
+    <meta name="description" content="Tips, tricks and random thoughts on Linux/Vim/rust/php/devops" />
+    <meta name="keywords" content='linux,architect,python,rust,php,rest' />
+    
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="Allan&#39;s blog" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/highlightjs-themes/androidstudio.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="http://allan-simon.github.io/blog/css/phlat.css" />
+    
+        
+    
+</head>
+
     <body>
         <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -30,9 +51,7 @@
         
         
 
-        
-
-<p>I found a tool to manage redmine from the cli, in python:</p>
+        <p>I found a tool to manage redmine from the cli, in python:</p>
 
 <p><code>pip install redmine-cli</code></p>
 
@@ -67,7 +86,9 @@ my modification include so far:</p>
 <li><code>redmine update 123 'in progress'</code> to update the status to <code>in progress</code> (admitting your redmine has this status)</li>
 </ul>
 
-<h3 id="the-long-story-behind:d401f13f70d55c7805182afc8cf1c451">The long story behind:</h3>
+<p></p>
+
+<h3 id="the-long-story-behind">The long story behind:</h3>
 
 <p>As any good Linux user, I love the CLI (no, there&rsquo;s no such thing
 as a <strong>good</strong> Linux user who does not love the CLI). Starting from
@@ -103,7 +124,7 @@ Then you have the second technique</p>
 <p>each of these steps impliying a page load, no need to tell you how much times
 it takes even for 5 tickets</p>
 
-<h3 id="the-cli-will-always-be-there-for-you-redmine-cli:d401f13f70d55c7805182afc8cf1c451">The CLI will always be there for you: redmine-cli</h3>
+<h3 id="the-cli-will-always-be-there-for-you-redmine-cli">The CLI will always be there for you: redmine-cli</h3>
 
 <p>For now some month, whenever I&rsquo;m looking for that little tool, the reflex is to
 search for it on github. As I knew there was a Redmine API and that we don&rsquo;t have
@@ -124,7 +145,7 @@ so that people know if the project is dead or just &lsquo;in good shape enough b
 <p>So I found the python project, which was updated in 2014 and
 had clear installation instruction <code>pip install redmine-cli</code></p>
 
-<h3 id="missing-feature-redmine-api-my-love:d401f13f70d55c7805182afc8cf1c451">Missing feature: redmine API my love</h3>
+<h3 id="missing-feature-redmine-api-my-love">Missing feature: redmine API my love</h3>
 
 <p>while implementing the feature I found that</p>
 
@@ -147,7 +168,6 @@ So please please when you do an API</p>
 <li>Be consistent, if <code>status_id</code> is an integer once, it must always be a integer</li>
 <li>Have a clear documentation, with example</li>
 </ul>
-
         
 
     </div>
